@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2級建築士 法規まとめノート 〇✕トレーナー</title>
+<style>
+  :root{
+    --ink:#1b1830; --ink-soft:#494363;
+    --paper:#edecf4; --paper-2:#f9f9fc; --line:#d4d2e2;
+    --accent:#5a51a0; --accent-soft:#e7e3f4;
+    --ok:#2f7d54; --ok-soft:#e0efe5;
+    --ng:#b4392f; --ng-soft:#f4e0dd;
+    --mono:"SFMono-Regular",ui-monospace,"Roboto Mono",Menlo,monospace;
+    --jp:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{font-family:var(--jp);color:var(--ink);background:var(--paper);
+    background-image:linear-gradient(var(--line) 1px,transparent 1px);background-size:100% 40px;
+    line-height:1.7;min-height:100%;display:flex;justify-content:center;}
+  .app{width:100%;max-width:560px;min-height:100dvh;background:var(--paper-2);
+    border-left:1px solid var(--line);border-right:1px solid var(--line);display:flex;flex-direction:column;}
+
+  header{padding:18px 20px 14px;border-bottom:2px solid var(--ink);background:var(--paper-2);position:sticky;top:0;z-index:5;}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--accent);text-transform:uppercase;}
+  h1{font-size:18px;font-weight:800;letter-spacing:.02em;margin-top:2px;}
+  .meta{display:flex;justify-content:space-between;align-items:baseline;margin-top:12px;font-family:var(--mono);font-size:12px;color:var(--ink-soft);}
+  .meta b{color:var(--ink);font-size:13px;}
+  .track{height:5px;background:var(--accent-soft);margin-top:8px;border-radius:2px;overflow:hidden;}
+  .bar{height:100%;width:0;background:var(--accent);transition:width .35s ease;}
+  header.compact .meta,header.compact .track{display:none;}
+
+  main{flex:1;padding:22px 20px 30px;display:flex;flex-direction:column;}
+  .section-tag{display:inline-block;font-size:12px;font-weight:700;color:var(--ink-soft);
+    border:1px solid var(--line);border-radius:20px;padding:3px 12px;margin-bottom:16px;align-self:flex-start;background:var(--paper);}
+  .qhead{display:flex;align-items:baseline;gap:10px;margin-bottom:14px;}
+  .qno{font-family:var(--mono);font-size:34px;font-weight:700;color:var(--ink);line-height:1;}
+  .qsrc{font-family:var(--mono);font-size:11px;color:var(--ink-soft);margin-left:auto;}
+  .stmt{font-size:17px;font-weight:500;letter-spacing:.01em;}
+  .prompt{font-size:13px;color:var(--ink-soft);margin-top:16px;}
+
+  .choices{display:flex;gap:14px;margin-top:14px;}
+  .bubble{flex:1;cursor:pointer;border:1.5px solid var(--ink);background:var(--paper-2);
+    border-radius:14px;padding:18px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;
+    transition:transform .08s ease,background .15s ease;font-family:inherit;}
+  .bubble:active{transform:scale(.97);}
+  .mark{width:46px;height:46px;border-radius:50%;border:2px solid var(--ink);
+    display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:20px;font-weight:700;
+    transition:background .15s ease,color .15s ease;}
+  .blabel{font-size:14px;font-weight:700;}
+  .bubble.dim{opacity:.4;}
+  .bubble.chosen .mark{background:var(--ink);color:var(--paper-2);}
+  .bubble.correct{border-color:var(--ok);background:var(--ok-soft);}
+  .bubble.correct .mark{background:var(--ok);border-color:var(--ok);color:#fff;}
+  .bubble.wrong{border-color:var(--ng);background:var(--ng-soft);}
+  .bubble.wrong .mark{background:var(--ng);border-color:var(--ng);color:#fff;}
+  .bubble[disabled]{cursor:default;}
+
+  .fb{margin-top:20px;border-top:1px dashed var(--line);padding-top:18px;display:none;}
+  .fb.show{display:block;animation:rise .3s ease;}
+  @keyframes rise{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  .verdict{display:flex;align-items:center;gap:10px;font-weight:800;font-size:17px;}
+  .verdict .dot{width:11px;height:11px;border-radius:50%;}
+  .verdict.y{color:var(--ok);} .verdict.y .dot{background:var(--ok);}
+  .verdict.n{color:var(--ng);} .verdict.n .dot{background:var(--ng);}
+  .ansline{font-size:14px;margin-top:8px;color:var(--ink-soft);}
+  .ansline b{color:var(--ink);}
+  .point{margin-top:12px;background:var(--paper);border-left:3px solid var(--accent);padding:12px 14px;border-radius:0 8px 8px 0;font-size:14.5px;}
+  .point .pt-l{font-family:var(--mono);font-size:10px;letter-spacing:.15em;color:var(--accent);display:block;margin-bottom:4px;}
+  .point .hl{color:var(--ng);font-weight:700;}
+
+  .actions{margin-top:auto;padding-top:24px;}
+  .next{width:100%;border:none;background:var(--ink);color:var(--paper-2);font-family:inherit;font-size:16px;font-weight:700;letter-spacing:.04em;padding:16px;border-radius:14px;cursor:pointer;transition:opacity .15s ease;}
+  .next:active{opacity:.85;} .next:disabled{opacity:.3;cursor:default;}
+
+  .result{padding:30px 20px;text-align:center;display:none;flex-direction:column;flex:1;}
+  .result.show{display:flex;}
+  .score-big{font-family:var(--mono);font-size:64px;font-weight:700;line-height:1;color:var(--accent);}
+  .score-sub{font-size:14px;color:var(--ink-soft);margin-top:6px;}
+  .pct{font-family:var(--mono);font-size:15px;margin-top:18px;font-weight:700;}
+  .review{margin-top:24px;text-align:left;}
+  .review h3{font-size:13px;letter-spacing:.06em;color:var(--ink-soft);margin-bottom:10px;font-family:var(--mono);}
+  .miss{display:flex;gap:10px;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--line);font-size:13.5px;}
+  .miss .mno{font-family:var(--mono);font-weight:700;color:var(--ng);min-width:46px;}
+  .rbtn{width:100%;font-family:inherit;font-size:15px;font-weight:700;padding:14px;border-radius:14px;cursor:pointer;margin-top:14px;}
+  .rbtn.solid{border:none;background:var(--accent);color:#fff;}
+  .rbtn.ghost{border:1.5px solid var(--ink);background:transparent;color:var(--ink);}
+  .note{font-size:11.5px;color:var(--ink-soft);text-align:center;padding:14px 20px;border-top:1px solid var(--line);font-family:var(--mono);}
+
+  .home{padding:30px 20px;flex:1;display:flex;flex-direction:column;}
+  .home.hide{display:none;}
+  .home .lead{font-size:14px;color:var(--ink-soft);margin-bottom:22px;line-height:1.8;}
+  .home .lead b{color:var(--ink);}
+  .pick{width:100%;text-align:left;border:1.5px solid var(--ink);background:var(--paper-2);border-radius:16px;padding:18px;margin-bottom:14px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:16px;transition:transform .08s ease,background .15s ease;}
+  .pick:active{transform:scale(.98);background:var(--accent-soft);}
+  .pick.retry{border-color:var(--accent);background:var(--accent-soft);}
+  .pick .rng{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--accent);min-width:84px;}
+  .pick .ttl{font-size:16px;font-weight:700;}
+  .pick .sub{font-size:12px;color:var(--ink-soft);margin-top:2px;}
+  .pick .txt{flex:1;} .pick .arw{font-size:20px;color:var(--ink-soft);}
+  .hsec{font-family:var(--mono);font-size:11px;letter-spacing:.15em;color:var(--ink-soft);margin:6px 0 12px;}
+  .pending{font-size:12px;color:var(--ink-soft);border:1px dashed var(--line);border-radius:12px;padding:12px 14px;margin-top:4px;line-height:1.7;}
+</style>
+</head>
+<body>
+<div class="app">
+  <header id="hdr" class="compact">
+    <span class="eyebrow">2026 / 法規まとめノート</span>
+    <h1>重要ポイント 〇✕トレーナー</h1>
+    <div class="meta">
+      <span>問 <b id="cur">–</b> / <span id="total">–</span></span>
+      <span>正答 <b id="hit">0</b></span>
+    </div>
+    <div class="track"><div class="bar" id="bar"></div></div>
+  </header>
+
+  <div class="home" id="home">
+    <p class="lead">法規まとめノートの<b>重要数値・キーワード</b>を〇✕で暗記。記述が<b>正しければ ①適当</b>、<b>誤っていれば ②不適当</b>を選びます。誤り肢には正しい数値を解説。間違えた問題は記録され、<b>あとから間違いだけ再テスト</b>できます。</p>
+    <button class="pick retry" id="retryStore" style="display:none;" onclick="startStoredWrong()">
+      <span class="rng">復習</span>
+      <span class="txt"><span class="ttl">前回までの間違いを再テスト</span><div class="sub" id="retryStoreSub"></div></span>
+      <span class="arw">→</span>
+    </button>
+    <div class="hsec">分野をえらぶ</div>
+    <div id="homeButtons"></div>
+    <div class="pending" id="pending"></div>
+  </div>
+
+  <main id="main" style="display:none;">
+    <span class="section-tag" id="sec"></span>
+    <div class="qhead">
+      <span class="qno" id="qno"></span>
+      <span class="qsrc" id="qsrc"></span>
+    </div>
+    <p class="stmt" id="stmt"></p>
+    <p class="prompt">記述が正しければ ① 、誤っていれば ② を選ぶ</p>
+
+    <div class="choices">
+      <button class="bubble" id="b1" onclick="answer(1)"><span class="mark">①</span><span class="blabel">適当</span></button>
+      <button class="bubble" id="b2" onclick="answer(2)"><span class="mark">②</span><span class="blabel">不適当</span></button>
+    </div>
+
+    <div class="fb" id="fb">
+      <div class="verdict" id="verdict"><span class="dot"></span><span id="vtext"></span></div>
+      <div class="ansline">正解は <b id="ans"></b> です。</div>
+      <div class="point"><span class="pt-l">POINT</span><span id="point"></span></div>
+    </div>
+
+    <div class="actions"><button class="next" id="next" onclick="nextQ()" disabled>解答する</button></div>
+  </main>
+
+  <div class="result" id="result">
+    <div class="score-big" id="rScore">0</div>
+    <div class="score-sub" id="rSub"></div>
+    <div class="pct" id="rPct"></div>
+    <div class="review" id="reviewWrap"><h3>復習リスト（間違えた問題）</h3><div id="missList"></div></div>
+    <button class="rbtn solid" id="retryNow" onclick="retryMisses()">間違えた問題だけ再テスト</button>
+    <button class="rbtn ghost" onclick="goHome()">分野をえらび直す</button>
+  </div>
+
+  <div class="note" id="note">2026 法規まとめノート ／ 赤字=重要ポイントを出題</div>
+</div>
+
+<script>
+/* a:1=適当(正しい記述) / a:2=不適当(誤った記述)
+   p の中で正しい数値・語句を hl(赤) で示す */
+const QUESTIONS = [
+ /* ===== 1. 容積率 ===== */
+ {n:1, sec:"容積率", src:"1-1", a:2,
+  q:"前面道路幅員による容積率は、住居系＝幅員×6/10、その他＝幅員×4/10で求める。",
+  p:"住居系は <span class='hl'>×4/10</span>、その他は <span class='hl'>×6/10</span>。係数が逆。指定容積率と比較して小さい方を採用する。"},
+ {n:2, sec:"容積率", src:"1-2", a:1,
+  q:"前面道路が複数ある場合、道路幅員は最大幅員を用いて容積率を計算する。",
+  p:"前面道路が複数なら <span class='hl'>最大幅員</span> を採用。"},
+ {n:3, sec:"容積率", src:"1-3", a:1,
+  q:"敷地が複数の用途地域にまたがる場合、各（面積×容積率）を合算（加重平均）して求める。",
+  p:"用途地域をまたぐ場合は各部分の <span class='hl'>面積×容積率を合算（加重平均）</span>。"},
+ {n:4, sec:"容積率", src:"1-4", a:2,
+  q:"住宅等の地階で天井が地盤面＋1m以下の部分は、住宅部分の床面積合計の1/2まで容積率に不算入とできる。",
+  p:"住宅等の地階（天井が地盤面+1m以下）は床面積合計の <span class='hl'>1/3</span> まで不算入。1/2ではない。"},
+
+ /* ===== 2. 建蔽率 ===== */
+ {n:5, sec:"建蔽率", src:"2-1", a:1,
+  q:"準防火地域内の耐火・準耐火建築物、防火地域内の耐火建築物、指定角地は、建蔽率が＋1/10緩和される。",
+  p:"緩和 <span class='hl'>+1/10</span>：準防火地域の耐火・準耐火、防火地域の耐火、指定角地。"},
+ {n:6, sec:"建蔽率", src:"2-2", a:1,
+  q:"防火地域内で建蔽率8/10の地域に耐火建築物を建てる場合、建蔽率の制限はなし（10/10）となる。",
+  p:"防火地域＋耐火建築物で <span class='hl'>8/10の地域 → 制限なし（10/10）</span>。"},
+ {n:7, sec:"建蔽率", src:"2-3", a:2,
+  q:"近隣商業地域（8/10）で準防火地域内の準耐火建築物の場合、建蔽率の最高限度は10/10となる。",
+  p:"近隣商業(8/10)＋準防火地域の準耐火建築物は ＋1/10で <span class='hl'>最高限度 9/10</span>。10/10ではない。"},
+
+ /* ===== 3. 高さ制限（斜線制限）===== */
+ {n:8, sec:"斜線制限", src:"3-1", a:2,
+  q:"北側斜線は、水平距離×1.5＋10（低層・田園住居は＋5）で算定する。",
+  p:"北側斜線は 水平距離 <span class='hl'>×1.25</span>＋10（中高層）／低層・田園住居は <span class='hl'>＋5</span>。1.5ではない。"},
+ {n:9, sec:"斜線制限", src:"3-2", a:1,
+  q:"道路斜線は、反対側境界からの水平距離×1.25（住居系）または×1.5（商業・工業系）で求め、複数制限がある場合は小さい方が答えとなる。",
+  p:"道路斜線：水平距離 <span class='hl'>×1.25（住居系）／×1.5（商業・工業系）</span>。複数制限は <span class='hl'>小さい方</span>。"},
+ {n:10, sec:"斜線制限", src:"3-3", a:1,
+  q:"日影規制で、接する道路等の幅が10m超のとき、反対側境界から敷地側5mの線を境界とみなす。",
+  p:"日影規制：道路等の幅 <span class='hl'>10m超 → 反対側境界から敷地側5m</span> の線を境界とみなす。"},
+ {n:11, sec:"斜線制限", src:"3-4", a:1,
+  q:"北側に川等がある場合、水面等の幅の1/2だけ外側に境界線があるものとみなす。",
+  p:"北側に川等 → 水面等の幅の <span class='hl'>1/2</span> だけ外側に境界線。"},
+
+ /* ===== 4. 面積・階数の算定 ===== */
+ {n:12, sec:"面積・階数", src:"4-1", a:1,
+  q:"建築面積は、地階で地盤面上1m以下の部分は不算入とする。",
+  p:"建築面積：地階で <span class='hl'>地盤面上1m以下</span> は不算入。"},
+ {n:13, sec:"面積・階数", src:"4-2", a:1,
+  q:"バルコニー・ひさしは、先端から1m後退した部分を建築面積に算入する。",
+  p:"バルコニー・ひさし → <span class='hl'>先端から1m後退</span> 部分を算入。"},
+ {n:14, sec:"面積・階数", src:"4-3", a:2,
+  q:"塔屋（PH）は、水平投影面積の合計が建築面積の1/5以内なら階数・高さに不算入とできる。",
+  p:"PH（塔屋）は水平投影面積合計が建築面積の <span class='hl'>1/8以内</span> なら階数・高さに不算入。1/5ではない。"},
+ {n:15, sec:"面積・階数", src:"4-4", a:1,
+  q:"屋上部分が建築面積の1/8超の場合、階数に算入する。",
+  p:"階数：屋上部分が <span class='hl'>建築面積1/8超</span> で算入。"},
+ {n:16, sec:"面積・階数", src:"4-5", a:2,
+  q:"延べ面積の算定では、バルコニー・ひさしは算入し、階段室は不算入とする。",
+  p:"延べ面積：バルコニー・ひさしは <span class='hl'>不算入</span>／階段室は <span class='hl'>算入</span>。逆。"},
+ {n:17, sec:"面積・階数", src:"4-6", a:1,
+  q:"2項道路の中心後退部分は敷地面積に不算入とする（2m→1m、6m→3m）。反対側が川等なら反対側境界から敷地側4m。",
+  p:"2項道路の中心後退部分は <span class='hl'>不算入</span>。反対側が川等は反対側境界から敷地側 <span class='hl'>4m</span>。"},
+
+ /* ===== 5. 構造（荷重・応力度・接合・配筋）===== */
+ {n:18, sec:"構造", src:"5-1", a:1,
+  q:"標準せん断力係数Coは、許容応力度計算（一次）で0.2以上（著しく軟弱な地盤の木造は0.3以上）、保有水平耐力計算（二次）で1.0以上とする。",
+  p:"Co：許容応力度計算 <span class='hl'>0.2以上</span>（軟弱地盤の木造 0.3以上）／保有水平耐力計算 <span class='hl'>1.0以上</span>。"},
+ {n:19, sec:"構造", src:"5-2", a:2,
+  q:"短期応力度の計算で、多雪区域では積雪荷重も考慮し、地震時・暴風時にG＋P＋0.7Sを採用する。",
+  p:"多雪区域の短期は <span class='hl'>G＋P＋0.35S…</span>。0.7Sではない（0.35）。"},
+ {n:20, sec:"構造", src:"5-3", a:1,
+  q:"保有水平耐力計算で用いる荷重は、固定荷重＋積載荷重である。",
+  p:"保有水平耐力計算の荷重＝ <span class='hl'>固定荷重＋積載荷重</span>。"},
+ {n:21, sec:"構造", src:"5-4", a:2,
+  q:"柱の帯筋間隔は、15cm（柱に接する部分等は10cm）以下、かつ最も太い主筋径の15倍以下とする。",
+  p:"帯筋間隔：15cm（柱に接する部分等10cm）以下、かつ <span class='hl'>最も細い主筋径の15倍以下</span>。太いではなく細い。"},
+ {n:22, sec:"構造", src:"5-5", a:1,
+  q:"中間検査の特定工程は、RC造等で「2階の床」及びこれを支持するはりの配筋工程を終えたときで、検査者は建築主事又は指定確認検査機関である。",
+  p:"中間検査の特定工程：RC造等で <span class='hl'>「2階の床」及び支持するはりの配筋工程</span> 終了時。検査者は建築主事又は指定確認検査機関。"},
+
+ /* ===== 6. 建築確認・手続き ===== */
+ {n:23, sec:"確認・手続", src:"6-1", a:1,
+  q:"鉄骨造平家180m²の事務所を飲食店に用途変更する場合、確認は不要である（200m²超でない）。",
+  p:"確認不要：鉄骨造平家180m²事務所→飲食店の用途変更（<span class='hl'>200m²超でない</span>）。"},
+ {n:24, sec:"確認・手続", src:"6-2", a:1,
+  q:"防火・準防火地域以外での10m²以内の増築は、確認が不要である。",
+  p:"確認不要：<span class='hl'>防火・準防火地域以外</span> での <span class='hl'>10m²以内</span> の増築。"},
+ {n:25, sec:"確認・手続", src:"6-3", a:1,
+  q:"共同住宅を事務所に用途変更する場合、確認は不要である（事務所は特殊建築物でない）。",
+  p:"共同住宅→事務所の用途変更は確認不要（<span class='hl'>事務所は特殊建築物でない</span>）。"},
+ {n:26, sec:"確認・手続", src:"6-4", a:2,
+  q:"準防火地域での10m²の増築は、確認が不要である。",
+  p:"<span class='hl'>準防火地域での10m²増築は確認が必要</span>。10m²以内で不要なのは防火・準防火地域「以外」。"},
+ {n:27, sec:"確認・手続", src:"6-5", a:1,
+  q:"用途変更の工事が完了したときは、建築主事に届出を行う（完了検査ではなく届出）。",
+  p:"用途変更の工事完了時は <span class='hl'>建築主事に届出</span>（完了検査でなく届出）。"},
+ {n:28, sec:"確認・手続", src:"6-6", a:1,
+  q:"高さ4m超の記念塔（工作物）は、確認が必要である。",
+  p:"確認が必要：<span class='hl'>高さ4m超</span> の記念塔（工作物）。"},
+
+ /* ===== 7. 内装制限 ===== */
+ {n:29, sec:"内装制限", src:"7-1", a:1,
+  q:"大規模建築物の内装制限は、階数3以上で延べ500m²超（ほか階数2で1000m²超／階数1で3000m²超）が対象となる。",
+  p:"大規模建築物：<span class='hl'>階数3以上で延べ500m²超</span>／階数2で1000m²超／階数1で3000m²超。"},
+ {n:30, sec:"内装制限", src:"7-2", a:1,
+  q:"自動車車庫・自動車修理工場は、面積に関係なく内装制限を受ける。",
+  p:"自動車車庫・修理工場は <span class='hl'>面積に関係なく</span> 内装制限を受ける。"},
+ {n:31, sec:"内装制限", src:"7-3", a:2,
+  q:"内装制限は壁・天井・床が対象であり、廊下や階段の床面も含まれる。",
+  p:"内装制限は <span class='hl'>壁・天井が対象で床は含まない</span>。"},
+ {n:32, sec:"内装制限", src:"7-4", a:1,
+  q:"火気使用室のうち、最上階にある調理室や、主要構造部を耐火構造とした建築物のものは、内装制限を受けない。",
+  p:"内装制限を受けない：<span class='hl'>最上階の調理室／主要構造部を耐火構造</span> とした建築物のもの。"},
+ {n:33, sec:"内装制限", src:"7-5", a:2,
+  q:"自動車車庫は、床面から1.2m以下の部分について難燃材料を使用してもよい（腰壁緩和あり）。",
+  p:"自動車車庫は <span class='hl'>床面から1.2m以下にも難燃材不可</span>（準不燃以上が必要・腰壁緩和なし）。"},
+
+ /* ===== 8. 避難規定 ===== */
+ {n:34, sec:"避難規定", src:"8-1", a:1,
+  q:"主要構造部が準耐火・不燃材料の場合、階段等の面積数値を2倍読みできる（100m²→200m²等）。",
+  p:"主要構造部が準耐火・不燃 → 階段等の面積数値を <span class='hl'>2倍読み</span>（100→200m²等）。"},
+ {n:35, sec:"避難規定", src:"8-2", a:2,
+  q:"物品販売業の店舗で2以上の直通階段が必要となるのは、床面積1000m²超の場合である。",
+  p:"物品販売業の店舗で2以上の直通階段が必要なのは <span class='hl'>床面積1500m²超</span>。1000m²ではない。"},
+ {n:36, sec:"避難規定", src:"8-3", a:1,
+  q:"旅館・ホテル等では、その階の居室が200m²超（避難階の直上階）のとき2以上の直通階段が必要となる。",
+  p:"旅館・ホテル等：その階の居室 <span class='hl'>200m²超</span>（避難階の直上階）で2以上の直通階段。"},
+ {n:37, sec:"避難規定", src:"8-4", a:2,
+  q:"寄宿舎では、2階の寝室が200m²超のとき2以上の直通階段が必要となる。",
+  p:"寄宿舎：2階の寝室が <span class='hl'>100m²超</span> で必要。200m²ではない。"},
+ {n:38, sec:"避難規定", src:"8-5", a:1,
+  q:"小学校で両側に居室のある廊下は2.3m以上（片側は1.8m以上）としなければならない。",
+  p:"小学校で <span class='hl'>両側に居室 → 2.3m以上</span>（片側は1.8m以上）。"},
+ {n:39, sec:"避難規定", src:"8-6", a:1,
+  q:"共同住宅の2階以上のバルコニー等の手すり・さくは、1.1m以上としなければならない。",
+  p:"共同住宅の2階以上のバルコニー等 → 手すり・さく <span class='hl'>1.1m以上</span>。"},
+ {n:40, sec:"避難規定", src:"8-7", a:2,
+  q:"非常用進入口は、50m以下ごとに設けなければならない。",
+  p:"非常用進入口は <span class='hl'>40m以下</span> ごと。50mではない。"},
+ {n:41, sec:"避難規定", src:"8-8", a:1,
+  q:"排煙設備は、延べ500m²超の特殊建築物で必要となる（学校等は除く）。",
+  p:"排煙設備：延べ <span class='hl'>500m²超</span> の特殊建築物で必要（学校等は除く）。"},
+ {n:42, sec:"避難規定", src:"8-9", a:1,
+  q:"延べ300m²の飲食店は、原則として排煙設備の対象外である（無窓居室等を除く）。",
+  p:"延べ300m²の飲食店は排煙設備 <span class='hl'>対象外</span>（無窓居室等を除く）。"},
+ {n:43, sec:"避難規定", src:"8-10", a:1,
+  q:"共同住宅の住戸には、非常用照明装置は不要である。",
+  p:"共同住宅（住戸）は <span class='hl'>非常用照明装置 不要</span>。"},
+
+ /* ===== 9. その他 ===== */
+ {n:44, sec:"その他", src:"9-1", a:1,
+  q:"かし担保責任は、大臣の承認を受けた場合に解除できる。",
+  p:"かし担保責任：<span class='hl'>大臣の承認</span> を受けた場合、解除。"},
+ {n:45, sec:"その他", src:"9-2", a:1,
+  q:"都市計画法上、延べ面積150m²の木造の改築には、県知事の許可は不要である。",
+  p:"都市計画法上、延べ面積150m²の木造の改築 → 県知事の許可は <span class='hl'>不要</span>。"},
+];
+
+let idx=0, hits=0, locked=false;
+let ACTIVE=[]; let misses=[]; let storedWrong=[];
+const STORE_KEY="houki_note_wrong";
+const $=id=>document.getElementById(id);
+
+async function loadStored(){
+  try{ const r=await window.storage.get(STORE_KEY); storedWrong=r&&r.value?JSON.parse(r.value):[]; }
+  catch(e){ storedWrong=[]; }
+  refreshRetryButton();
+}
+async function saveStored(){ try{ await window.storage.set(STORE_KEY, JSON.stringify(storedWrong)); }catch(e){} }
+function refreshRetryButton(){
+  const btn=$("retryStore");
+  if(storedWrong.length>0){ $("retryStoreSub").textContent="まだ間違いとして残っている "+storedWrong.length+" 問"; btn.style.display="flex"; }
+  else btn.style.display="none";
+}
+
+const GROUPS=[
+  {key:"容積建蔽", label:"容積率・建蔽率", sub:"道路幅員・緩和・加重平均", secs:["容積率","建蔽率"]},
+  {key:"高さ面積", label:"斜線・面積算定", sub:"北側/道路斜線・日影・面積階数", secs:["斜線制限","面積・階数"]},
+  {key:"構造", label:"構造", sub:"Co値・荷重・帯筋・中間検査", secs:["構造"]},
+  {key:"確認", label:"建築確認・手続", sub:"確認の要否・用途変更", secs:["確認・手続"]},
+  {key:"内装", label:"内装制限", sub:"対象・緩和・車庫の注意", secs:["内装制限"]},
+  {key:"避難", label:"避難規定ほか", sub:"直通階段・廊下・排煙・その他", secs:["避難規定","その他"]},
+];
+
+function buildHome(){
+  const wrap=$("homeButtons"); wrap.innerHTML="";
+  GROUPS.forEach(g=>{
+    const list=QUESTIONS.filter(q=>g.secs.includes(q.sec));
+    if(!list.length) return;
+    const btn=document.createElement("button");
+    btn.className="pick";
+    btn.innerHTML='<span class="rng">'+g.key+'</span>'+
+      '<span class="txt"><span class="ttl">'+g.label+'</span><div class="sub">'+g.sub+'（'+list.length+'問）</div></span>'+
+      '<span class="arw">→</span>';
+    btn.addEventListener("click",()=>startSet(list));
+    wrap.appendChild(btn);
+  });
+  const allBtn=document.createElement("button");
+  allBtn.className="pick";
+  allBtn.innerHTML='<span class="rng">全'+QUESTIONS.length+'問</span>'+
+    '<span class="txt"><span class="ttl">全部を通しで</span><div class="sub">まとめノート9分野を通し</div></span>'+
+    '<span class="arw">→</span>';
+  allBtn.addEventListener("click",startAll);
+  wrap.appendChild(allBtn);
+  $("pending").textContent="※ 法規まとめノートの赤字＝重要ポイントを〇✕化。誤り肢にはノートの正しい数値・語句をPOINTで赤表示しています。";
+}
+
+function startSet(list){
+  if(!list.length) return;
+  ACTIVE=list.slice(); idx=0; hits=0; locked=false; misses=[];
+  $("home").className="home hide"; $("result").className="result"; $("hdr").className="";
+  $("main").style.display="flex"; render(); window.scrollTo({top:0,behavior:"smooth"});
+}
+function startAll(){ startSet(QUESTIONS); }
+function startStoredWrong(){ startSet(QUESTIONS.filter(q=>storedWrong.includes(q.n))); }
+
+function render(){
+  const q=ACTIVE[idx]; locked=false;
+  $("sec").textContent=q.sec; $("qno").textContent="Q"+q.n; $("qsrc").textContent=q.src; $("stmt").textContent=q.q;
+  $("cur").textContent=idx+1; $("total").textContent=ACTIVE.length; $("hit").textContent=hits;
+  $("bar").style.width=((idx)/ACTIVE.length*100)+"%";
+  ["b1","b2"].forEach(id=>{const b=$(id);b.disabled=false;b.className="bubble";});
+  $("fb").className="fb";
+  const nb=$("next"); nb.textContent="解答する"; nb.disabled=true; nb.onclick=()=>{};
+}
+
+function answer(choice){
+  if(locked) return; locked=true;
+  const q=ACTIVE[idx]; const correct=(choice===q.a);
+  if(correct) hits++; else misses.push(q);
+  $("hit").textContent=hits;
+  const b1=$("b1"), b2=$("b2"); b1.disabled=true; b2.disabled=true;
+  const chosen=choice===1?b1:b2, right=q.a===1?b1:b2;
+  chosen.classList.add("chosen"); right.classList.add("correct");
+  if(!correct) chosen.classList.add("wrong");
+  (choice===1?b2:b1).classList.add("dim");
+  $("verdict").className="verdict "+(correct?"y":"n");
+  $("vtext").textContent=correct?"正解":"不正解";
+  $("ans").textContent=q.a===1?"① 適当（正しい記述）":"② 不適当（誤った記述）";
+  $("point").innerHTML=q.p; $("fb").className="fb show";
+  const nb=$("next"); nb.disabled=false;
+  nb.textContent=idx===ACTIVE.length-1?"結果を見る":"次の問題へ →"; nb.onclick=nextQ;
+}
+
+function nextQ(){
+  if(!locked) return;
+  if(idx===ACTIVE.length-1){ showResult(); return; }
+  idx++; render(); window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function showResult(){
+  $("main").style.display="none"; $("bar").style.width="100%";
+  const missNums=misses.map(m=>m.n);
+  ACTIVE.forEach(q=>{
+    const inStore=storedWrong.includes(q.n);
+    if(missNums.includes(q.n)){ if(!inStore) storedWrong.push(q.n); }
+    else if(inStore){ storedWrong=storedWrong.filter(n=>n!==q.n); }
+  });
+  saveStored(); refreshRetryButton();
+  const total=ACTIVE.length;
+  $("rScore").textContent=hits; $("rSub").textContent="／ "+total+" 問正解";
+  $("rPct").textContent="正答率 "+Math.round(hits/total*100)+"％";
+  if(misses.length===0){
+    $("reviewWrap").innerHTML='<h3 style="color:var(--ok)">全問正解！復習なし</h3>';
+    $("retryNow").style.display="none";
+  }else{
+    $("reviewWrap").innerHTML='<h3>復習リスト（間違えた問題）</h3><div id="missList"></div>';
+    const list=$("missList");
+    misses.slice().sort((a,b)=>a.n-b.n).forEach(m=>{
+      const d=document.createElement("div"); d.className="miss";
+      d.innerHTML='<span class="mno">Q'+m.n+'</span><span>'+m.q+'<br><span style="color:var(--ink-soft)">→ 正解 '+(m.a===1?"① 適当":"② 不適当")+'</span></span>';
+      list.appendChild(d);
+    });
+    $("retryNow").style.display="block";
+    $("retryNow").textContent="間違えた問題だけ再テスト（"+misses.length+"問）";
+  }
+  $("result").className="result show";
+}
+
+function retryMisses(){ startSet(misses); }
+function goHome(){
+  $("result").className="result"; $("main").style.display="none";
+  $("hdr").className="compact"; $("home").className="home";
+  refreshRetryButton(); window.scrollTo({top:0,behavior:"smooth"});
+}
+
+buildHome();
+loadStored();
+</script>
+</body>
+</html>

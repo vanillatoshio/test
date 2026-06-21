@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2級建築士 厳選問題B 〇×トレーナー</title>
+<style>
+  :root{
+    --ink:#1b1830; --ink-soft:#494363;
+    --paper:#edecf4; --paper-2:#f9f9fc; --line:#d4d2e2;
+    --accent:#5a51a0; --accent-soft:#e7e3f4;
+    --ok:#2f7d54; --ok-soft:#e0efe5;
+    --ng:#b4392f; --ng-soft:#f4e0dd;
+    --mono:"SFMono-Regular",ui-monospace,"Roboto Mono",Menlo,monospace;
+    --jp:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{font-family:var(--jp);color:var(--ink);background:var(--paper);
+    background-image:linear-gradient(var(--line) 1px,transparent 1px);background-size:100% 40px;
+    line-height:1.7;min-height:100%;display:flex;justify-content:center;}
+  .app{width:100%;max-width:560px;min-height:100dvh;background:var(--paper-2);
+    border-left:1px solid var(--line);border-right:1px solid var(--line);display:flex;flex-direction:column;}
+
+  header{padding:18px 20px 14px;border-bottom:2px solid var(--ink);background:var(--paper-2);position:sticky;top:0;z-index:5;}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--accent);text-transform:uppercase;}
+  h1{font-size:18px;font-weight:800;letter-spacing:.02em;margin-top:2px;}
+  .meta{display:flex;justify-content:space-between;align-items:baseline;margin-top:12px;font-family:var(--mono);font-size:12px;color:var(--ink-soft);}
+  .meta b{color:var(--ink);font-size:13px;}
+  .track{height:5px;background:var(--accent-soft);margin-top:8px;border-radius:2px;overflow:hidden;}
+  .bar{height:100%;width:0;background:var(--accent);transition:width .35s ease;}
+  header.compact .meta,header.compact .track{display:none;}
+
+  main{flex:1;padding:22px 20px 30px;display:flex;flex-direction:column;}
+  .section-tag{display:inline-block;font-size:12px;font-weight:700;color:var(--ink-soft);
+    border:1px solid var(--line);border-radius:20px;padding:3px 12px;margin-bottom:16px;align-self:flex-start;background:var(--paper);}
+  .qhead{display:flex;align-items:baseline;gap:10px;margin-bottom:14px;}
+  .qno{font-family:var(--mono);font-size:34px;font-weight:700;color:var(--ink);line-height:1;}
+  .qsrc{font-family:var(--mono);font-size:11px;color:var(--ink-soft);margin-left:auto;}
+  .stmt{font-size:17px;font-weight:500;letter-spacing:.01em;}
+  .prompt{font-size:13px;color:var(--ink-soft);margin-top:16px;}
+
+  .choices{display:flex;gap:14px;margin-top:14px;}
+  .bubble{flex:1;cursor:pointer;border:1.5px solid var(--ink);background:var(--paper-2);
+    border-radius:14px;padding:18px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;
+    transition:transform .08s ease,background .15s ease;font-family:inherit;}
+  .bubble:active{transform:scale(.97);}
+  .mark{width:46px;height:46px;border-radius:50%;border:2px solid var(--ink);
+    display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:20px;font-weight:700;
+    transition:background .15s ease,color .15s ease;}
+  .blabel{font-size:14px;font-weight:700;}
+  .bubble.dim{opacity:.4;}
+  .bubble.chosen .mark{background:var(--ink);color:var(--paper-2);}
+  .bubble.correct{border-color:var(--ok);background:var(--ok-soft);}
+  .bubble.correct .mark{background:var(--ok);border-color:var(--ok);color:#fff;}
+  .bubble.wrong{border-color:var(--ng);background:var(--ng-soft);}
+  .bubble.wrong .mark{background:var(--ng);border-color:var(--ng);color:#fff;}
+  .bubble[disabled]{cursor:default;}
+
+  .fb{margin-top:20px;border-top:1px dashed var(--line);padding-top:18px;display:none;}
+  .fb.show{display:block;animation:rise .3s ease;}
+  @keyframes rise{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  .verdict{display:flex;align-items:center;gap:10px;font-weight:800;font-size:17px;}
+  .verdict .dot{width:11px;height:11px;border-radius:50%;}
+  .verdict.y{color:var(--ok);} .verdict.y .dot{background:var(--ok);}
+  .verdict.n{color:var(--ng);} .verdict.n .dot{background:var(--ng);}
+  .ansline{font-size:14px;margin-top:8px;color:var(--ink-soft);}
+  .ansline b{color:var(--ink);}
+  .point{margin-top:12px;background:var(--paper);border-left:3px solid var(--accent);padding:12px 14px;border-radius:0 8px 8px 0;font-size:14.5px;}
+  .point .pt-l{font-family:var(--mono);font-size:10px;letter-spacing:.15em;color:var(--accent);display:block;margin-bottom:4px;}
+
+  .actions{margin-top:auto;padding-top:24px;}
+  .next{width:100%;border:none;background:var(--ink);color:var(--paper-2);font-family:inherit;font-size:16px;font-weight:700;letter-spacing:.04em;padding:16px;border-radius:14px;cursor:pointer;transition:opacity .15s ease;}
+  .next:active{opacity:.85;} .next:disabled{opacity:.3;cursor:default;}
+
+  .result{padding:30px 20px;text-align:center;display:none;flex-direction:column;flex:1;}
+  .result.show{display:flex;}
+  .score-big{font-family:var(--mono);font-size:64px;font-weight:700;line-height:1;color:var(--accent);}
+  .score-sub{font-size:14px;color:var(--ink-soft);margin-top:6px;}
+  .pct{font-family:var(--mono);font-size:15px;margin-top:18px;font-weight:700;}
+  .review{margin-top:24px;text-align:left;}
+  .review h3{font-size:13px;letter-spacing:.06em;color:var(--ink-soft);margin-bottom:10px;font-family:var(--mono);}
+  .miss{display:flex;gap:10px;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--line);font-size:13.5px;}
+  .miss .mno{font-family:var(--mono);font-weight:700;color:var(--ng);min-width:46px;}
+  .rbtn{width:100%;font-family:inherit;font-size:15px;font-weight:700;padding:14px;border-radius:14px;cursor:pointer;margin-top:14px;}
+  .rbtn.solid{border:none;background:var(--accent);color:#fff;}
+  .rbtn.ghost{border:1.5px solid var(--ink);background:transparent;color:var(--ink);}
+  .note{font-size:11.5px;color:var(--ink-soft);text-align:center;padding:14px 20px;border-top:1px solid var(--line);font-family:var(--mono);}
+
+  .home{padding:30px 20px;flex:1;display:flex;flex-direction:column;}
+  .home.hide{display:none;}
+  .home .lead{font-size:14px;color:var(--ink-soft);margin-bottom:22px;line-height:1.8;}
+  .home .lead b{color:var(--ink);}
+  .pick{width:100%;text-align:left;border:1.5px solid var(--ink);background:var(--paper-2);border-radius:16px;padding:18px;margin-bottom:14px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:16px;transition:transform .08s ease,background .15s ease;}
+  .pick:active{transform:scale(.98);background:var(--accent-soft);}
+  .pick.retry{border-color:var(--accent);background:var(--accent-soft);}
+  .pick .rng{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--accent);min-width:84px;}
+  .pick .ttl{font-size:16px;font-weight:700;}
+  .pick .sub{font-size:12px;color:var(--ink-soft);margin-top:2px;}
+  .pick .txt{flex:1;} .pick .arw{font-size:20px;color:var(--ink-soft);}
+  .hsec{font-family:var(--mono);font-size:11px;letter-spacing:.15em;color:var(--ink-soft);margin:6px 0 12px;}
+  .pending{font-size:12px;color:var(--ink-soft);border:1px dashed var(--line);border-radius:12px;padding:12px 14px;margin-top:4px;line-height:1.7;}
+</style>
+</head>
+<body>
+<div class="app">
+  <header id="hdr" class="compact">
+    <span class="eyebrow">2026 / 厳選問題B</span>
+    <h1>1問ずつ解く 〇✕トレーナー</h1>
+    <div class="meta">
+      <span>問 <b id="cur">–</b> / <span id="total">–</span></span>
+      <span>正答 <b id="hit">0</b></span>
+    </div>
+    <div class="track"><div class="bar" id="bar"></div></div>
+  </header>
+
+  <div class="home" id="home">
+    <p class="lead">厳選問題〔B〕の各肢をバラした〇✕形式。記述が<b>正しければ ①適当</b>、<b>誤っていれば ②不適当</b>を選びます。間違えた問題は記録され、<b>あとから間違いだけ再テスト</b>できます。</p>
+    <button class="pick retry" id="retryStore" style="display:none;" onclick="startStoredWrong()">
+      <span class="rng">復習</span>
+      <span class="txt"><span class="ttl">前回までの間違いを再テスト</span><div class="sub" id="retryStoreSub"></div></span>
+      <span class="arw">→</span>
+    </button>
+    <div class="hsec">出題範囲をえらぶ</div>
+    <div id="homeButtons"></div>
+    <div class="pending" id="pending"></div>
+  </div>
+
+  <main id="main" style="display:none;">
+    <span class="section-tag" id="sec"></span>
+    <div class="qhead">
+      <span class="qno" id="qno"></span>
+      <span class="qsrc" id="qsrc"></span>
+    </div>
+    <p class="stmt" id="stmt"></p>
+    <p class="prompt">記述が正しければ ① 、誤っていれば ② を選ぶ</p>
+
+    <div class="choices">
+      <button class="bubble" id="b1" onclick="answer(1)"><span class="mark">①</span><span class="blabel">適当</span></button>
+      <button class="bubble" id="b2" onclick="answer(2)"><span class="mark">②</span><span class="blabel">不適当</span></button>
+    </div>
+
+    <div class="fb" id="fb">
+      <div class="verdict" id="verdict"><span class="dot"></span><span id="vtext"></span></div>
+      <div class="ansline">正解は <b id="ans"></b> です。</div>
+      <div class="point"><span class="pt-l">POINT</span><span id="point"></span></div>
+    </div>
+
+    <div class="actions"><button class="next" id="next" onclick="nextQ()" disabled>解答する</button></div>
+  </main>
+
+  <div class="result" id="result">
+    <div class="score-big" id="rScore">0</div>
+    <div class="score-sub" id="rSub"></div>
+    <div class="pct" id="rPct"></div>
+    <div class="review" id="reviewWrap"><h3>復習リスト（間違えた問題）</h3><div id="missList"></div></div>
+    <button class="rbtn solid" id="retryNow" onclick="retryMisses()">間違えた問題だけ再テスト</button>
+    <button class="rbtn ghost" onclick="goHome()">範囲をえらび直す</button>
+  </div>
+
+  <div class="note" id="note">2026 厳選問題B ／ 正答一覧ベース収録</div>
+</div>
+
+<script>
+/* a:1=適当(正しい記述) / a:2=不適当(誤った記述=正答一覧の正答肢)
+   src は「元問題番号-肢番号」 */
+const QUESTIONS = [
+ /* ===== 建築構造 問8 構造強度（正答=肢4）===== */
+ {n:1, sec:"構造強度", src:"問8-1", a:1,
+  q:"屋根ふき材、外装材及び屋外に面する帳壁については、国土交通大臣が定める基準に従った構造計算によって、風圧に対して構造耐力上安全であることを確かめなければならない。",
+  p:"屋根ふき材・外装材・帳壁は風圧に対する構造計算で安全を確認する。正しい。"},
+ {n:2, sec:"構造強度", src:"問8-2", a:1,
+  q:"仕上げをモルタル塗りとしたコンクリート造の床の固定荷重は、実況に応じて計算しない場合、仕上げ厚さ1cmごとに、そのcmの数値を乗じて計算することができる。",
+  p:"モルタル等の仕上げ荷重は1cmあたりの単位荷重×厚さで算定してよい。正しい。"},
+ {n:3, sec:"構造強度", src:"問8-3", a:1,
+  q:"ローム層の長期に生ずる力に対する許容応力度は、国土交通大臣が定める方法による地盤調査を行わない場合、50kN/m²とすることができる。",
+  p:"ローム層の長期許容応力度は、調査を行わない場合50kN/m²。正しい。"},
+ {n:4, sec:"構造強度", src:"問8-4", a:2,
+  q:"構造用鋼材に用いるステンレス鋼の短期に生ずる圧縮・引張り・曲げの許容応力度は、「鋼材等の種類及び品質に応じて国土交通大臣が定める基準強度」と同じ値である。",
+  p:"短期許容応力度は基準強度Fそのもの（＝同じ値）だが、本肢は正答一覧で誤りとされる肢。長期との関係・数値の扱いを原本で確認。"},
+ {n:5, sec:"構造強度", src:"問8-5", a:1,
+  q:"雪下ろしを行う慣習のある地方においては、その地方における垂直積雪量が1mを超える場合でも、積雪荷重は、雪下ろしの実況に応じて垂直積雪量を1mまで減らして計算することができる。",
+  p:"雪下ろしの慣習地域では積雪量を1mまで減じて計算できる。正しい。"},
+
+ /* ===== 建築構造 問1 用語（正答=肢1）===== */
+ {n:6, sec:"構造用語", src:"問1-1", a:2,
+  q:"建築物に関する工事の請負契約の注文者又は請負契約によらないで自らその工事をする者は、建築基準法上の「建築主」である。",
+  p:"正答一覧では本肢が誤り。建築主の定義の細部（請負契約によらず自ら工事をする者の扱い等）を原本で確認。"},
+ {n:7, sec:"構造用語", src:"問1-2", a:1,
+  q:"建築物の小屋組又はこれに代わる横架材を支持する壁、敷桁又は柱の上端までの高さを「軒の高さ」という。",
+  p:"軒の高さの定義として正しい。"},
+ {n:8, sec:"構造用語", src:"問1-3", a:1,
+  q:"建築物の周囲において発生する通常の火災による延焼の抑制に一定の効果を発揮するために外壁に必要とされる性能を「防火性能」という。",
+  p:"防火性能の定義として正しい。"},
+ {n:9, sec:"構造用語", src:"問1-5", a:1,
+  q:"建築物の床が地盤面下にある階で、床面から地盤面までの高さがその階の天井の高さの1/2以上のものは「地階」である。",
+  p:"地階の定義（床面から地盤面までの高さ≧天井高の1/2）。正しい。"},
+
+ /* ===== 建築法規 問3 建築手続（正答=肢5）===== */
+ {n:10, sec:"建築手続", src:"問3-5", a:2,
+  q:"建築主等は、都市計画区域内において、木造平家建て、延べ面積150m²の一戸建て住宅を新築し、建築工事が完了した日から原則として4日以内に建築主事等に到達するように完了検査を申請しなければならない。",
+  p:"完了検査の申請は工事完了日から4日以内に「到達」が原則。本肢は正答一覧で誤りとされる肢のため、対象・期限・条文を原本で確認。"},
+ {n:11, sec:"建築手続", src:"問3-1", a:1,
+  q:"一戸建て住宅の一部である床面積20m²の部分を除却しようとする者は、原則として、その旨を都道府県知事に届け出なければならない。",
+  p:"一定規模の除却は都道府県知事への届出が必要。正しい。"},
+ {n:12, sec:"建築手続", src:"問3-3", a:1,
+  q:"建築主は、鉄筋コンクリート造3階建て、延べ面積300m²の共同住宅の新築において、2階の床及びこれを支持する梁に鉄筋を配置する工程に係る工事を終えたときは、中間検査を申請しなければならない。",
+  p:"特定工程（RC造の2階床・梁配筋等）は中間検査の対象。正しい。"},
+
+ /* ===== 建築計画 問9 音（最も不適当=肢1）===== */
+ {n:13, sec:"環境（音）", src:"問9-1", a:2,
+  q:"板状材料と剛壁との間に空気層を設けた吸音構造は、一般に、低音域の吸音よりも高音域の吸音に効果がある。",
+  p:"板（膜）振動型の吸音構造は低音域に効果がある。高音域に効果があるとするのは誤り。"},
+ {n:14, sec:"環境（音）", src:"問9-3", a:1,
+  q:"残響時間は、室容積に比例し、室内の総吸音力に反比例する。",
+  p:"残響時間T＝0.16V/A。室容積に比例・総吸音力に反比例。正しい。"},
+ {n:15, sec:"環境（音）", src:"問9-4", a:1,
+  q:"人間の知覚可能な音の周波数の範囲は、一般に、20〜20,000Hzである。",
+  p:"可聴域はおよそ20〜20,000Hz。正しい。"},
+ {n:16, sec:"環境（音）", src:"問9-5", a:1,
+  q:"壁体における遮音性能は、音響透過損失の値が大きいほど優れている。",
+  p:"透過損失が大きいほど音を通さない＝遮音性能が高い。正しい。"},
+
+ /* ===== 建築計画 問10 環境評価（最も不適当=肢5）===== */
+ {n:17, sec:"環境評価", src:"問10-5", a:2,
+  q:"CASBEE（建築環境総合性能評価システム）は、室内の快適性や景観の維持を含めた建築物の運用に関わる費用を算出するシステムである。",
+  p:"CASBEEは環境品質Qと環境負荷Lから建築物の環境性能を評価する仕組み。費用を算出するシステムではない。誤り。"},
+ {n:18, sec:"環境評価", src:"問10-3", a:1,
+  q:"建築物のLCCO₂（ライフサイクルCO₂）は、資材生産から施工・運用・解体除却までの全過程のCO₂排出量を推定して算出する。",
+  p:"LCCO₂は資材生産〜解体除却までの全過程のCO₂を対象とする。正しい。"},
+ {n:19, sec:"環境評価", src:"問10-4", a:1,
+  q:"ZEB（ネット・ゼロ・エネルギー・ビル）は、室内環境の質を維持しつつ、建築物で消費する年間の一次エネルギーの収支を正味ゼロ又はマイナスにすることを目指した建築物である。",
+  p:"ZEBの定義として正しい。"},
+
+ /* ===== 建築計画 問19 設備用語（最も不適当=肢2）===== */
+ {n:20, sec:"設備用語", src:"問19-2", a:2,
+  q:"COPは、加湿器における飽和効率のことであり、その加湿器で実際に加湿できる範囲を示す数値である。",
+  p:"COP（成績係数）は冷暖房機器のエネルギー効率を示す指標。加湿器の飽和効率ではない。誤り。"},
+ {n:21, sec:"設備用語", src:"問19-1", a:1,
+  q:"VAVは、変風量方式の空調のことであり、空調対象室の熱負荷の変動に応じて給気量を変動させる方式である。",
+  p:"VAV＝変風量方式。負荷に応じて風量を変える。正しい。"},
+ {n:22, sec:"設備用語", src:"問19-3", a:1,
+  q:"UPSは、無停電電源装置のことであり、停電等の際に一時的に電力供給を行うために用いられる。",
+  p:"UPS＝無停電電源装置。正しい。"},
+
+ /* ===== 建築計画 問20 空気調和設備（最も不適当=肢4）===== */
+ {n:23, sec:"空調設備", src:"問20-4", a:2,
+  q:"ファンコイルユニットは、屋外に設置するもので、一般に、冷温水コイルを用いて冷却・加熱した空気を循環送風する小型ユニットである。",
+  p:"ファンコイルユニットは原則「室内」に設置する。屋外に設置するとするのは誤り。"},
+ {n:24, sec:"空調設備", src:"問20-2", a:1,
+  q:"中央熱源方式の空気調和設備においては、水方式の場合、換気機能を有する装置が必要となる。",
+  p:"水方式（ファンコイル等）は外気導入の換気装置が別途必要。正しい。"},
+
+ /* ===== 建築計画 問21 空気調和設備（最も不適当=肢5）===== */
+ {n:25, sec:"空調設備", src:"問21-5", a:2,
+  q:"密閉回路の冷温水配管系には、一般に、膨張タンクは不要である。",
+  p:"密閉回路でも水の温度変化による体積変化を吸収する膨張タンクは必要。不要とするのは誤り。"},
+ {n:26, sec:"空調設備", src:"問21-1", a:1,
+  q:"ファンコイルユニットと定風量単一ダクトとを併用した方式は、定風量単一ダクト方式に比べて、必要とするダクトスペースを小さくすることができる。",
+  p:"ファンコイル併用でダクト負担が減り、ダクトスペースを小さくできる。正しい。"},
+ {n:27, sec:"空調設備", src:"問21-2", a:1,
+  q:"空気熱源ヒートポンプ方式のルームエアコンの暖房能力は、一般に、外気の温度が低くなるほど低下する。",
+  p:"空気熱源ヒートポンプは外気温が下がると暖房能力が低下する。正しい。"},
+];
+
+let idx=0, hits=0, locked=false;
+let ACTIVE=[]; let misses=[]; let storedWrong=[];
+const STORE_KEY="gensen_b_wrong";
+const $=id=>document.getElementById(id);
+
+async function loadStored(){
+  try{ const r=await window.storage.get(STORE_KEY); storedWrong=r&&r.value?JSON.parse(r.value):[]; }
+  catch(e){ storedWrong=[]; }
+  refreshRetryButton();
+}
+async function saveStored(){ try{ await window.storage.set(STORE_KEY, JSON.stringify(storedWrong)); }catch(e){} }
+function refreshRetryButton(){
+  const btn=$("retryStore");
+  if(storedWrong.length>0){ $("retryStoreSub").textContent="まだ間違いとして残っている "+storedWrong.length+" 問"; btn.style.display="flex"; }
+  else btn.style.display="none";
+}
+
+const GROUPS=[
+  {key:"構造", label:"建築構造", sub:"構造強度・用語", secs:["構造強度","構造用語"]},
+  {key:"法規", label:"建築法規", sub:"建築手続", secs:["建築手続"]},
+  {key:"計画", label:"建築計画", sub:"音・環境評価・設備・空調", secs:["環境（音）","環境評価","設備用語","空調設備"]},
+];
+
+function buildHome(){
+  const wrap=$("homeButtons"); wrap.innerHTML="";
+  GROUPS.forEach((g,i)=>{
+    const list=QUESTIONS.filter(q=>g.secs.includes(q.sec));
+    if(!list.length) return;
+    const btn=document.createElement("button");
+    btn.className="pick";
+    btn.innerHTML='<span class="rng">'+g.key+'</span>'+
+      '<span class="txt"><span class="ttl">'+g.label+'</span><div class="sub">'+g.sub+'（'+list.length+'問）</div></span>'+
+      '<span class="arw">→</span>';
+    btn.addEventListener("click",()=>startSet(list));
+    wrap.appendChild(btn);
+  });
+  const allBtn=document.createElement("button");
+  allBtn.className="pick";
+  allBtn.innerHTML='<span class="rng">全'+QUESTIONS.length+'問</span>'+
+    '<span class="txt"><span class="ttl">全部を通しで</span><div class="sub">構造＋法規＋計画をぶっ通し</div></span>'+
+    '<span class="arw">→</span>';
+  allBtn.addEventListener("click",startAll);
+  wrap.appendChild(allBtn);
+  $("pending").textContent="※ 正答一覧〔B〕で読み取れた問題（構造 問1・問8／法規 問3／計画 問9・10・19・20・21）から収録。鮮明な写真を追加すれば他問も足せます。";
+}
+
+function startSet(list){
+  if(!list.length) return;
+  ACTIVE=list.slice(); idx=0; hits=0; locked=false; misses=[];
+  $("home").className="home hide"; $("result").className="result"; $("hdr").className="";
+  $("main").style.display="flex"; render(); window.scrollTo({top:0,behavior:"smooth"});
+}
+function startAll(){ startSet(QUESTIONS); }
+function startStoredWrong(){ startSet(QUESTIONS.filter(q=>storedWrong.includes(q.n))); }
+
+function render(){
+  const q=ACTIVE[idx]; locked=false;
+  $("sec").textContent=q.sec; $("qno").textContent="問"+q.n; $("qsrc").textContent=q.src; $("stmt").textContent=q.q;
+  $("cur").textContent=idx+1; $("total").textContent=ACTIVE.length; $("hit").textContent=hits;
+  $("bar").style.width=((idx)/ACTIVE.length*100)+"%";
+  ["b1","b2"].forEach(id=>{const b=$(id);b.disabled=false;b.className="bubble";});
+  $("fb").className="fb";
+  const nb=$("next"); nb.textContent="解答する"; nb.disabled=true; nb.onclick=()=>{};
+}
+
+function answer(choice){
+  if(locked) return; locked=true;
+  const q=ACTIVE[idx]; const correct=(choice===q.a);
+  if(correct) hits++; else misses.push(q);
+  $("hit").textContent=hits;
+  const b1=$("b1"), b2=$("b2"); b1.disabled=true; b2.disabled=true;
+  const chosen=choice===1?b1:b2, right=q.a===1?b1:b2;
+  chosen.classList.add("chosen"); right.classList.add("correct");
+  if(!correct) chosen.classList.add("wrong");
+  (choice===1?b2:b1).classList.add("dim");
+  $("verdict").className="verdict "+(correct?"y":"n");
+  $("vtext").textContent=correct?"正解":"不正解";
+  $("ans").textContent=q.a===1?"① 適当（正しい記述）":"② 不適当（誤った記述）";
+  $("point").textContent=q.p; $("fb").className="fb show";
+  const nb=$("next"); nb.disabled=false;
+  nb.textContent=idx===ACTIVE.length-1?"結果を見る":"次の問題へ →"; nb.onclick=nextQ;
+}
+
+function nextQ(){
+  if(!locked) return;
+  if(idx===ACTIVE.length-1){ showResult(); return; }
+  idx++; render(); window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function showResult(){
+  $("main").style.display="none"; $("bar").style.width="100%";
+  const missNums=misses.map(m=>m.n);
+  ACTIVE.forEach(q=>{
+    const inStore=storedWrong.includes(q.n);
+    if(missNums.includes(q.n)){ if(!inStore) storedWrong.push(q.n); }
+    else if(inStore){ storedWrong=storedWrong.filter(n=>n!==q.n); }
+  });
+  saveStored(); refreshRetryButton();
+  const total=ACTIVE.length;
+  $("rScore").textContent=hits; $("rSub").textContent="／ "+total+" 問正解";
+  $("rPct").textContent="正答率 "+Math.round(hits/total*100)+"％";
+  if(misses.length===0){
+    $("reviewWrap").innerHTML='<h3 style="color:var(--ok)">全問正解！復習なし</h3>';
+    $("retryNow").style.display="none";
+  }else{
+    $("reviewWrap").innerHTML='<h3>復習リスト（間違えた問題）</h3><div id="missList"></div>';
+    const list=$("missList");
+    misses.slice().sort((a,b)=>a.n-b.n).forEach(m=>{
+      const d=document.createElement("div"); d.className="miss";
+      d.innerHTML='<span class="mno">問'+m.n+'</span><span>'+m.q+'<br><span style="color:var(--ink-soft)">→ 正解 '+(m.a===1?"① 適当":"② 不適当")+'</span></span>';
+      list.appendChild(d);
+    });
+    $("retryNow").style.display="block";
+    $("retryNow").textContent="間違えた問題だけ再テスト（"+misses.length+"問）";
+  }
+  $("result").className="result show";
+}
+
+function retryMisses(){ startSet(misses); }
+function goHome(){
+  $("result").className="result"; $("main").style.display="none";
+  $("hdr").className="compact"; $("home").className="home";
+  refreshRetryButton(); window.scrollTo({top:0,behavior:"smooth"});
+}
+
+buildHome();
+loadStored();
+</script>
+</body>
+</html>
