@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2級建築士 構造 マラソンテスト</title>
+<style>
+  :root{
+    --ink:#16202e;
+    --ink-soft:#3a4a5e;
+    --paper:#f3efe6;
+    --paper-2:#fbf9f4;
+    --line:#d8d0c0;
+    --amber:#c8741b;
+    --amber-soft:#f0e2cf;
+    --ok:#2f7d54;
+    --ok-soft:#e0efe5;
+    --ng:#b4392f;
+    --ng-soft:#f4e0dd;
+    --mono:"SFMono-Regular",ui-monospace,"Roboto Mono",Menlo,monospace;
+    --jp:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{
+    font-family:var(--jp);
+    color:var(--ink);
+    background:var(--paper);
+    background-image:linear-gradient(var(--line) 1px,transparent 1px);
+    background-size:100% 40px;
+    line-height:1.7;
+    min-height:100%;
+    display:flex;
+    justify-content:center;
+  }
+  .app{
+    width:100%;
+    max-width:560px;
+    min-height:100dvh;
+    background:var(--paper-2);
+    border-left:1px solid var(--line);
+    border-right:1px solid var(--line);
+    display:flex;
+    flex-direction:column;
+  }
+
+  /* ---- header ---- */
+  header{
+    padding:18px 20px 14px;
+    border-bottom:2px solid var(--ink);
+    background:var(--paper-2);
+    position:sticky;top:0;z-index:5;
+  }
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:11px;letter-spacing:.18em;
+    color:var(--amber);text-transform:uppercase;
+  }
+  h1{font-size:18px;font-weight:800;letter-spacing:.02em;margin-top:2px;}
+  .meta{
+    display:flex;justify-content:space-between;align-items:baseline;
+    margin-top:12px;font-family:var(--mono);font-size:12px;color:var(--ink-soft);
+  }
+  .meta b{color:var(--ink);font-size:13px;}
+  .track{height:5px;background:var(--amber-soft);margin-top:8px;border-radius:2px;overflow:hidden;}
+  .bar{height:100%;width:0;background:var(--amber);transition:width .35s ease;}
+
+  /* ---- card ---- */
+  main{flex:1;padding:22px 20px 30px;display:flex;flex-direction:column;}
+  .section-tag{
+    display:inline-block;font-size:12px;font-weight:700;
+    color:var(--ink-soft);border:1px solid var(--line);
+    border-radius:20px;padding:3px 12px;margin-bottom:16px;align-self:flex-start;
+    background:var(--paper);
+  }
+  .qhead{display:flex;align-items:baseline;gap:10px;margin-bottom:14px;}
+  .qno{font-family:var(--mono);font-size:34px;font-weight:700;color:var(--ink);line-height:1;}
+  .qsrc{font-family:var(--mono);font-size:11px;color:var(--ink-soft);margin-left:auto;}
+  .stmt{font-size:18px;font-weight:500;letter-spacing:.01em;}
+  .prompt{font-size:13px;color:var(--ink-soft);margin-top:16px;}
+
+  /* ---- mark sheet choices ---- */
+  .choices{display:flex;gap:14px;margin-top:14px;}
+  .bubble{
+    flex:1;cursor:pointer;border:1.5px solid var(--ink);
+    background:var(--paper-2);border-radius:14px;
+    padding:18px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;
+    transition:transform .08s ease,background .15s ease;font-family:inherit;
+  }
+  .bubble:active{transform:scale(.97);}
+  .mark{
+    width:46px;height:46px;border-radius:50%;border:2px solid var(--ink);
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:20px;font-weight:700;
+    transition:background .15s ease,color .15s ease;
+  }
+  .blabel{font-size:14px;font-weight:700;}
+  .bubble.dim{opacity:.4;}
+  .bubble.chosen .mark{background:var(--ink);color:var(--paper-2);}
+  .bubble.correct{border-color:var(--ok);background:var(--ok-soft);}
+  .bubble.correct .mark{background:var(--ok);border-color:var(--ok);color:#fff;}
+  .bubble.wrong{border-color:var(--ng);background:var(--ng-soft);}
+  .bubble.wrong .mark{background:var(--ng);border-color:var(--ng);color:#fff;}
+  .bubble[disabled]{cursor:default;}
+
+  /* ---- feedback ---- */
+  .fb{margin-top:20px;border-top:1px dashed var(--line);padding-top:18px;display:none;}
+  .fb.show{display:block;animation:rise .3s ease;}
+  @keyframes rise{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  .verdict{display:flex;align-items:center;gap:10px;font-weight:800;font-size:17px;}
+  .verdict .dot{width:11px;height:11px;border-radius:50%;}
+  .verdict.y{color:var(--ok);} .verdict.y .dot{background:var(--ok);}
+  .verdict.n{color:var(--ng);} .verdict.n .dot{background:var(--ng);}
+  .ansline{font-size:14px;margin-top:8px;color:var(--ink-soft);}
+  .ansline b{color:var(--ink);}
+  .point{
+    margin-top:12px;background:var(--paper);border-left:3px solid var(--amber);
+    padding:12px 14px;border-radius:0 8px 8px 0;font-size:14.5px;
+  }
+  .point .pt-l{font-family:var(--mono);font-size:10px;letter-spacing:.15em;color:var(--amber);display:block;margin-bottom:4px;}
+
+  /* ---- buttons ---- */
+  .actions{margin-top:auto;padding-top:24px;}
+  .next{
+    width:100%;border:none;background:var(--ink);color:var(--paper-2);
+    font-family:inherit;font-size:16px;font-weight:700;letter-spacing:.04em;
+    padding:16px;border-radius:14px;cursor:pointer;transition:opacity .15s ease;
+  }
+  .next:active{opacity:.85;}
+  .next:disabled{opacity:.3;cursor:default;}
+
+  /* ---- result ---- */
+  .result{padding:30px 20px;text-align:center;display:none;flex-direction:column;flex:1;}
+  .result.show{display:flex;}
+  .score-big{font-family:var(--mono);font-size:64px;font-weight:700;line-height:1;color:var(--amber);}
+  .score-sub{font-size:14px;color:var(--ink-soft);margin-top:6px;}
+  .pct{font-family:var(--mono);font-size:15px;margin-top:18px;font-weight:700;}
+  .review{margin-top:24px;text-align:left;}
+  .review h3{font-size:13px;letter-spacing:.06em;color:var(--ink-soft);margin-bottom:10px;font-family:var(--mono);}
+  .miss{
+    display:flex;gap:10px;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--line);font-size:13.5px;
+  }
+  .miss .mno{font-family:var(--mono);font-weight:700;color:var(--ng);min-width:36px;}
+  .restart{
+    margin-top:26px;border:1.5px solid var(--ink);background:transparent;color:var(--ink);
+    font-family:inherit;font-size:15px;font-weight:700;padding:14px;border-radius:14px;cursor:pointer;
+  }
+  .note{font-size:11.5px;color:var(--ink-soft);text-align:center;padding:14px 20px;border-top:1px solid var(--line);font-family:var(--mono);}
+
+  /* ---- home ---- */
+  .home{padding:34px 20px 30px;flex:1;display:flex;flex-direction:column;}
+  .home.hide{display:none;}
+  .home .lead{font-size:14px;color:var(--ink-soft);margin-bottom:24px;line-height:1.8;}
+  .home .lead b{color:var(--ink);}
+  .pick{
+    width:100%;text-align:left;border:1.5px solid var(--ink);background:var(--paper-2);
+    border-radius:16px;padding:18px 18px;margin-bottom:14px;cursor:pointer;font-family:inherit;
+    display:flex;align-items:center;gap:16px;transition:transform .08s ease,background .15s ease;
+  }
+  .pick:active{transform:scale(.98);background:var(--amber-soft);}
+  .pick .rng{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--amber);min-width:74px;}
+  .pick .ttl{font-size:16px;font-weight:700;}
+  .pick .sub{font-size:12px;color:var(--ink-soft);margin-top:2px;}
+  .pick .txt{flex:1;}
+  .pick .arw{font-size:20px;color:var(--ink-soft);}
+  .hsec{font-family:var(--mono);font-size:11px;letter-spacing:.15em;color:var(--ink-soft);margin:6px 0 12px;}
+  header.compact .meta,header.compact .track{display:none;}
+</style>
+</head>
+<body>
+<div class="app">
+  <header id="hdr" class="compact">
+    <span class="eyebrow">2026 / 構造 マラソンテスト</span>
+    <h1>1問ずつ解く 〇✕トレーナー</h1>
+    <div class="meta">
+      <span>問 <b id="cur">–</b> / <span id="total">–</span></span>
+      <span>正答 <b id="hit">0</b></span>
+    </div>
+    <div class="track"><div class="bar" id="bar"></div></div>
+  </header>
+
+  <div class="home" id="home">
+    <p class="lead">適当／不適当を判定する〇✕形式。<b>50問ずつ一区切り</b>で挑戦できます。範囲を選んでください。</p>
+    <div class="hsec">出題範囲をえらぶ</div>
+    <button class="pick" onclick="start(1,50)">
+      <span class="rng">問 1–50</span>
+      <span class="txt"><span class="ttl">マークシート 1</span><div class="sub">荷重・木質・コンクリート ほか</div></span>
+      <span class="arw">→</span>
+    </button>
+    <button class="pick" onclick="start(51,100)">
+      <span class="rng">問 51–100</span>
+      <span class="txt"><span class="ttl">マークシート 2</span><div class="sub">RC・鋼材・鉄骨・建築材料 ほか</div></span>
+      <span class="arw">→</span>
+    </button>
+    <button class="pick" onclick="start(1,100)">
+      <span class="rng">問 1–100</span>
+      <span class="txt"><span class="ttl">全問通し</span><div class="sub">100問ぶっ通し</div></span>
+      <span class="arw">→</span>
+    </button>
+  </div>
+
+  <main id="main" style="display:none;">
+    <span class="section-tag" id="sec"></span>
+    <div class="qhead">
+      <span class="qno" id="qno"></span>
+      <span class="qsrc" id="qsrc"></span>
+    </div>
+    <p class="stmt" id="stmt"></p>
+    <p class="prompt">適当なら ① 、不適当なら ② を選ぶ</p>
+
+    <div class="choices">
+      <button class="bubble" id="b1" onclick="answer(1)">
+        <span class="mark">①</span><span class="blabel">適当</span>
+      </button>
+      <button class="bubble" id="b2" onclick="answer(2)">
+        <span class="mark">②</span><span class="blabel">不適当</span>
+      </button>
+    </div>
+
+    <div class="fb" id="fb">
+      <div class="verdict" id="verdict"><span class="dot"></span><span id="vtext"></span></div>
+      <div class="ansline">正解は <b id="ans"></b> です。</div>
+      <div class="point"><span class="pt-l">POINT</span><span id="point"></span></div>
+    </div>
+
+    <div class="actions">
+      <button class="next" id="next" onclick="nextQ()" disabled>解答する</button>
+    </div>
+  </main>
+
+  <div class="result" id="result">
+    <div class="score-big" id="rScore">0</div>
+    <div class="score-sub" id="rSub"></div>
+    <div class="pct" id="rPct"></div>
+    <div class="review" id="reviewWrap">
+      <h3>復習リスト（間違えた問題）</h3>
+      <div id="missList"></div>
+    </div>
+    <button class="restart" onclick="restart()">範囲をえらび直す</button>
+  </div>
+
+  <div class="note">2026 マラソンテスト 構造 ／ 全100問 収録</div>
+</div>
+
+<script>
+const QUESTIONS = [
+ {n:1, sec:"荷重・外力", src:"067・2", a:2,
+  q:"多雪区域において、長期に生ずる力の計算に用いる積雪荷重は、短期に生ずる力の計算に用いる積雪荷重の0.35倍の数値とする。",
+  p:"長期は短期の0.7倍。0.35倍は誤り。"},
+ {n:2, sec:"荷重・外力", src:"072・5", a:1,
+  q:"同一の室に用いる積載荷重の大小関係は、一般に、「床の計算用」＞「大梁及び柱の計算用」＞「地震力の計算用」である。",
+  p:"正しい。床用＞大梁・柱用＞地震用 の順に小さくなる。"},
+ {n:3, sec:"荷重・外力", src:"071・1", a:2,
+  q:"床の単位面積当たりの積載荷重は、一般に、「百貨店又は店舗の売場」より「教室」のほうが大きい。",
+  p:"売場（2900N/㎡）＞教室（2300N/㎡）。教室のほうが大きいは誤り。"},
+ {n:4, sec:"荷重・外力", src:"071", a:2,
+  q:"屋根の積雪荷重は、屋根に雪止めがある場合を除き、その勾配が45度を超える場合においては、零とすることができる。",
+  p:"零にできるのは勾配が「60度」を超える場合。45度では誤り。"},
+ {n:5, sec:"風圧力・地震力", src:"062・2", a:1,
+  q:"速度圧の計算に用いる地表面粗度区分は、海岸線からの距離、建築物の高さ等を考慮して定められている。",
+  p:"正しい。地表面粗度区分は、海岸線からの距離・建築物の高さなどで区分される。"},
+ {n:6, sec:"風圧力・地震力", src:"062・1", a:2,
+  q:"風圧力の計算に用いる速度圧は、その地方において定められた風速の平方根に比例する。",
+  p:"速度圧は風速の「2乗」に比例する。平方根ではない。"},
+ {n:7, sec:"風圧力・地震力", src:"064・4", a:1,
+  q:"建築物の屋根版に作用する風圧力と、屋根葺き材に作用する風圧力とは、それぞれ個別に計算する。",
+  p:"正しい。構造骨組用と外装材（葺き材）用は別々に計算する。"},
+ {n:8, sec:"風圧力・地震力", src:"059・1", a:2,
+  q:"建築物の地上部分の地震力は、当該高さの部分が支える固定荷重に、当該高さにおける地震層せん断力係数を乗じて計算する。",
+  p:"地上部分は「固定荷重＋積載荷重」の和に地震層せん断力係数を乗じる。固定荷重だけではない。"},
+ {n:9, sec:"風圧力・地震力", src:"065・5", a:2,
+  q:"地震力の計算に用いる振動特性係数Rtの地盤種別による大小関係は、建築物の設計用一次固有周期Tが長い場合、第一種地盤＞第二種地盤＞第三種地盤となる。",
+  p:"Tが長い領域ではRtは「第一種＜第二種＜第三種」。硬い地盤ほどRtは小さい。大小関係が逆。"},
+ {n:10, sec:"風圧力・地震力", src:"063・3", a:2,
+  q:"地震力の計算に用いる建築物の設計用一次固有周期Tは、建築物の高さが同じであれば、一般に、鉄筋コンクリート造より木造や鉄骨造のほうが短い。",
+  p:"T＝h×(0.02 + 0.01α)。木造・S造はα=1で長くなり、RC造より「長い」。短いは誤り。"},
+ {n:11, sec:"風圧力・地震力", src:"057・1", a:2,
+  q:"地盤が著しく軟弱な区域として指定された区域内における木造の建築物の標準せん断力係数C₀は、原則として、0.2以上とする。",
+  p:"軟弱地盤指定区域の木造はC₀＝0.3以上。0.2ではない。"},
+ {n:12, sec:"風圧力・地震力", src:"067・4", a:1,
+  q:"建築物の地下部分の各部分に作用する地震力は、一般に、当該部分の固定荷重と積載荷重との和に、水平震度kを乗じて計算する。",
+  p:"正しい。地下部分は（固定＋積載）×水平震度k で算定する。"},
+ {n:13, sec:"地盤・基礎構造", src:"078・2", a:2,
+  q:"ヒービングとは、砂中を上向きに流れる水流圧力によって、砂粒がかきまわされ湧き上がる現象である。",
+  p:"これはボイリング（クイックサンド）の説明。ヒービングは軟弱な粘性土で掘削底面が盛り上がる現象。"},
+ {n:14, sec:"地盤・基礎構造", src:"080・2", a:2,
+  q:"圧密とは、砂質土が、荷重の作用によって、長い時間をかけて排水しながら体積を減少させる現象である。",
+  p:"圧密は「粘性土」で起きる現象。砂質土ではない。"},
+ {n:15, sec:"地盤・基礎構造", src:"078・4", a:1,
+  q:"液状化とは、水で飽和した砂質土等が、振動・衝撃等による間隙水圧の上昇によって、せん断抵抗を失う現象である。",
+  p:"正しい。液状化の定義そのもの。"},
+ {n:16, sec:"地盤・基礎構造", src:"078・1", a:1,
+  q:"負の摩擦力とは、軟弱地盤等において、周囲の地盤が沈下することによって、杭の周面に下向きに作用する摩擦力である。",
+  p:"正しい。ネガティブフリクション（負の摩擦力）の説明。"},
+ {n:17, sec:"地盤・基礎構造", src:"073・2", a:1,
+  q:"基礎梁の剛性を大きくすることは、不同沈下の影響を減少させるために有効である。",
+  p:"正しい。基礎梁を剛にすると沈下差をならし、不同沈下の影響を抑えられる。"},
+ {n:18, sec:"地盤・基礎構造", src:"073・4", a:1,
+  q:"PHC杭とは、遠心力成形された中空円筒形をした工場生産の高強度コンクリート杭である。",
+  p:"正しい。PHC杭（プレストレスト高強度コンクリート杭）の説明。"},
+ {n:19, sec:"木材・木質系材料", src:"084・3", a:2,
+  q:"木材の強度は、一般に、含水率の減少に伴い増大し、繊維飽和点を下回るとほぼ一定となる。",
+  p:"逆。繊維飽和点（約30%）を「下回る」と含水率低下に伴い強度が増大、「上回る」とほぼ一定。"},
+ {n:20, sec:"木材・木質系材料", src:"084・1", a:2,
+  q:"木材の乾燥収縮率は、年輪の接線方向より繊維方向のほうが大きい。",
+  p:"乾燥収縮率は 接線方向＞半径方向＞繊維方向。繊維方向が最小なので逆。"},
+ {n:21, sec:"木材・木質系材料", src:"R07・20・3", a:1,
+  q:"板目材は、乾燥すると、木表側に凹に変形する。",
+  p:"正しい。木表側が縮んで凹に反る（木裏側が凸）。"},
+ {n:22, sec:"木材・木質系材料", src:"085・3", a:2,
+  q:"木材の腐朽菌は、酸素、温度、水分又は栄養源のうち、いずれか一つの条件を満たすと繁殖する。",
+  p:"腐朽菌は酸素・温度・水分・栄養源の「すべて」が揃うと繁殖。一つでは繁殖しない。"},
+ {n:23, sec:"木材・木質系材料", src:"225・1", a:2,
+  q:"パーティクルボードは、木材などの植物質繊維を加圧成形した板材で、耐火性に優れている。",
+  p:"木質系のため可燃性で、耐火性に優れているわけではない。"},
+ {n:24, sec:"木材・木質系材料", src:"090・3", a:2,
+  q:"木材の繊維方向の基準強度の大小関係は、一般に、曲げ＞圧縮＞せん断＞引張りである。",
+  p:"正しくは 曲げ＞圧縮＞引張り＞せん断。引張りとせん断が逆。"},
+ {n:25, sec:"木質構造（構造設計）", src:"095・5", a:1,
+  q:"2階の耐力壁の位置は、1階の耐力壁の位置の直上又は市松状の配置となるようにする。",
+  p:"正しい。上下階で力が流れるよう、直上または市松状に配置する。"},
+ {n:26, sec:"木質構造（構造設計）", src:"204・2", a:2,
+  q:"同じ構面内の同種の筋かいは、一般に、傾きの方向が同じ向きとなるように配置する。",
+  p:"同じ向きだと水平力で偏りが出る。たすき掛け等、傾きが釣り合う配置が望ましい。"},
+ {n:27, sec:"木質構造（構造設計）", src:"095・4", a:2,
+  q:"圧縮力を負担する筋かいとして、幅90mmの木材を使用する場合、その厚さは15mm以上とする。",
+  p:"圧縮力を負担する筋かいは厚さ30mm以上・幅90mm以上（令45条）。15mmでは不足。"},
+ {n:28, sec:"木質構造（構造設計）", src:"R07・11・1", a:1,
+  q:"存在壁量は、耐力壁のほか、所定の仕様を満たす準耐力壁及び垂れ壁・腰壁を加えて求めることができる。",
+  p:"正しい。耐力壁に加え、所定仕様の準耐力壁・垂れ壁・腰壁を算入できる。"},
+ {n:29, sec:"木質構造（構造設計）", src:"092・2", a:1,
+  q:"風圧力に対して必要な耐力壁の有効長さ（必要壁量）を求める場合、2階建の建築物の2階部分の見付面積に乗ずる数値は、平家建の建築物の見付面積に乗ずる数値と同じである。",
+  p:"正しい。最上階（2階建の2階＝平家建相当）に乗ずる数値は同じ。"},
+ {n:30, sec:"木質構造（構造設計）", src:"093・1", a:2,
+  q:"曲げ材は、一般に、材せいに比べて材幅が大きいほど、横座屈を生じやすい。",
+  p:"逆。材幅が「小さい」（細長い）ほど横座屈を生じやすい。"},
+ {n:31, sec:"木質構造（構造設計）", src:"094・5", a:1,
+  q:"水平力が作用した場合に生じる柱の浮き上がり軸力は、柱の位置に応じて、水平力時の柱軸力を低減して算定する。",
+  p:"正しい。柱位置に応じ、水平力時の柱軸力を低減して浮き上がり軸力を算定する。"},
+ {n:32, sec:"木質構造（接合法）", src:"115・3", a:2,
+  q:"大入れ蟻掛けは、断面が大きい梁・桁などの横架材を、材軸方向に継ぐ場合に用いられる。",
+  p:"大入れ蟻掛けは横架材を直交方向に取り合わせる「仕口」。材軸方向に継ぐ「継手」ではない。"},
+ {n:33, sec:"木質構造（接合法）", src:"112・2", a:2,
+  q:"引張力を受けるボルト接合部において、ボルトの材質、ボルトの径、座金の寸法及び樹種が同じであったので、許容引張耐力は、ボルトが長くなるほど大きくなることを考慮する。",
+  p:"許容引張耐力はボルト長さに依存しない。長くなるほど大きくなるは誤り。"},
+ {n:34, sec:"木質構造（接合法）", src:"109・3", a:2,
+  q:"ラグスクリュー接合において、ラグスクリューが緩む可能性があるため、潤滑剤を用いてはならない。",
+  p:"ねじ込み時の割れ防止・施工性のため潤滑剤を用いてよい。「用いてはならない」は誤り。"},
+ {n:35, sec:"木質構造（接合法）", src:"115・1", a:1,
+  q:"釘接合部及びボルト接合部において、施工時の木材の含水率が20％以上の場合には、接合部の許容せん断耐力を低減する。",
+  p:"正しい。含水率20%以上では許容せん断耐力を低減する。"},
+ {n:36, sec:"木質構造（接合法）", src:"110・3", a:2,
+  q:"せん断力を受けるボルト接合において、座金が木材にめり込まない程度にボルトを締付ける。",
+  p:"座金が木材に「わずかにめり込む程度」に締め付ける。めり込まない程度では不十分。"},
+ {n:37, sec:"コンクリート", src:"R07・22・4", a:2,
+  q:"用いるセメントによる一般的なコンクリートの初期強度（材齢7日程度までの硬化初期の過程における圧縮強度）の大小関係は、早強ポルトランドセメント＞中庸熱ポルトランドセメント＞普通ポルトランドセメントである。",
+  p:"初期強度は 早強＞普通＞中庸熱。中庸熱は初期強度が低く、順序が誤り。"},
+ {n:38, sec:"コンクリート", src:"132・3", a:1,
+  q:"高炉セメントB種を用いたコンクリートは、圧縮強度が同程度の普通ポルトランドセメントを用いたコンクリートに比べて、長期の湿潤養生期間が必要となる。",
+  p:"正しい。高炉セメントB種は初期強度の発現が遅く、長期の湿潤養生が必要。"},
+ {n:39, sec:"コンクリート", src:"127・5", a:2,
+  q:"実積率の小さい粗骨材を使用することにより、同一スランプを得るための単位水量を小さくすることができる。",
+  p:"逆。実積率の「大きい」（角がなく密に詰まる）粗骨材ほど単位水量を小さくできる。"},
+ {n:40, sec:"コンクリート", src:"135・3", a:1,
+  q:"コンクリートの強度の大小関係は、圧縮＞曲げ＞引張りである。",
+  p:"正しい。コンクリートは 圧縮＞曲げ＞引張り。"},
+ {n:41, sec:"コンクリート", src:"133・1", a:2,
+  q:"コンクリートの圧縮強度は、一般に、水セメント比が大きいほど大きい。",
+  p:"逆。水セメント比が「小さい」ほど圧縮強度は大きい。"},
+ {n:42, sec:"コンクリート", src:"133・3", a:2,
+  q:"一般に、コンクリートの圧縮強度が大きいほど、中性化速度は大きくなる。",
+  p:"逆。圧縮強度が大きい（緻密な）ほど中性化速度は小さく（遅く）なる。"},
+ {n:43, sec:"コンクリート", src:"122・2", a:1,
+  q:"アルカリ骨材反応によるコンクリートのひび割れは、骨材中の成分がセメントペースト中に含まれるアルカリ分と反応し、骨材が膨張することによって生じる。",
+  p:"正しい。アルカリ骨材反応の説明。"},
+ {n:44, sec:"コンクリート", src:"128・1", a:1,
+  q:"コンクリートの調合強度は、調合管理強度よりも大きい。",
+  p:"正しい。ばらつきを見込むため 調合強度＞調合管理強度。"},
+ {n:45, sec:"コンクリート", src:"130・5", a:1,
+  q:"コンクリートの圧縮強度は養生温度が高いほど、発現が早い。",
+  p:"正しい。養生温度が高いほど強度発現が早い（ただし長期強度は低下しうる）。"},
+ {n:46, sec:"コンクリート", src:"135・5", a:2,
+  q:"コンクリートのヤング係数は、圧縮強度には関係なく、ほぼ一定である。",
+  p:"ヤング係数は圧縮強度（および気乾単位容積質量）が大きいほど大きくなる。一定ではない。"},
+ {n:47, sec:"コンクリート", src:"133・5", a:2,
+  q:"コンクリートの短期許容圧縮応力度は、設計基準強度に1/3を乗じた値である。",
+  p:"短期は設計基準強度の2/3、長期が1/3。短期に1/3は誤り。"},
+ {n:48, sec:"コンクリート", src:"134・5", a:1,
+  q:"AE剤の使用により、フレッシュコンクリート中に微細な独立した空気泡が連行され、コンクリートのワーカビリティーと耐凍害性を向上させることができる。",
+  p:"正しい。AE剤による微細な独立気泡でワーカビリティーと耐凍害性が向上する。"},
+ {n:49, sec:"鉄筋コンクリート構造（構造設計）", src:"141・2", a:1,
+  q:"梁とスラブのコンクリートを一体に打ち込む場合、両側にスラブが付く梁の剛性については、一般に、スラブの有効幅を考慮したT形梁として計算する。",
+  p:"正しい。一体打ちで両側にスラブが付く梁はT形梁として剛性を評価する。"},
+ {n:50, sec:"鉄筋コンクリート構造（構造設計）", src:"141・5", a:1,
+  q:"部材の曲げモーメントに対する断面算定においては、一般に、コンクリートの引張応力度を無視する。",
+  p:"正しい。曲げの断面算定ではコンクリートの引張は無視し、引張は鉄筋が負担する。"},
+ {n:51, sec:"鉄筋コンクリート構造（構造設計）", src:"144・1", a:2,
+  q:"梁の引張鉄筋比が、釣り合い鉄筋比以上の場合、梁の許容曲げモーメントは、引張鉄筋の断面積にほぼ比例する。",
+  p:"釣り合い鉄筋比「未満」のとき断面積にほぼ比例。以上ではコンクリート側で決まり比例しない。"},
+ {n:52, sec:"鉄筋コンクリート構造（構造設計）", src:"142・3", a:1,
+  q:"普通コンクリートを用いた柱の小径は、一般に、その構造耐力上主要な支点間の距離の1/15以上とする。",
+  p:"正しい。柱の小径は主要支点間距離の1/15以上（普通コンクリート）。"},
+ {n:53, sec:"鉄筋コンクリート構造（構造設計）", src:"137・1", a:2,
+  q:"柱のコンクリート全断面積に対する主筋全断面積の割合を、0.2％とする。",
+  p:"柱主筋は全断面積の0.8％以上。0.2％では不足。"},
+ {n:54, sec:"鉄筋コンクリート構造（構造設計）", src:"144・2", a:1,
+  q:"柱は、一般に、負担している軸方向圧縮力が大きくなると、靭性が小さくなる。",
+  p:"正しい。軸力が大きいほど脆性的になり、靭性は低下する。"},
+ {n:55, sec:"鉄筋コンクリート構造（構造設計）", src:"142・5", a:2,
+  q:"帯筋・あばら筋は、一般に、せん断ひび割れの発生を抑制することを主な目的として設ける。",
+  p:"主目的はせん断補強（せん断耐力・靭性の確保）。ひび割れ発生抑制が主目的ではない。"},
+ {n:56, sec:"鉄筋コンクリート構造（構造設計）", src:"136・5", a:1,
+  q:"耐震壁周辺のスラブや吹抜け部周囲のスラブなどは、地震時の面内せん断力が伝達可能なスラブ厚とする。",
+  p:"正しい。水平力を伝達できるよう、面内せん断力に応じたスラブ厚とする。"},
+ {n:57, sec:"鉄筋コンクリート構造（各部設計）", src:"148・5", a:2,
+  q:"柱の主筋をガス圧接する場合、一般に、各主筋の継手位置は、同じ高さに設ける。",
+  p:"継手位置は同じ高さに集中させず、相互にずらす（千鳥配置）。"},
+ {n:58, sec:"鉄筋コンクリート構造（各部設計）", src:"147・2", a:1,
+  q:"柱の帯筋の末端部は、135度以上に折り曲げて定着させるか、又は相互に溶接する。",
+  p:"正しい。帯筋末端は135度以上のフック又は溶接で定着する。"},
+ {n:59, sec:"鉄筋コンクリート構造（各部設計）", src:"153・5", a:2,
+  q:"フック付き重ね継手の長さは、鉄筋相互のフックの最外端間の距離とする。",
+  p:"重ね継手長さはフック部分を含まず、折り曲げ起点間の距離でとる。"},
+ {n:60, sec:"鉄筋コンクリート構造（各部設計）", src:"153・4", a:1,
+  q:"帯筋に用いるスパイラル筋の重ね継手の末端に90°フックを設ける場合、余長は鉄筋の径（異形鉄筋では呼び名に用いた数値）の12倍以上とする。",
+  p:"正しい。スパイラル筋の90°フックの余長は12d以上。"},
+ {n:61, sec:"鉄筋コンクリート構造（各部設計）", src:"141・3", a:2,
+  q:"梁端部の主筋に生じる引張力に対し、梁から梁主筋が引き抜けないことの確認を定着の検定、柱から梁主筋が引き抜けないことの確認を付着の検定という。",
+  p:"用語が逆。柱から引き抜けない確認が「定着」、梁内の確認が「付着」。"},
+ {n:62, sec:"鋼材", src:"159・5", a:2,
+  q:"常温における鋼材のヤング係数は、SS400材よりSN400材のほうが大きい。",
+  p:"鋼材のヤング係数は材種によらずほぼ一定（約2.05×10⁵N/㎟）。同じ。"},
+ {n:63, sec:"鋼材", src:"160・5", a:2,
+  q:"鋼材は、炭素含有量が多くなると、一般に、溶接性が向上する。",
+  p:"炭素量が増えると強度は上がるが溶接性は「低下」する。"},
+ {n:64, sec:"鋼材", src:"160・4", a:1,
+  q:"一般の鋼材の引張強さは、温度が200〜300℃程度で最大となり、それ以上の温度になると急激に低下する。",
+  p:"正しい。200〜300℃で引張強さは最大、以降は急減する。"},
+ {n:65, sec:"鋼材", src:"159・1", a:2,
+  q:"鋼材の比重は、アルミニウム材の比重の約1.5倍である。",
+  p:"鋼≒7.85、アルミ≒2.7。約3倍。1.5倍ではない。"},
+ {n:66, sec:"鋼材", src:"155・2", a:2,
+  q:"鋼材を焼入れすると、強さ・硬さ・耐摩耗性が減少するが、粘り強くなる。",
+  p:"逆。焼入れで強さ・硬さ・耐摩耗性は増大し、粘りは低下（脆くなる）。"},
+ {n:67, sec:"鋼材", src:"157・5", a:1,
+  q:"異形棒鋼SD345の降伏点の下限値は、345N/mm²である。",
+  p:"正しい。SD345の数値は降伏点の下限値（345N/㎟）を表す。"},
+ {n:68, sec:"鉄骨構造（構造設計）", src:"170・2", a:1,
+  q:"H形断面を有する梁が、強軸まわりに曲げを受ける場合、梁の細長比が大きいほど許容曲げ応力度が小さくなる。",
+  p:"正しい。細長比が大きいほど横座屈しやすく、許容曲げ応力度は小さくなる。"},
+ {n:69, sec:"鉄骨構造（構造設計）", src:"168・4", a:2,
+  q:"鉄骨部材は、平板要素の幅厚比や鋼管の径厚比が大きいものほど、局部座屈が生じにくい。",
+  p:"逆。幅厚比・径厚比が大きい（薄い）ほど局部座屈が生じやすい。"},
+ {n:70, sec:"鉄骨構造（構造設計）", src:"167", a:2,
+  q:"H形鋼を梁に用いる場合、一般に、曲げモーメントをウェブで、せん断力をフランジで負担させるものとする。",
+  p:"逆。曲げモーメントはフランジ、せん断力はウェブで負担させる。"},
+ {n:71, sec:"鉄骨構造（構造設計）", src:"166・3", a:2,
+  q:"「建築構造用圧延鋼材SN400」は、溶接接合を用いる建築物の場合、一般に、A種を用いる。",
+  p:"溶接にはB種・C種を用いる。A種は溶接性が保証されない。"},
+ {n:72, sec:"鉄骨構造（構造設計）", src:"169・3", a:1,
+  q:"露出形式の柱脚においては、一般に、アンカーボルトの基礎に対する定着長さをアンカーボルトの径の20倍以上とする。",
+  p:"正しい。露出柱脚のアンカーボルト定着長さは径の20倍以上。"},
+ {n:73, sec:"鉄骨構造（接合法）", src:"179・1", a:2,
+  q:"高力ボルト摩擦接合部の許容応力度は、締め付けられる鋼材間の摩擦力と高力ボルトのせん断力との和として応力が伝達されるものとして計算する。",
+  p:"摩擦接合は鋼材間の「摩擦力のみ」で応力伝達。ボルトのせん断との和ではない。"},
+ {n:74, sec:"鉄骨構造（接合法）", src:"180・5", a:1,
+  q:"高力ボルト摩擦接合において、2面摩擦の許容せん断力は、1面摩擦の2倍の許容せん断力とすることができる。",
+  p:"正しい。摩擦面が2面なら許容せん断力は1面の2倍。"},
+ {n:75, sec:"鉄骨構造（接合法）", src:"178・2", a:2,
+  q:"一つの継手に普通ボルトと高力ボルトを併用する場合、応力を普通ボルトと高力ボルトで分担することができる。",
+  p:"挙動が異なるため分担不可。高力ボルトが全応力を負担すると考える。"},
+ {n:76, sec:"鉄骨構造（接合法）", src:"177・4", a:2,
+  q:"構造計算に用いる隅肉溶接の溶接部の有効のど厚は、一般に、隅肉サイズの1/2とする。",
+  p:"有効のど厚は0.7×サイズ（≒1/√2）。1/2ではない。"},
+ {n:77, sec:"鉄骨構造（接合法）", src:"180・3", a:1,
+  q:"一つの継手に突合せ溶接と隅肉溶接を併用する場合、それぞれの応力は、各溶接継目の許容耐力に応じて分担させることができる。",
+  p:"正しい。溶接どうしの併用は許容耐力に応じて応力を分担できる。"},
+ {n:78, sec:"鉄骨構造（接合法）", src:"179・3", a:2,
+  q:"一つの継手に高力ボルトと溶接を併用する場合、両方の耐力を加算できるようにするために、溶接をした後に高力ボルトで締め付ける。",
+  p:"逆。高力ボルトを先に締めてから溶接すれば両方の耐力を加算できる。"},
+ {n:79, sec:"構造設計（耐震設計等）", src:"199・3", a:1,
+  q:"各階における層間変形角の値は、一次設計用地震力に対し、原則として、1/200以内となるようにする。",
+  p:"正しい。層間変形角は原則1/200以内（条件により1/120まで緩和）。"},
+ {n:80, sec:"構造設計（耐震設計等）", src:"196・4", a:1,
+  q:"ピロティ階の必要保有水平耐力について、「剛性率による割増し係数」と「ピロティ階の強度割増し係数」のうち、大きい方の値を用いて算出する。",
+  p:"正しい。両係数のうち大きい方を用いて必要保有水平耐力を割り増す。"},
+ {n:81, sec:"構造設計（耐震設計等）", src:"196・1", a:2,
+  q:"建築物の各階における重心と剛心との距離ができるだけ大きくなるように、耐力壁を配置する。",
+  p:"逆。偏心を抑えるため重心と剛心の距離を「小さく」する。"},
+ {n:82, sec:"構造設計（耐震設計等）", src:"199・2", a:1,
+  q:"エキスパンションジョイントのみで接している複数の建築物については、それぞれ別の建築物として構造計算を行う。",
+  p:"正しい。Expansion Jointで分離された建物は別個に構造計算する。"},
+ {n:83, sec:"構造設計（耐震設計等）", src:"205・4", a:1,
+  q:"建築物の耐震設計は、まれに発生する地震（中程度の地震）に対して損傷による性能の低下を生じないことを確かめる一次設計と、極めてまれに発生する地震（最大級の地震）に対して崩壊・倒壊等しないことを確かめる二次設計から構成される。",
+  p:"正しい。一次設計（損傷防止）と二次設計（倒壊防止）からなる。"},
+ {n:84, sec:"構造設計（耐震設計等）", src:"199・1", a:1,
+  q:"建築物の耐震性は、一般に、強度と靭性によって評価されるが、靭性が乏しい場合には、強度を十分に高くする必要がある。",
+  p:"正しい。靭性が低いなら、その分強度を高めて耐震性を確保する。"},
+ {n:85, sec:"構造設計（耐震設計等）", src:"200・3", a:2,
+  q:"木造の建築物について、床組や小屋梁組のたわみを減少させるために、火打材を用いて補強する。",
+  p:"火打材は水平構面の変形（面内せん断）防止が目的。鉛直たわみ低減のためではない。"},
+ {n:86, sec:"構造設計（耐震設計等）", src:"192・4", a:1,
+  q:"制振構造について、一般に、大地震に対しては制振装置を各層に分散配置する方式が用いられ、暴風時の居住性向上には制振装置を頂部に集中配置する方式が用いられることが多い。",
+  p:"正しい。大地震用は各層分散、風時の居住性向上には頂部集中が一般的。"},
+ {n:87, sec:"構造設計（耐震設計等）", src:"206・1", a:2,
+  q:"鉄筋コンクリート構造において、袖壁、腰壁については非耐力壁として考え、偏心率の算定に当たり、影響はないものとする。",
+  p:"袖壁・腰壁も剛性に影響するため、偏心率の算定で考慮する必要がある。"},
+ {n:88, sec:"構造設計（耐震設計等）", src:"198・5", a:1,
+  q:"免震構造を採用した建築物は、一般に、免震構造を採用しない場合と比べて固有周期が長くなる。",
+  p:"正しい。免震層で固有周期を長くし、地震入力を低減する。"},
+ {n:89, sec:"構造設計（耐震設計等）", src:"207・4", a:2,
+  q:"耐震診断基準における第2次診断法は、柱や壁の変形能力などは考慮せずに、梁の強さと変形能力などをもとに耐震性能を判定する診断手法である。",
+  p:"第2次診断法は「柱・壁」の強さと靭性に着目する。梁ではない。"},
+ {n:90, sec:"構造設計（耐震設計等）", src:"207・5", a:1,
+  q:"鉄筋コンクリート造の柱における炭素繊維巻付け補強は、柱の靭性を高めるのに有効である。",
+  p:"正しい。炭素繊維巻付けは柱を拘束し、靭性向上に有効。"},
+ {n:91, sec:"建築材料", src:"216・2", a:1,
+  q:"砂岩は、耐火性に優れているので、壁の内装仕上げに用いられる。",
+  p:"正しい。砂岩は比較的耐火性があり、内装仕上げに使われる。"},
+ {n:92, sec:"建築材料", src:"220・4", a:2,
+  q:"しっくいは、消石灰にすさ・のり・砂などを混ぜて水で練ったもので、水と反応して固まる水硬性の材料である。",
+  p:"しっくいは空気中のCO₂と反応して固まる「気硬性」材料。水硬性ではない。"},
+ {n:93, sec:"建築材料", src:"210・2", a:2,
+  q:"線入り板ガラスは、板ガラスの中に金属線を封入したガラスであり、割れても破片が落ちにくいので、防火戸に用いるガラスとして使用される。",
+  p:"防火用は「網入りガラス」。線入りガラスは防火設備用には用いない。"},
+ {n:94, sec:"建築材料", src:"210・1", a:1,
+  q:"Low-E複層ガラスは、2枚の板ガラスの片方の中空層側表面に低放射の特殊金属膜をコーティングしたガラスであり、日射制御機能と高い断熱性を有する。",
+  p:"正しい。Low-E複層ガラスの説明。日射制御と高断熱を両立する。"},
+ {n:95, sec:"建築材料", src:"214・5", a:1,
+  q:"スレート波板は、セメント、補強繊維、混和材に水を混合して成形したもので、屋根や外壁材に使用される。",
+  p:"正しい。繊維強化セメント板で、屋根・外壁に用いられる。"},
+ {n:96, sec:"建築材料", src:"224・1", a:1,
+  q:"合成樹脂調合ペイントは、下地がコンクリートなどのアルカリ性のものには適さない。",
+  p:"正しい。合成樹脂調合ペイント（SOP）はアルカリに弱く、コンクリート下地に不適。"},
+ {n:97, sec:"建築材料", src:"224・4", a:2,
+  q:"酢酸ビニル樹脂系接着剤は、耐水性、耐熱性に優れているので、屋外における使用に適している。",
+  p:"酢酸ビニル系（木工用）は耐水・耐熱性に劣り、屋外には適さない。"},
+ {n:98, sec:"建築材料", src:"216・4", a:1,
+  q:"シージングせっこうボードは、防水性に優れているので、台所の壁下地材に用いられる。",
+  p:"正しい。耐水処理されており、水回りの壁下地に用いられる。"},
+ {n:99, sec:"建築材料", src:"211・4", a:2,
+  q:"花こう岩は、高温でも火害を受けにくいので、耐火被覆材として用いられる。",
+  p:"花こう岩は高温で割れやすく耐火性に劣る。耐火被覆材には不適。"},
+ {n:100, sec:"建築材料", src:"220・2", a:1,
+  q:"ALCは、原料を発泡させて高温高圧蒸気養生した材料であり、1mm程度の独立気泡を多く含むので、優れた耐火性・断熱性を有している。",
+  p:"正しい。ALC（軽量気泡コンクリート）の説明。耐火・断熱性に優れる。"},
+];
+
+let idx=0, hits=0, locked=false, picked=null;
+let ACTIVE=[];
+const misses=[];
+const $=id=>document.getElementById(id);
+
+function start(lo,hi){
+  ACTIVE=QUESTIONS.filter(q=>q.n>=lo && q.n<=hi);
+  idx=0; hits=0; locked=false; misses.length=0;
+  $("home").className="home hide";
+  $("result").className="result";
+  $("hdr").className="";
+  $("main").style.display="flex";
+  render();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function render(){
+  const q=ACTIVE[idx];
+  locked=false; picked=null;
+  $("sec").textContent=q.sec;
+  $("qno").textContent="問"+q.n;
+  $("qsrc").textContent=q.src;
+  $("stmt").textContent=q.q;
+  $("cur").textContent=idx+1;
+  $("total").textContent=ACTIVE.length;
+  $("hit").textContent=hits;
+  $("bar").style.width=((idx)/ACTIVE.length*100)+"%";
+  ["b1","b2"].forEach(id=>{
+    const b=$(id);
+    b.disabled=false;
+    b.className="bubble";
+  });
+  $("fb").className="fb";
+  const nb=$("next");
+  nb.textContent="解答する"; nb.disabled=true; nb.onclick=()=>{};
+}
+
+function answer(choice){
+  if(locked) return;
+  locked=true; picked=choice;
+  const q=ACTIVE[idx];
+  const correct=(choice===q.a);
+  if(correct) hits++; else misses.push(q);
+  $("hit").textContent=hits;
+
+  const b1=$("b1"), b2=$("b2");
+  b1.disabled=true; b2.disabled=true;
+  const chosen = choice===1?b1:b2;
+  const right  = q.a===1?b1:b2;
+  chosen.classList.add("chosen");
+  right.classList.add("correct");
+  if(!correct) chosen.classList.add("wrong");
+  (choice===1?b2:b1).classList.add("dim");
+
+  const v=$("verdict");
+  v.className="verdict "+(correct?"y":"n");
+  $("vtext").textContent=correct?"正解":"不正解";
+  $("ans").textContent = q.a===1 ? "① 適当" : "② 不適当";
+  $("point").textContent=q.p;
+  $("fb").className="fb show";
+
+  const nb=$("next");
+  nb.disabled=false;
+  nb.textContent = idx===ACTIVE.length-1 ? "結果を見る" : "次の問題へ →";
+  nb.onclick=nextQ;
+}
+
+function nextQ(){
+  if(!locked) return;
+  if(idx===ACTIVE.length-1){ showResult(); return; }
+  idx++; render();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function showResult(){
+  $("main").style.display="none";
+  $("bar").style.width="100%";
+  const total=ACTIVE.length;
+  $("rScore").textContent=hits;
+  $("rSub").textContent="／ "+total+" 問正解";
+  const pct=Math.round(hits/total*100);
+  $("rPct").textContent="正答率 "+pct+"％";
+  const ml=$("missList");
+  if(misses.length===0){
+    $("reviewWrap").innerHTML='<h3 style="color:var(--ok)">全問正解！復習なし</h3>';
+  }else{
+    ml.innerHTML="";
+    misses.sort((a,b)=>a.n-b.n).forEach(m=>{
+      const d=document.createElement("div");
+      d.className="miss";
+      d.innerHTML='<span class="mno">問'+m.n+'</span><span>'+m.q+'<br><span style="color:var(--ink-soft)">→ 正解 '+(m.a===1?"① 適当":"② 不適当")+'</span></span>';
+      ml.appendChild(d);
+    });
+  }
+  $("result").className="result show";
+}
+
+function restart(){
+  $("result").className="result";
+  $("main").style.display="none";
+  $("hdr").className="compact";
+  $("home").className="home";
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+</script>
+</body>
+</html>

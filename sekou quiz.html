@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2級建築士 施工 マラソンテスト</title>
+<style>
+  :root{
+    --ink:#16202e;
+    --ink-soft:#3a4a5e;
+    --paper:#eef1ef;
+    --paper-2:#f8faf9;
+    --line:#cdd6d2;
+    --accent:#27796b;
+    --accent-soft:#d8e8e3;
+    --ok:#2f7d54;
+    --ok-soft:#e0efe5;
+    --ng:#b4392f;
+    --ng-soft:#f4e0dd;
+    --mono:"SFMono-Regular",ui-monospace,"Roboto Mono",Menlo,monospace;
+    --jp:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{
+    font-family:var(--jp);color:var(--ink);background:var(--paper);
+    background-image:linear-gradient(var(--line) 1px,transparent 1px);
+    background-size:100% 40px;line-height:1.7;min-height:100%;
+    display:flex;justify-content:center;
+  }
+  .app{width:100%;max-width:560px;min-height:100dvh;background:var(--paper-2);
+    border-left:1px solid var(--line);border-right:1px solid var(--line);
+    display:flex;flex-direction:column;}
+
+  header{padding:18px 20px 14px;border-bottom:2px solid var(--ink);
+    background:var(--paper-2);position:sticky;top:0;z-index:5;}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;
+    color:var(--accent);text-transform:uppercase;}
+  h1{font-size:18px;font-weight:800;letter-spacing:.02em;margin-top:2px;}
+  .meta{display:flex;justify-content:space-between;align-items:baseline;
+    margin-top:12px;font-family:var(--mono);font-size:12px;color:var(--ink-soft);}
+  .meta b{color:var(--ink);font-size:13px;}
+  .track{height:5px;background:var(--accent-soft);margin-top:8px;border-radius:2px;overflow:hidden;}
+  .bar{height:100%;width:0;background:var(--accent);transition:width .35s ease;}
+  header.compact .meta,header.compact .track{display:none;}
+
+  main{flex:1;padding:22px 20px 30px;display:flex;flex-direction:column;}
+  .section-tag{display:inline-block;font-size:12px;font-weight:700;color:var(--ink-soft);
+    border:1px solid var(--line);border-radius:20px;padding:3px 12px;margin-bottom:16px;
+    align-self:flex-start;background:var(--paper);}
+  .qhead{display:flex;align-items:baseline;gap:10px;margin-bottom:14px;}
+  .qno{font-family:var(--mono);font-size:34px;font-weight:700;color:var(--ink);line-height:1;}
+  .qsrc{font-family:var(--mono);font-size:11px;color:var(--ink-soft);margin-left:auto;}
+  .stmt{font-size:18px;font-weight:500;letter-spacing:.01em;}
+  .prompt{font-size:13px;color:var(--ink-soft);margin-top:16px;}
+
+  .choices{display:flex;gap:14px;margin-top:14px;}
+  .bubble{flex:1;cursor:pointer;border:1.5px solid var(--ink);background:var(--paper-2);
+    border-radius:14px;padding:18px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;
+    transition:transform .08s ease,background .15s ease;font-family:inherit;}
+  .bubble:active{transform:scale(.97);}
+  .mark{width:46px;height:46px;border-radius:50%;border:2px solid var(--ink);
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:20px;font-weight:700;
+    transition:background .15s ease,color .15s ease;}
+  .blabel{font-size:14px;font-weight:700;}
+  .bubble.dim{opacity:.4;}
+  .bubble.chosen .mark{background:var(--ink);color:var(--paper-2);}
+  .bubble.correct{border-color:var(--ok);background:var(--ok-soft);}
+  .bubble.correct .mark{background:var(--ok);border-color:var(--ok);color:#fff;}
+  .bubble.wrong{border-color:var(--ng);background:var(--ng-soft);}
+  .bubble.wrong .mark{background:var(--ng);border-color:var(--ng);color:#fff;}
+  .bubble[disabled]{cursor:default;}
+
+  .fb{margin-top:20px;border-top:1px dashed var(--line);padding-top:18px;display:none;}
+  .fb.show{display:block;animation:rise .3s ease;}
+  @keyframes rise{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  .verdict{display:flex;align-items:center;gap:10px;font-weight:800;font-size:17px;}
+  .verdict .dot{width:11px;height:11px;border-radius:50%;}
+  .verdict.y{color:var(--ok);} .verdict.y .dot{background:var(--ok);}
+  .verdict.n{color:var(--ng);} .verdict.n .dot{background:var(--ng);}
+  .ansline{font-size:14px;margin-top:8px;color:var(--ink-soft);}
+  .ansline b{color:var(--ink);}
+  .point{margin-top:12px;background:var(--paper);border-left:3px solid var(--accent);
+    padding:12px 14px;border-radius:0 8px 8px 0;font-size:14.5px;}
+  .point .pt-l{font-family:var(--mono);font-size:10px;letter-spacing:.15em;color:var(--accent);display:block;margin-bottom:4px;}
+
+  .actions{margin-top:auto;padding-top:24px;}
+  .next{width:100%;border:none;background:var(--ink);color:var(--paper-2);font-family:inherit;
+    font-size:16px;font-weight:700;letter-spacing:.04em;padding:16px;border-radius:14px;cursor:pointer;
+    transition:opacity .15s ease;}
+  .next:active{opacity:.85;}
+  .next:disabled{opacity:.3;cursor:default;}
+
+  .result{padding:30px 20px;text-align:center;display:none;flex-direction:column;flex:1;}
+  .result.show{display:flex;}
+  .score-big{font-family:var(--mono);font-size:64px;font-weight:700;line-height:1;color:var(--accent);}
+  .score-sub{font-size:14px;color:var(--ink-soft);margin-top:6px;}
+  .pct{font-family:var(--mono);font-size:15px;margin-top:18px;font-weight:700;}
+  .review{margin-top:24px;text-align:left;}
+  .review h3{font-size:13px;letter-spacing:.06em;color:var(--ink-soft);margin-bottom:10px;font-family:var(--mono);}
+  .miss{display:flex;gap:10px;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--line);font-size:13.5px;}
+  .miss .mno{font-family:var(--mono);font-weight:700;color:var(--ng);min-width:36px;}
+  .rbtn{width:100%;font-family:inherit;font-size:15px;font-weight:700;padding:14px;border-radius:14px;cursor:pointer;margin-top:14px;}
+  .rbtn.solid{border:none;background:var(--accent);color:#fff;}
+  .rbtn.ghost{border:1.5px solid var(--ink);background:transparent;color:var(--ink);}
+  .note{font-size:11.5px;color:var(--ink-soft);text-align:center;padding:14px 20px;border-top:1px solid var(--line);font-family:var(--mono);}
+
+  .home{padding:30px 20px;flex:1;display:flex;flex-direction:column;}
+  .home.hide{display:none;}
+  .home .lead{font-size:14px;color:var(--ink-soft);margin-bottom:22px;line-height:1.8;}
+  .home .lead b{color:var(--ink);}
+  .pick{width:100%;text-align:left;border:1.5px solid var(--ink);background:var(--paper-2);
+    border-radius:16px;padding:18px;margin-bottom:14px;cursor:pointer;font-family:inherit;
+    display:flex;align-items:center;gap:16px;transition:transform .08s ease,background .15s ease;}
+  .pick:active{transform:scale(.98);background:var(--accent-soft);}
+  .pick.retry{border-color:var(--accent);background:var(--accent-soft);}
+  .pick .rng{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--accent);min-width:84px;}
+  .pick .ttl{font-size:16px;font-weight:700;}
+  .pick .sub{font-size:12px;color:var(--ink-soft);margin-top:2px;}
+  .pick .txt{flex:1;}
+  .pick .arw{font-size:20px;color:var(--ink-soft);}
+  .hsec{font-family:var(--mono);font-size:11px;letter-spacing:.15em;color:var(--ink-soft);margin:6px 0 12px;}
+</style>
+</head>
+<body>
+<div class="app">
+  <header id="hdr" class="compact">
+    <span class="eyebrow">2026 / 施工 マラソンテスト</span>
+    <h1>1問ずつ解く 〇✕トレーナー</h1>
+    <div class="meta">
+      <span>問 <b id="cur">–</b> / <span id="total">–</span></span>
+      <span>正答 <b id="hit">0</b></span>
+    </div>
+    <div class="track"><div class="bar" id="bar"></div></div>
+  </header>
+
+  <div class="home" id="home">
+    <p class="lead">適当／不適当を判定する〇✕形式。間違えた問題は記録され、<b>あとから間違いだけ再テスト</b>できます。</p>
+    <button class="pick retry" id="retryStore" style="display:none;" onclick="startStoredWrong()">
+      <span class="rng">復習</span>
+      <span class="txt"><span class="ttl">前回までの間違いを再テスト</span><div class="sub" id="retryStoreSub"></div></span>
+      <span class="arw">→</span>
+    </button>
+    <div class="hsec">出題範囲をえらぶ</div>
+    <button class="pick" onclick="startSet(QUESTIONS.filter(q=>q.n<=50))">
+      <span class="rng">問 1–50</span>
+      <span class="txt"><span class="ttl">マークシート 1</span><div class="sub">契約・安全・仮設・土工事・RC施工 ほか</div></span>
+      <span class="arw">→</span>
+    </button>
+    <button class="pick" onclick="startSet(QUESTIONS.filter(q=>q.n>=51))">
+      <span class="rng">問 51–100</span>
+      <span class="txt"><span class="ttl">マークシート 2</span><div class="sub">鉄骨・木工事・防水・仕上げ・積算 ほか</div></span>
+      <span class="arw">→</span>
+    </button>
+    <button class="pick" onclick="startAll()">
+      <span class="rng">問 1–100</span>
+      <span class="txt"><span class="ttl">全問通し</span><div class="sub">100問ぶっ通し</div></span>
+      <span class="arw">→</span>
+    </button>
+  </div>
+
+  <main id="main" style="display:none;">
+    <span class="section-tag" id="sec"></span>
+    <div class="qhead">
+      <span class="qno" id="qno"></span>
+      <span class="qsrc" id="qsrc"></span>
+    </div>
+    <p class="stmt" id="stmt"></p>
+    <p class="prompt">適当なら ① 、不適当なら ② を選ぶ</p>
+
+    <div class="choices">
+      <button class="bubble" id="b1" onclick="answer(1)">
+        <span class="mark">①</span><span class="blabel">適当</span>
+      </button>
+      <button class="bubble" id="b2" onclick="answer(2)">
+        <span class="mark">②</span><span class="blabel">不適当</span>
+      </button>
+    </div>
+
+    <div class="fb" id="fb">
+      <div class="verdict" id="verdict"><span class="dot"></span><span id="vtext"></span></div>
+      <div class="ansline">正解は <b id="ans"></b> です。</div>
+      <div class="point"><span class="pt-l">POINT</span><span id="point"></span></div>
+    </div>
+
+    <div class="actions">
+      <button class="next" id="next" onclick="nextQ()" disabled>解答する</button>
+    </div>
+  </main>
+
+  <div class="result" id="result">
+    <div class="score-big" id="rScore">0</div>
+    <div class="score-sub" id="rSub"></div>
+    <div class="pct" id="rPct"></div>
+    <div class="review" id="reviewWrap">
+      <h3>復習リスト（間違えた問題）</h3>
+      <div id="missList"></div>
+    </div>
+    <button class="rbtn solid" id="retryNow" onclick="retryMisses()">間違えた問題だけ再テスト</button>
+    <button class="rbtn ghost" onclick="goHome()">範囲をえらび直す</button>
+  </div>
+
+  <div class="note" id="note">2026 マラソンテスト 施工 ／ 問1〜100 収録</div>
+</div>
+
+<script>
+const QUESTIONS = [
+ {n:1, sec:"工事請負契約約款", src:"001・5", a:1,
+  q:"監理者は、設計図書等の内容を把握し、設計図書等に明らかな矛盾、誤謬、脱漏、不適切な納まり等を発見した場合は、受注者に通知する。",
+  p:"正しい。監理者は設計図書の矛盾・誤り等を発見したら受注者に通知する。"},
+ {n:2, sec:"工事請負契約約款", src:"006・4", a:1,
+  q:"受注者が正当な理由なく、着手期日を過ぎても工事に着手しないときは、発注者は契約を解除し、受注者に損害の賠償を請求することができる。",
+  p:"正しい。正当な理由なく未着手なら、発注者は解除・損害賠償請求ができる。"},
+ {n:3, sec:"工事請負契約約款", src:"002・1", a:1,
+  q:"請負代金額を変更するときは、原則として、工事の減少部分については監理者の確認を受けた請負代金内訳書の単価により、増加部分については時価による。",
+  p:"正しい。減少部分は内訳書の単価、増加部分は時価によるのが原則。"},
+ {n:4, sec:"工事監理業務", src:"011", a:2,
+  q:"設計図書の内容を把握し、設計図書に明らかな、矛盾、誤謬、脱漏、不適切な納まり等を発見した場合には、設計者に報告し、必要に応じて建築主事に届け出る。",
+  p:"発見時は設計者に報告する。建築主事に届け出るのは誤り。"},
+ {n:5, sec:"施工計画", src:"015・1", a:2,
+  q:"施工計画書に含まれる基本工程表については、監理者が作成し、検査及び立会の日程等を施工者へ指示した。",
+  p:"基本工程表は「施工者」が作成する。監理者が作成し指示するのは誤り。"},
+ {n:6, sec:"施工計画", src:"016・1", a:1,
+  q:"総合施工計画書には、工事期間中における工事敷地内の仮設資材や工事用機械の配置を示し、道路や近隣との取合いについても表示した。",
+  p:"正しい。総合仮設計画として配置・近隣取合いを示すのは適切。"},
+ {n:7, sec:"施工計画", src:"017・1", a:1,
+  q:"工事に先立ち、設計図書及び各種調査結果に基づいた施工計画書を作成し、工事監理者の承認を受けた。",
+  p:"正しい。施工計画書は監理者の承認を受けて進める。"},
+ {n:8, sec:"施工計画", src:"016・3", a:1,
+  q:"基本工程表を作成するに当たって、施工計画書、製作図及び施工図の作成並びに承諾の時期を考慮した。",
+  p:"正しい。図書作成・承諾の時期を織り込んで工程を組むのは適切。"},
+ {n:9, sec:"安全衛生管理", src:"026・5", a:1,
+  q:"高さ3mの作業場所から不要となった資材を投下する必要があったので、投下設備を設けるとともに、立入禁止区域を設定して監視人を配置した。",
+  p:"正しい。高さ3m以上からの投下は投下設備＋監視人が必要。"},
+ {n:10, sec:"安全衛生管理", src:"025・5", a:1,
+  q:"吊り足場の作業床は、幅を40cmとし、かつ、隙間がないようにした。",
+  p:"正しい。吊り足場の作業床は幅40cm以上・隙間なし。"},
+ {n:11, sec:"安全衛生管理", src:"026・3", a:1,
+  q:"高さ9mの登り桟橋において、踊り場を高さ3mごとに設けた。",
+  p:"正しい。高さ8m以上は7m以内ごとに踊り場。3mごとは条件を満たす。"},
+ {n:12, sec:"安全衛生管理", src:"023・5", a:1,
+  q:"掘削面の高さが1.8mの地山の掘削作業については、作業主任者を選任しないで行った。",
+  p:"正しい。地山掘削作業主任者は掘削面2m以上で必要。1.8mは不要。"},
+ {n:13, sec:"安全衛生管理", src:"024・5", a:2,
+  q:"高さが4.5mのコンクリート造の工作物の型枠支保工の解体作業については、作業主任者を選任しないで行った。",
+  p:"型枠支保工の組立て等作業主任者は高さに関係なく必要。選任しないのは誤り。"},
+ {n:14, sec:"材料管理", src:"031・5", a:2,
+  q:"巻いた状態のビニル壁紙は、くせが付かないように、井桁積みにして保管した。",
+  p:"ロール状の壁紙は「立てて」保管。井桁積み（横積み）は変形の原因。"},
+ {n:15, sec:"材料管理", src:"030・5", a:2,
+  q:"断熱材を屋外で保管するに当たり、日射を避けるために黒色のシートで覆い、かつ、シートと断熱材との間に隙間が生じないようにした。",
+  p:"黒色シートは熱を吸収し逆効果。遮熱性のあるシートで覆い、通気を確保する。"},
+ {n:16, sec:"材料管理", src:"029・5", a:1,
+  q:"セメントは、吸湿しないように、上げ床のある倉庫内に保管した。",
+  p:"正しい。セメントは防湿のため上げ床のある倉庫で保管。"},
+ {n:17, sec:"渉外諸手続き", src:"034・5", a:2,
+  q:"危険物貯蔵所設置許可申請書 ── 消防署長",
+  p:"提出先は市町村長等（都道府県知事）。消防署長ではない。"},
+ {n:18, sec:"渉外諸手続き", src:"035・3", a:1,
+  q:"特定建設作業実施届出書 ── 市町村長",
+  p:"正しい。騒音・振動規制法の特定建設作業実施届出は市町村長。"},
+ {n:19, sec:"渉外諸手続き", src:"035・5", a:2,
+  q:"クレーン設置届 ── 警察署長",
+  p:"提出先は労働基準監督署長。警察署長ではない。"},
+ {n:20, sec:"産業廃棄物", src:"041・5", a:2,
+  q:"建築物の新築に伴って生じた紙くずは、一般廃棄物に該当する。",
+  p:"建設業に伴う紙くずは「産業廃棄物」。一般廃棄物ではない。"},
+ {n:21, sec:"産業廃棄物", src:"042・5", a:1,
+  q:"建築物の解体に伴って生じたひ素を含む汚泥は、特別管理産業廃棄物に該当する。",
+  p:"正しい。有害物質（ひ素等）を含む汚泥は特別管理産業廃棄物。"},
+ {n:22, sec:"地盤調査", src:"047・2", a:2,
+  q:"地盤の粒度分布 ── 平板載荷試験",
+  p:"粒度分布は粒度試験（ふるい分析等）で調べる。平板載荷試験は地耐力。"},
+ {n:23, sec:"測量", src:"048・2", a:1,
+  q:"平板測量において、見通しの良い小さな敷地の測量は、放射法により行った。",
+  p:"正しい。見通しのよい狭い敷地には放射法が適する。"},
+ {n:24, sec:"仮設工事", src:"058・4", a:2,
+  q:"架設通路の階段の踊り場において、墜落の危険のある箇所には、高さ80cmの手摺を設け、高さ40cmの中桟を取り付けた。",
+  p:"手摺は高さ85cm以上。80cmは不足。"},
+ {n:25, sec:"仮設工事", src:"056・2", a:2,
+  q:"単管足場の壁つなぎの間隔は、垂直方向5.5m、水平方向5mとした。",
+  p:"単管足場は垂直5m以下・水平5.5m以下。数値が逆。"},
+ {n:26, sec:"仮設工事", src:"053・2", a:1,
+  q:"単管足場における地上第一の布を、地面から高さ2.0mの位置に設けた。",
+  p:"正しい。地上第一の布は高さ2m以下。"},
+ {n:27, sec:"仮設工事", src:"057・2", a:2,
+  q:"高さが12mの枠組足場における壁つなぎの間隔を、垂直方向8m、水平方向9mとした。",
+  p:"枠組足場は垂直9m以下・水平8m以下。数値が逆。"},
+ {n:28, sec:"仮設工事", src:"052・4", a:2,
+  q:"高さが2.5mの登り桟橋は、滑止めのための踏桟を設けたので、勾配を35度とした。",
+  p:"登り桟橋（架設通路）の勾配は30度以下。35度は不適当。"},
+ {n:29, sec:"土工事・地業工事", src:"066・5", a:1,
+  q:"アースドリル工法において、掘削深さが所定の深度となり、排出された土によって予定の支持地盤に達したことを確認したので、スライム処理を行った。",
+  p:"正しい。支持地盤到達確認後にスライム処理を行うのは適切。"},
+ {n:30, sec:"土工事・地業工事", src:"062・1", a:2,
+  q:"土工事において、地盤沈下を防止するための地下水処理の工法として、ディープウェル工法を採用した。",
+  p:"ディープウェルは地下水位を下げる排水工法で、周辺地盤沈下を生じやすい。沈下防止目的には不適。"},
+ {n:31, sec:"土工事・地業工事", src:"063・3", a:2,
+  q:"セメントミルク工法において、アースオーガーによる掘削中は正回転とし、引上げ時には逆回転とした。",
+  p:"引上げ時も正回転のまま引き上げる。逆回転は孔壁を乱すため不適当。"},
+ {n:32, sec:"木造住宅の基礎工事", src:"150・1", a:1,
+  q:"布基礎において、底盤部分の主筋にはD10を用い、その間隔を300mmとした。",
+  p:"正しい。布基礎底盤の主筋はD10＠300程度が標準。"},
+ {n:33, sec:"木造住宅の基礎工事", src:"150・4", a:1,
+  q:"布基礎の立上りの厚さは150mmとした。",
+  p:"正しい。布基礎の立上り厚さは150mm以上。"},
+ {n:34, sec:"木造住宅の基礎工事", src:"150・2", a:2,
+  q:"柱脚部の短期許容耐力が25kNのホールダウン専用アンカーボルトのコンクリート基礎への埋込み長さを、250mmとした。",
+  p:"25kN用ホールダウンの埋込み長さは360mm程度以上必要。250mmは不足。"},
+ {n:35, sec:"鉄筋工事", src:"067・4", a:2,
+  q:"D19の異形鉄筋の端部に設ける90度フックにおいて、折り曲げ内法直径を70mmとした。",
+  p:"90度フックの内法直径は4d以上＝4×19＝76mm以上。70mmは不足。"},
+ {n:36, sec:"鉄筋工事", src:"069・5", a:1,
+  q:"梁の配筋において、鉄筋のかぶり厚さを確保するためのスペーサーの配置は、特記がなかったので、間隔を1.5m程度とし、端部については0.5m程度となるようにした。",
+  p:"正しい。梁スペーサーは1.5m程度・端部0.5m程度が標準。"},
+ {n:37, sec:"鉄筋工事", src:"074・2", a:1,
+  q:"鉄筋相互のあきは、「粗骨材の最大寸法の1.25倍」、「25mm」及び「隣り合う鉄筋の平均径（呼び名の数値）の1.5倍」のうち最大のもの以上とした。",
+  p:"正しい。あきは3条件のうち最大値以上とする。"},
+ {n:38, sec:"鉄筋工事", src:"073・5", a:1,
+  q:"ガス圧接継手において、外観検査の結果、ふくらみの直径や長さが規定値を満たさず不合格となった圧接部は、再加熱・加圧して修正した。",
+  p:"正しい。ふくらみ不足は再加熱・加圧で修正できる。"},
+ {n:39, sec:"鉄筋工事", src:"071・2", a:2,
+  q:"梁主筋を柱内に折り曲げて定着させる部分では、特記がなかったので、投影定着長さを柱せいの1/2とした。",
+  p:"投影定着長さは柱せいの3/4以上（特記なき場合）。1/2は不足。"},
+ {n:40, sec:"鉄筋工事", src:"070・2", a:2,
+  q:"ガス圧接完了後の圧接部の外観検査において、検査方法は目視又はノギス、スケール等を用いて行い、検査対象は抜取りとした。",
+  p:"外観検査は「全数」検査。抜取りは超音波探傷検査（内部）。外観を抜取りは誤り。"},
+ {n:41, sec:"型枠工事", src:"082・4", a:1,
+  q:"構造体コンクリートの圧縮強度が設計基準強度以上に達し、かつ、施工中の荷重及び外力について構造計算により安全であることが確認されたので、コンクリートの材齢にかかわらず梁下の支柱を取り外した。",
+  p:"正しい。強度確認＋構造計算で安全なら材齢によらず支柱を外せる。"},
+ {n:42, sec:"型枠工事", src:"080・2", a:1,
+  q:"梁の側面のせき板は、建築物の計画供用期間の級が「標準」であり、普通ポルトランドセメントを使用したコンクリートの打込み後5日間の平均気温が20℃以上であったので、圧縮試験を行わずに取り外した。",
+  p:"正しい。標準・普通・20℃以上なら存置4日でよく、5日経過で取り外せる。"},
+ {n:43, sec:"型枠工事", src:"083・3", a:2,
+  q:"支柱として使用するパイプサポートは、3本継ぎとし、それぞれ4本のボルトで継いで強固に組み立てた。",
+  p:"パイプサポートは3本以上継いではならない（継ぐのは2本まで）。"},
+ {n:44, sec:"型枠工事", src:"077・4", a:2,
+  q:"支柱として用いるパイプサポートの高さが3.6mであったので、水平つなぎを高さ2.1mの位置とし、二方向に設けるとともに、水平つなぎの変位を防止した。",
+  p:"高さ3.5m超では2m以内ごとに水平つなぎが必要。2.1mは2mを超え不適当。"},
+ {n:45, sec:"コンクリート工事", src:"089・3", a:2,
+  q:"梁及びスラブにおける鉛直打継ぎの位置を、そのスパンの端部とした。",
+  p:"鉛直打継ぎはせん断力の小さい「スパン中央付近」とする。端部は不適当。"},
+ {n:46, sec:"コンクリート工事", src:"090・4", a:1,
+  q:"寒冷期におけるコンクリートの養生については、コンクリートを寒気から保護し、打込み後5日間にわたって、コンクリート温度を2℃以上に保った。",
+  p:"正しい。寒中コンクリートは初期5日間、温度2℃以上を保つ。"},
+ {n:47, sec:"コンクリート工事", src:"089・1", a:2,
+  q:"コンクリートの打込みにおいて、同一区画の打込み継続中における打重ね時間の間隔は、外気温が30℃であったので、150分以内とした。",
+  p:"外気温25℃以上は120分以内。30℃なら120分以内が必要で、150分は不適当。"},
+ {n:48, sec:"コンクリート工事", src:"094・1", a:1,
+  q:"材齢28日で試験を行うための構造体コンクリートの圧縮強度推定用供試体は、工事現場の直射日光の当たらない屋外において、水中養生とした。",
+  p:"正しい。現場水中養生（直射日光を避ける）は適切。"},
+ {n:49, sec:"コンクリート工事", src:"090・3", a:2,
+  q:"コンクリートの打継ぎにおいては、打継ぎ面にあるレイタンスなどを取り除き、十分に乾燥させた状態で、コンクリートを打ち込んだ。",
+  p:"打継ぎ面は「湿潤」状態で打ち込む。乾燥させると一体化しない。"},
+ {n:50, sec:"コンクリート工事", src:"098・2", a:2,
+  q:"建築物の計画供用期間の級が「短期」であったので、普通ポルトランドセメントを使用したコンクリートの打込み後の湿潤養生期間を、3日間とした。",
+  p:"普通ポルトランドの湿潤養生は短期・標準で5日以上。3日は不足。"},
+ {n:51, sec:"コンクリート工事", src:"095・4", a:2,
+  q:"コンクリートの品質基準強度は、設計基準強度と耐久設計基準強度との平均値とした。",
+  p:"品質基準強度は設計基準強度と耐久設計基準強度の「大きい方」。平均値ではない。"},
+ {n:52, sec:"鉄骨工事", src:"119・1", a:2,
+  q:"高力ボルト用の孔あけ加工は、接合面をブラスト処理した後にドリルあけとした。",
+  p:"順序が逆。孔あけ（ドリル）を先に行い、その後に摩擦面のブラスト処理をする。"},
+ {n:53, sec:"鉄骨工事", src:"109・1", a:1,
+  q:"ベースプレートとアンカーボルトとの緊結を確実に行うため、ナットは二重とし、ナット上部にアンカーボルトのねじ山が3山以上出るようにした。",
+  p:"正しい。ダブルナット＋ねじ山3山以上の出しろは適切。"},
+ {n:54, sec:"鉄骨工事", src:"109・3", a:1,
+  q:"高力ボルトの締付け作業において、高力ボルトを取り付けた後、一次締め、マーキング、本締めの順で行った。",
+  p:"正しい。一次締め→マーキング→本締めの順は適切。"},
+ {n:55, sec:"鉄骨工事", src:"114・5", a:2,
+  q:"接合部の材厚の差により1.2mmの肌すきが生じたので、ボルトの締付けのトルク値を高めることにより修正した。",
+  p:"肌すき1mm超はフィラープレートを挿入して処理する。トルクを高めて対応は不適当。"},
+ {n:56, sec:"鉄骨工事", src:"113・3", a:2,
+  q:"作業場所の気温が4℃であったので、溶接線から50mmまでの範囲の母材部分を加熱して、溶接を行った。",
+  p:"気温-5〜5℃では溶接線から100mm範囲を加熱する。50mmでは不足。"},
+ {n:57, sec:"鉄骨工事", src:"111・1", a:2,
+  q:"ターンバックル付き筋かいを有する建築物であったので、その筋かいを活用して建入れ直しを行った。",
+  p:"ターンバックル付き筋かいを建入れ直しに使用してはならない。"},
+ {n:58, sec:"鉄骨工事", src:"105・2", a:1,
+  q:"一群のボルトの締付けは、群の中央部から周辺に向かう順序で行った。",
+  p:"正しい。締付けは群の中央部から周辺へ向かう順序で行う。"},
+ {n:59, sec:"補強コンクリートブロック造工事", src:"122", a:1,
+  q:"押し目地仕上げは、目地モルタルが硬化する前に、目地こてで押さえた。",
+  p:"正しい。押し目地は目地モルタルが硬化する前に目地こてで押さえる。"},
+ {n:60, sec:"補強コンクリートブロック造工事", src:"124・3", a:1,
+  q:"高さ1.8mのブロック塀において、長さ3.4mごとに控壁を設けた。",
+  p:"正しい。高さ1.2m超の塀は3.4m以内ごとに控壁を設ける。"},
+ {n:61, sec:"ALCパネル工事・押出成形セメント板工事", src:"127・2", a:2,
+  q:"ALCパネルの短辺小口相互の接合部の目地は伸縮調整目地とし、特記がなかったので、目地幅は5mmとした。",
+  p:"短辺小口の伸縮調整目地は10〜20mm程度（短辺15mm以上）。5mmは不足。"},
+ {n:62, sec:"ALCパネル工事・押出成形セメント板工事", src:"124・4", a:1,
+  q:"押出成形セメント板を縦張り工法で取り付けるに当たり、セメント板相互の目地幅は、特記がなかったので、長辺の目地幅を10mm、短辺の目地幅を15mmとした。",
+  p:"正しい。縦張りは縦目地（長辺）8mm以上・横目地（短辺）15mm以上。"},
+ {n:63, sec:"木工事", src:"145・1", a:1,
+  q:"大引の継手は、床束心から150mm程度持ち出した位置とし、腰掛け蟻継ぎ、釘2本打ちとした。",
+  p:"正しい。大引の継手は床束心から150mm程度持ち出し、腰掛け蟻継ぎとする。"},
+ {n:64, sec:"木工事", src:"131・3", a:1,
+  q:"筋かいと間柱が取合う部分については、間柱を筋かいの厚さだけ欠き取り、釘打ちとした。",
+  p:"正しい。筋かいを欠き取らず、間柱側を欠き取って取り合わせる。"},
+ {n:65, sec:"木工事", src:"143・5", a:1,
+  q:"土台と柱との接合には、かど金物を使用した。",
+  p:"正しい。土台と柱の接合にはかど金物（山形プレート等）を用いる。"},
+ {n:66, sec:"木工事", src:"141・5", a:2,
+  q:"敷居には、木裏側に建具の溝を付けたものを使用した。",
+  p:"敷居・鴨居は「木表側」に建具の溝を付ける。木裏側は誤り。"},
+ {n:67, sec:"木工事", src:"139・4", a:1,
+  q:"桁に使用する木材については、継ぎ伸ばしの都合上、やむを得ず短材を使用する必要があったので、その長さを2mとした。",
+  p:"正しい。やむを得ず短材を使う場合でも長さ2m以上とする。"},
+ {n:68, sec:"木工事", src:"137・4", a:1,
+  q:"和室の畳床において、根太の間隔を450mmとした。",
+  p:"正しい。畳床の根太間隔は450mm程度。"},
+ {n:69, sec:"木工事", src:"143・2", a:2,
+  q:"桁は、腹を上端にして使用した。",
+  p:"桁・梁は「背」を上にして使う。腹を上端にするのは不適当。"},
+ {n:70, sec:"防水・屋根工事", src:"164・3", a:1,
+  q:"アスファルト防水工事において、出隅・入隅等へのストレッチルーフィングの増張りを行った後、一般平場部分にストレッチルーフィングを張り付けた。",
+  p:"正しい。出隅・入隅の増張り（補強）を先に行い、その後一般部を張る。"},
+ {n:71, sec:"防水・屋根工事", src:"163・1", a:1,
+  q:"鉄筋コンクリート造の陸屋根のアスファルト防水工事において、保護コンクリートに設ける伸縮目地のうち、パラペットに最も近い目地は、パラペットの立上りの仕上面から600mmの位置に設けた。",
+  p:"正しい。パラペット際の伸縮目地は600mm程度、中間は3m程度。"},
+ {n:72, sec:"防水・屋根工事", src:"158・3", a:1,
+  q:"加硫ゴム系シートによる合成高分子系シート張付け防水工事において、平場一般部のシートの重ね幅を、幅方向、長手方向とも100mmとした。",
+  p:"正しい。加硫ゴム系シートの重ね幅は100mm以上。"},
+ {n:73, sec:"防水・屋根工事", src:"165・4", a:2,
+  q:"木造2階建て住宅の平家部分の下葺きに用いるアスファルトルーフィングは、壁面との取合い部において、その壁面に沿って150mm立ち上げた。",
+  p:"壁面との取合いは250mm以上立ち上げる。150mmは不足。"},
+ {n:74, sec:"左官・タイル・石工事", src:"169・1", a:2,
+  q:"コンクリート壁面へのモルタル塗りにおいて、上塗りには、下塗りよりも富調合のモルタルを使用した。",
+  p:"上塗りほど「貧調合」にする。富調合は下塗り側で、逆。"},
+ {n:75, sec:"左官・タイル・石工事", src:"174・2", a:2,
+  q:"屋内の床面のセルフレベリング材塗りにおいて、セルフレベリング材の標準塗厚を5mmとした。",
+  p:"セルフレベリング材の標準塗厚は10mm程度。5mmは不足。"},
+ {n:76, sec:"左官・タイル・石工事", src:"173・4", a:2,
+  q:"ラス下地面へのせっこうプラスター塗りにおいて、中塗りが十分に乾燥した後、上塗りを行った。",
+  p:"せっこうプラスターは中塗りが半乾燥のうちに上塗りする。十分乾燥後は不適当。"},
+ {n:77, sec:"左官・タイル・石工事", src:"172・3", a:1,
+  q:"内壁タイルの密着張りにおいて、タイルは、上部から下部へ、一段置きに水糸に合わせて張った後、それらの間を埋めるように張り進めた。",
+  p:"正しい。密着張り（ヴィブラート工法）の手順として適切。"},
+ {n:78, sec:"左官・タイル・石工事", src:"167・4", a:1,
+  q:"タイル工事において、下地のひび割れ誘発目地、打継ぎ目地及び構造スリットの位置には、伸縮調整目地を設けた。",
+  p:"正しい。下地の目地・スリット位置に合わせて伸縮調整目地を設ける。"},
+ {n:79, sec:"左官・タイル・石工事", src:"173・1", a:1,
+  q:"外壁湿式工法による石材の取付けにおいて、石材の裏面とコンクリート躯体面との間隔を40mmとした。",
+  p:"正しい。湿式工法の裏込めモルタル空間は40mm程度。"},
+ {n:80, sec:"塗装工事", src:"179・1", a:2,
+  q:"外壁の吹付け塗りにおいて、スプレーガンを素地面に対して直角に保ち、1行ごとの吹付け幅が重ならないように吹き付けた。",
+  p:"吹付けは1行ごとに1/3程度重ねて吹く。重ねないのは不適当。"},
+ {n:81, sec:"塗装工事", src:"178", a:2,
+  q:"屋外の鉄骨面は、合成樹脂エマルションペイント塗りとした。",
+  p:"合成樹脂エマルションペイント（EP）は屋内用で防錆性がない。屋外鉄骨面には不適当。"},
+ {n:82, sec:"塗装工事", src:"178・1", a:1,
+  q:"屋内の木部は、オイルステイン塗りとした。",
+  p:"正しい。オイルステインは木部の着色に用いる。"},
+ {n:83, sec:"塗装工事", src:"178・2", a:1,
+  q:"屋内の亜鉛めっき鋼面は、合成樹脂調合ペイント塗りとした。",
+  p:"正しい。下地処理のうえ亜鉛めっき鋼面にSOP塗りは可。"},
+ {n:84, sec:"建具・ガラス・内装工事", src:"185・1", a:1,
+  q:"FRP系塗膜防水とアルミニウム製建具が取り合う箇所は、防水工事を施工した後、建具の取付けを行った。",
+  p:"正しい。防水を先行し、その後に建具を取り付ける。"},
+ {n:85, sec:"建具・ガラス・内装工事", src:"189・1", a:2,
+  q:"木製建具の保管に当たり、障子は平積みとし、フラッシュ戸は立てかけとした。",
+  p:"逆。フラッシュ戸は平積み、障子・框戸は立てかけ（立て置き）とする。"},
+ {n:86, sec:"建具・ガラス・内装工事", src:"186・2", a:1,
+  q:"ガラスブロック積みにおいて、特記がなかったので、平積みの目地幅の寸法を10mmとした。",
+  p:"正しい。ガラスブロックの目地幅は8〜15mm程度（標準10mm程度）。"},
+ {n:87, sec:"建具・ガラス・内装工事", src:"192", a:2,
+  q:"ビニル床シートの張付けにおいて、モルタル塗り下地を施工後10日間放置し、乾燥させてから行った。",
+  p:"モルタル下地は28日以上乾燥させてから張る。10日では不足。"},
+ {n:88, sec:"建具・ガラス・内装工事", src:"189・5", a:1,
+  q:"床にフローリングを張るに当たり、室の中心部から割付けを行い、壁際で寸法調整をした。",
+  p:"正しい。中心から割付け、端部（壁際）で寸法調整する。"},
+ {n:89, sec:"建具・ガラス・内装工事", src:"189・4", a:1,
+  q:"洗面室にビニル床シートを張り付けるに当たり、ウレタン樹脂系の接着剤を使用した。",
+  p:"正しい。水回りには耐水性のウレタン樹脂系接着剤を用いる。"},
+ {n:90, sec:"設備工事", src:"206・4", a:2,
+  q:"給水管と排水管とを平行に地中に埋設するに当たり、両配管の水平間隔を300mmとし、給水管が排水管の上方となるように埋設した。",
+  p:"水平間隔は500mm以上必要。給水管を上方にするのは正しいが、300mmは不足で不適当。"},
+ {n:91, sec:"設備工事", src:"207・4", a:2,
+  q:"雨水ますには、インバートが設けられたますを使用した。",
+  p:"雨水ますは泥だめ付き。インバート付きは汚水ます。組合せが誤り。"},
+ {n:92, sec:"設備工事", src:"204・4", a:1,
+  q:"換気設備の排気ダクトは、住戸内から住戸外に向かって、先下がり勾配となるように取り付けた。",
+  p:"正しい。結露水が室内に戻らないよう、外側へ先下がり勾配とする。"},
+ {n:93, sec:"設備工事", src:"205・3", a:1,
+  q:"住宅用防災警報器は、天井面から下方0.15m以上0.5m以内の位置にある壁の屋内に面する部分に取り付けた。",
+  p:"正しい。壁取付けは天井面から0.15〜0.5mの範囲。"},
+ {n:94, sec:"改修工事", src:"199・3", a:2,
+  q:"モルタル塗り仕上げ外壁の改修工事において、モルタルを撤去した欠損部の面積が1箇所当たり0.50m²程度となったので、充填工法を採用した。",
+  p:"充填工法は小面積（0.25m²程度以下）向け。0.50m²は大きく、塗替え工法等が適切。"},
+ {n:95, sec:"改修工事", src:"200・3", a:2,
+  q:"かぶせ工法によるアルミニウム製建具の改修において、既存枠へ新規に建具を取り付けるに当たり、小ねじの留付け間隔は、中間部で500mmとした。",
+  p:"小ねじ留付けは中間部400mm以下・端部100mm程度。500mmは超過。"},
+ {n:96, sec:"用語・機械", src:"213・2", a:1,
+  q:"左官工事において、床コンクリート直均し仕上げに、トロウェルを使用した。",
+  p:"正しい。直均し仕上げに機械ごて（トロウェル）を用いる。"},
+ {n:97, sec:"積算", src:"225・4", a:2,
+  q:"計画数量は、設計図書に記載されている個数及び設計寸法から求めた長さ、面積、体積等の数量である。",
+  p:"これは「設計数量」の説明。計画数量は施工計画に基づく数量（仮設・土工等）。"},
+ {n:98, sec:"積算", src:"221・2", a:1,
+  q:"一般管理費等には、現場管理費は含まれない。",
+  p:"正しい。現場管理費は共通費（工事原価）側で、一般管理費等には含まれない。"},
+ {n:99, sec:"積算", src:"219・2", a:1,
+  q:"直接仮設は、工事種目ごとの複数の工事科目に共通して使用する仮設をいう。",
+  p:"正しい。直接仮設の定義（共通仮設は工事全体に共通する仮設）。"},
+ {n:100, sec:"積算", src:"223・2", a:1,
+  q:"土工事における土砂量は、地山数量とし、掘削による増加や締固めによる減少は考慮しないで算出した。",
+  p:"正しい。土砂量は地山数量で算出し、ほぐし・締固めの増減は考慮しない。"},
+];
+
+let idx=0, hits=0, locked=false;
+let ACTIVE=[];
+let misses=[];          // 今回間違えた問題（オブジェクト）
+let storedWrong=[];     // 過去から繰り越し中の間違い番号
+const STORE_KEY="sekou_wrong";
+const $=id=>document.getElementById(id);
+
+/* ---- 永続化（利用できない環境では自動的に無効化） ---- */
+async function loadStored(){
+  try{
+    const r=await window.storage.get(STORE_KEY);
+    storedWrong = r&&r.value ? JSON.parse(r.value) : [];
+  }catch(e){ storedWrong=[]; }
+  refreshRetryButton();
+}
+async function saveStored(){
+  try{ await window.storage.set(STORE_KEY, JSON.stringify(storedWrong)); }catch(e){}
+}
+function refreshRetryButton(){
+  const btn=$("retryStore");
+  if(storedWrong.length>0){
+    $("retryStoreSub").textContent="まだ間違いとして残っている "+storedWrong.length+" 問";
+    btn.style.display="flex";
+  }else{
+    btn.style.display="none";
+  }
+}
+
+/* ---- 開始 ---- */
+function startSet(list){
+  if(!list.length) return;
+  ACTIVE=list.slice(); idx=0; hits=0; locked=false; misses=[];
+  $("home").className="home hide";
+  $("result").className="result";
+  $("hdr").className="";
+  $("main").style.display="flex";
+  render();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function startAll(){ startSet(QUESTIONS); }
+function startStoredWrong(){ startSet(QUESTIONS.filter(q=>storedWrong.includes(q.n))); }
+
+function render(){
+  const q=ACTIVE[idx];
+  locked=false;
+  $("sec").textContent=q.sec;
+  $("qno").textContent="問"+q.n;
+  $("qsrc").textContent=q.src;
+  $("stmt").textContent=q.q;
+  $("cur").textContent=idx+1;
+  $("total").textContent=ACTIVE.length;
+  $("hit").textContent=hits;
+  $("bar").style.width=((idx)/ACTIVE.length*100)+"%";
+  ["b1","b2"].forEach(id=>{const b=$(id);b.disabled=false;b.className="bubble";});
+  $("fb").className="fb";
+  const nb=$("next");
+  nb.textContent="解答する"; nb.disabled=true; nb.onclick=()=>{};
+}
+
+function answer(choice){
+  if(locked) return;
+  locked=true;
+  const q=ACTIVE[idx];
+  const correct=(choice===q.a);
+  if(correct) hits++; else misses.push(q);
+  $("hit").textContent=hits;
+
+  const b1=$("b1"), b2=$("b2");
+  b1.disabled=true; b2.disabled=true;
+  const chosen=choice===1?b1:b2, right=q.a===1?b1:b2;
+  chosen.classList.add("chosen");
+  right.classList.add("correct");
+  if(!correct) chosen.classList.add("wrong");
+  (choice===1?b2:b1).classList.add("dim");
+
+  $("verdict").className="verdict "+(correct?"y":"n");
+  $("vtext").textContent=correct?"正解":"不正解";
+  $("ans").textContent=q.a===1?"① 適当":"② 不適当";
+  $("point").textContent=q.p;
+  $("fb").className="fb show";
+
+  const nb=$("next");
+  nb.disabled=false;
+  nb.textContent=idx===ACTIVE.length-1?"結果を見る":"次の問題へ →";
+  nb.onclick=nextQ;
+}
+
+function nextQ(){
+  if(!locked) return;
+  if(idx===ACTIVE.length-1){ showResult(); return; }
+  idx++; render();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function showResult(){
+  $("main").style.display="none";
+  $("bar").style.width="100%";
+
+  // 永続化リストを更新：今回出題分のうち、間違い→追加、正解→削除
+  const missNums=misses.map(m=>m.n);
+  ACTIVE.forEach(q=>{
+    const inStore=storedWrong.includes(q.n);
+    if(missNums.includes(q.n)){ if(!inStore) storedWrong.push(q.n); }
+    else if(inStore){ storedWrong=storedWrong.filter(n=>n!==q.n); }
+  });
+  saveStored(); refreshRetryButton();
+
+  const total=ACTIVE.length;
+  $("rScore").textContent=hits;
+  $("rSub").textContent="／ "+total+" 問正解";
+  $("rPct").textContent="正答率 "+Math.round(hits/total*100)+"％";
+
+  const ml=$("missList");
+  if(misses.length===0){
+    $("reviewWrap").innerHTML='<h3 style="color:var(--ok)">全問正解！復習なし</h3>';
+    $("retryNow").style.display="none";
+  }else{
+    $("reviewWrap").innerHTML='<h3>復習リスト（間違えた問題）</h3><div id="missList"></div>';
+    const list=$("missList");
+    misses.slice().sort((a,b)=>a.n-b.n).forEach(m=>{
+      const d=document.createElement("div");
+      d.className="miss";
+      d.innerHTML='<span class="mno">問'+m.n+'</span><span>'+m.q+'<br><span style="color:var(--ink-soft)">→ 正解 '+(m.a===1?"① 適当":"② 不適当")+'</span></span>';
+      list.appendChild(d);
+    });
+    $("retryNow").style.display="block";
+    $("retryNow").textContent="間違えた問題だけ再テスト（"+misses.length+"問）";
+  }
+  $("result").className="result show";
+}
+
+function retryMisses(){ startSet(misses); }
+
+function goHome(){
+  $("result").className="result";
+  $("main").style.display="none";
+  $("hdr").className="compact";
+  $("home").className="home";
+  refreshRetryButton();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+loadStored();
+</script>
+</body>
+</html>

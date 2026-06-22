@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2級建築士 構造 厳選マラソン</title>
+<style>
+  :root{
+    --ink:#16202e; --ink-soft:#3a4a5e;
+    --paper:#f3efe6; --paper-2:#fbf9f4; --line:#d8d0c0;
+    --accent:#c8741b; --accent-soft:#f0e2cf;
+    --ok:#2f7d54; --ok-soft:#e0efe5;
+    --ng:#b4392f; --ng-soft:#f4e0dd;
+    --mono:"SFMono-Regular",ui-monospace,"Roboto Mono",Menlo,monospace;
+    --jp:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{font-family:var(--jp);color:var(--ink);background:var(--paper);
+    background-image:linear-gradient(var(--line) 1px,transparent 1px);background-size:100% 40px;
+    line-height:1.7;min-height:100%;display:flex;justify-content:center;}
+  .app{width:100%;max-width:560px;min-height:100dvh;background:var(--paper-2);
+    border-left:1px solid var(--line);border-right:1px solid var(--line);display:flex;flex-direction:column;}
+
+  header{padding:18px 20px 14px;border-bottom:2px solid var(--ink);background:var(--paper-2);position:sticky;top:0;z-index:5;}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--accent);text-transform:uppercase;}
+  h1{font-size:18px;font-weight:800;letter-spacing:.02em;margin-top:2px;}
+  .meta{display:flex;justify-content:space-between;align-items:baseline;margin-top:12px;font-family:var(--mono);font-size:12px;color:var(--ink-soft);}
+  .meta b{color:var(--ink);font-size:13px;}
+  .track{height:5px;background:var(--accent-soft);margin-top:8px;border-radius:2px;overflow:hidden;}
+  .bar{height:100%;width:0;background:var(--accent);transition:width .35s ease;}
+  header.compact .meta,header.compact .track{display:none;}
+
+  main{flex:1;padding:22px 20px 30px;display:flex;flex-direction:column;}
+  .topbar{display:flex;align-items:baseline;gap:10px;margin-bottom:6px;}
+  .topic{display:inline-block;font-size:12px;font-weight:700;color:var(--ink-soft);border:1px solid var(--line);border-radius:20px;padding:3px 12px;background:var(--paper);}
+  .src{font-family:var(--mono);font-size:11px;color:var(--ink-soft);margin-left:auto;}
+  .stem{font-size:16px;font-weight:700;margin:12px 0 4px;}
+  .prompt{font-size:13px;color:var(--ink-soft);margin-bottom:14px;}
+
+  .opts{display:flex;flex-direction:column;gap:10px;}
+  .opt{display:flex;gap:12px;align-items:flex-start;text-align:left;width:100%;
+    border:1.5px solid var(--line);background:var(--paper-2);border-radius:12px;padding:13px 14px;
+    cursor:pointer;font-family:inherit;font-size:14.5px;line-height:1.65;color:var(--ink);
+    transition:transform .07s ease,background .15s ease,border-color .15s ease;}
+  .opt:active{transform:scale(.99);}
+  .opt .num{flex:none;width:26px;height:26px;border-radius:50%;border:1.5px solid var(--ink);
+    display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:13px;font-weight:700;margin-top:1px;}
+  .opt[disabled]{cursor:default;}
+  .opt.correct{border-color:var(--ok);background:var(--ok-soft);}
+  .opt.correct .num{background:var(--ok);border-color:var(--ok);color:#fff;}
+  .opt.wrong{border-color:var(--ng);background:var(--ng-soft);}
+  .opt.wrong .num{background:var(--ng);border-color:var(--ng);color:#fff;}
+  .opt.dim{opacity:.5;}
+
+  .fb{margin-top:18px;border-top:1px dashed var(--line);padding-top:16px;display:none;}
+  .fb.show{display:block;animation:rise .3s ease;}
+  @keyframes rise{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  .verdict{display:flex;align-items:center;gap:10px;font-weight:800;font-size:16px;}
+  .verdict .dot{width:11px;height:11px;border-radius:50%;}
+  .verdict.y{color:var(--ok);} .verdict.y .dot{background:var(--ok);}
+  .verdict.n{color:var(--ng);} .verdict.n .dot{background:var(--ng);}
+  .ansline{font-size:14px;margin-top:8px;color:var(--ink-soft);}
+  .ansline b{color:var(--ink);}
+  .point{margin-top:12px;background:var(--paper);border-left:3px solid var(--accent);padding:12px 14px;border-radius:0 8px 8px 0;font-size:14.5px;}
+  .point .pt-l{font-family:var(--mono);font-size:10px;letter-spacing:.15em;color:var(--accent);display:block;margin-bottom:4px;}
+
+  .actions{margin-top:auto;padding-top:22px;}
+  .next{width:100%;border:none;background:var(--ink);color:var(--paper-2);font-family:inherit;font-size:16px;font-weight:700;letter-spacing:.04em;padding:16px;border-radius:14px;cursor:pointer;transition:opacity .15s ease;}
+  .next:active{opacity:.85;} .next:disabled{opacity:.3;cursor:default;}
+
+  .result{padding:30px 20px;text-align:center;display:none;flex-direction:column;flex:1;}
+  .result.show{display:flex;}
+  .score-big{font-family:var(--mono);font-size:64px;font-weight:700;line-height:1;color:var(--accent);}
+  .score-sub{font-size:14px;color:var(--ink-soft);margin-top:6px;}
+  .pct{font-family:var(--mono);font-size:15px;margin-top:18px;font-weight:700;}
+  .review{margin-top:24px;text-align:left;}
+  .review h3{font-size:13px;letter-spacing:.06em;color:var(--ink-soft);margin-bottom:10px;font-family:var(--mono);}
+  .miss{display:flex;gap:10px;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--line);font-size:13.5px;}
+  .miss .mno{font-family:var(--mono);font-weight:700;color:var(--ng);min-width:64px;}
+  .rbtn{width:100%;font-family:inherit;font-size:15px;font-weight:700;padding:14px;border-radius:14px;cursor:pointer;margin-top:14px;}
+  .rbtn.solid{border:none;background:var(--accent);color:#fff;}
+  .rbtn.ghost{border:1.5px solid var(--ink);background:transparent;color:var(--ink);}
+  .note{font-size:11.5px;color:var(--ink-soft);text-align:center;padding:14px 20px;border-top:1px solid var(--line);font-family:var(--mono);}
+
+  .home{padding:30px 20px;flex:1;display:flex;flex-direction:column;}
+  .home.hide{display:none;}
+  .home .lead{font-size:14px;color:var(--ink-soft);margin-bottom:22px;line-height:1.8;}
+  .home .lead b{color:var(--ink);}
+  .pick{width:100%;text-align:left;border:1.5px solid var(--ink);background:var(--paper-2);border-radius:16px;padding:18px;margin-bottom:14px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:16px;transition:transform .08s ease,background .15s ease;}
+  .pick:active{transform:scale(.98);background:var(--accent-soft);}
+  .pick.retry{border-color:var(--accent);background:var(--accent-soft);}
+  .pick .rng{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--accent);min-width:74px;}
+  .pick .ttl{font-size:16px;font-weight:700;}
+  .pick .sub{font-size:12px;color:var(--ink-soft);margin-top:2px;}
+  .pick .txt{flex:1;} .pick .arw{font-size:20px;color:var(--ink-soft);}
+  .hsec{font-family:var(--mono);font-size:11px;letter-spacing:.15em;color:var(--ink-soft);margin:6px 0 12px;}
+</style>
+</head>
+<body>
+<div class="app">
+  <header id="hdr" class="compact">
+    <span class="eyebrow">2026 / 構造 厳選マラソン</span>
+    <h1>5択トレーナー（最も不適当はどれ？）</h1>
+    <div class="meta">
+      <span>問 <b id="cur">–</b> / <span id="total">–</span></span>
+      <span>正答 <b id="hit">0</b></span>
+    </div>
+    <div class="track"><div class="bar" id="bar"></div></div>
+  </header>
+
+  <div class="home" id="home">
+    <p class="lead">各問の5つの記述から<b>最も不適当なもの</b>を1つ選ぶ5択形式。マル付き7問＋ひっかけ定番3問の<b>10問</b>。間違えた問題はあとで再テストできます。</p>
+    <button class="pick retry" id="retryStore" style="display:none;" onclick="startStoredWrong()">
+      <span class="rng">復習</span>
+      <span class="txt"><span class="ttl">前回までの間違いを再テスト</span><div class="sub" id="retryStoreSub"></div></span>
+      <span class="arw">→</span>
+    </button>
+    <div class="hsec">スタート</div>
+    <button class="pick" onclick="startAll()">
+      <span class="rng">全10問</span>
+      <span class="txt"><span class="ttl">厳選マラソン</span><div class="sub">コンクリ・耐震・鉄骨・RC・壁式・木質・荷重 ほか</div></span>
+      <span class="arw">→</span>
+    </button>
+  </div>
+
+  <main id="main" style="display:none;">
+    <div class="topbar">
+      <span class="topic" id="topic"></span>
+      <span class="src" id="src"></span>
+    </div>
+    <p class="stem" id="stem"></p>
+    <p class="prompt">最も不適当なものを1つ選ぶ</p>
+    <div class="opts" id="opts"></div>
+
+    <div class="fb" id="fb">
+      <div class="verdict" id="verdict"><span class="dot"></span><span id="vtext"></span></div>
+      <div class="ansline">不適当な記述は <b id="ans"></b> です。</div>
+      <div class="point"><span class="pt-l">POINT</span><span id="point"></span></div>
+    </div>
+
+    <div class="actions">
+      <button class="next" id="next" disabled>選んでください</button>
+    </div>
+  </main>
+
+  <div class="result" id="result">
+    <div class="score-big" id="rScore">0</div>
+    <div class="score-sub" id="rSub"></div>
+    <div class="pct" id="rPct"></div>
+    <div class="review" id="reviewWrap"><h3>復習リスト（間違えた問題）</h3><div id="missList"></div></div>
+    <button class="rbtn solid" id="retryNow" onclick="retryMisses()">間違えた問題だけ再テスト</button>
+    <button class="rbtn ghost" onclick="goHome()">最初の画面へ</button>
+  </div>
+
+  <div class="note">2026 厳選問題A 学科Ⅲ 構造 ＋ 類題 ／ 10問</div>
+</div>
+
+<script>
+const QUESTIONS = [
+ {id:"Q21", topic:"コンクリート", src:"厳選 問21", ans:3,
+  stem:"コンクリートの一般的な性質等に関する記述のうち、最も不適当なものはどれか。",
+  opts:[
+   "中性化速度は、圧縮強度が高いものほど小さい。",
+   "線膨張係数は、常温時には、鉄筋の線膨張係数とほぼ等しい。",
+   "長期許容圧縮応力度は、設計基準強度に2/3を乗じた値である。",
+   "圧縮強度は、水セメント比が小さいものほど高い。",
+   "ヤング係数は、圧縮強度が高いものほど大きい。"],
+  point:"長期許容圧縮応力度は設計基準強度Fcの1/3。2/3は短期許容応力度の値。"},
+ {id:"Q18", topic:"耐震設計", src:"厳選 問18", ans:3,
+  stem:"建築物の耐震設計に関する記述のうち、最も不適当なものはどれか。",
+  opts:[
+   "各階の剛性率は「当該階の層間変形角の逆数」を「全階の層間変形角の逆数の相加平均」で除した値で、小さいほどその階に損傷が集中する危険性が高い。",
+   "各階の偏心率は「重心と剛心との距離（偏心距離）」を「弾力半径」で除した値で、大きいほど特定の部材に損傷が集中する危険性が高い。",
+   "層間変形角は一次設計用地震力に対し原則1/200以内とするが、帳壁・内外装材・設備等に著しい損傷のおそれがないと確認された場合は1/100以内まで緩和できる。",
+   "一次設計では、存在期間中に数回程度遭遇する可能性の高い地震動に対し、小さなひび割れ等は許容するが修復せず使える耐震性を確認する。",
+   "固有周期は、剛性が同じであれば、質量が小さいほど短くなる。"],
+  point:"層間変形角の緩和は1/120以内まで。1/100は誤り。"},
+ {id:"Q17", topic:"鉄骨（接合）", src:"厳選 問17", ans:5,
+  stem:"鉄骨構造の接合に関する記述のうち、最も不適当なものはどれか。",
+  opts:[
+   "山形鋼や溝形鋼をガセットプレートの片側にのみ接合する場合は、偏心の影響を考慮して設計する。",
+   "片面溶接による部分溶込み溶接は、荷重の偏心による付加曲げの引張応力がルート部に作用する箇所には使用しない。",
+   "一つの継手に突合せ溶接と隅肉溶接を併用する場合、それぞれの応力は各溶接継目の許容耐力に応じて分担させることができる。",
+   "応力を伝達する重ね継手の溶接には、原則として、2列以上の隅肉溶接を用いる。",
+   "高力ボルトの接合において、ボルト孔の中心間の距離は、公称軸径の2倍以上とする。"],
+  point:"ボルトのピッチ（孔中心間距離）は公称軸径の2.5倍以上。2倍は誤り。"},
+ {id:"Q16", topic:"鉄骨構造", src:"厳選 問16", ans:5,
+  stem:"鉄骨構造に関する記述のうち、最も不適当なものはどれか。",
+  opts:[
+   "埋込み形式柱脚では、一般に、柱幅（見付け幅の大きいほう）の2倍以上の埋込み深さを確保する。",
+   "圧縮力を負担する構造耐力上主要な柱の有効細長比は、200以下としなければならない。",
+   "圧縮材の中間支点の補剛材は、圧縮力の2%以上の集中横力が補剛骨組に加わるものとして検討する。",
+   "H形鋼の梁では、一般に、せん断力の大部分をウェブで負担するように設計する。",
+   "筋かいの保有耐力接合は、筋かいが許容耐力を発揮する以前に座屈することを防止するために行う。"],
+  point:"保有耐力接合は、接合部が筋かい軸部の降伏（全強）より先に破断しないようにするための接合。座屈防止が目的ではない。"},
+ {id:"Q15", topic:"RC（配筋）", src:"厳選 問15", ans:4,
+  stem:"鉄筋コンクリート構造における配筋等に関する記述のうち、最も不適当なものはどれか。",
+  opts:[
+   "D35以上の異形鉄筋の継手には、原則として、重ね継手を用いない。",
+   "梁のせん断補強筋比は、0.2%以上とする。",
+   "柱の帯筋の末端部は、135度以上に折り曲げて定着させるか、又は相互に溶接する。",
+   "内柱において、梁降伏先行型の柱梁接合部に大梁主筋を通し配筋として定着する場合、大梁主筋の付着応力度の検討は不要である。",
+   "鉄筋の径（呼び名の数値）の差が7mmを超える場合には、原則として、ガス圧接継手を設けてはならない。"],
+  point:"通し配筋でも付着応力度の検討は必要。「不要」は誤り。"},
+ {id:"Q13", topic:"壁式RC", src:"厳選 問13", ans:1,
+  stem:"壁式鉄筋コンクリート造2階建ての住宅に関する記述のうち、最も不適当なものはどれか。",
+  opts:[
+   "長さが45cmの壁で、かつ、同一の実長を有する部分の高さが200cmである壁を、耐力壁として壁量計算に算入した。",
+   "基礎梁にプレキャスト鉄筋コンクリート部材を使用したので、部材相互を緊結し基礎を一体化した。",
+   "構造計算により構造耐力上安全と確認したので、壁梁は主筋にD13を用い、梁せいを40cmとした。",
+   "構造耐力上主要な部分のコンクリートの設計基準強度を、18N/mm²とした。",
+   "各階の階高を3mとしたので、耐力壁の厚さを15cmとした。"],
+  point:"耐力壁として算入するには、長さが高さの30%以上必要。200×0.3＝60cmで、45cm＜60cmなので算入できない。"},
+ {id:"Q12", topic:"木質（接合）", src:"厳選 問12", ans:4,
+  stem:"木質構造の接合に関する記述のうち、最も不適当なものはどれか。",
+  opts:[
+   "追掛け大栓継ぎは、断面が大きい梁・桁などの横架材を、材軸方向に継ぐ場合に用いられる。",
+   "接合部の木材の含水状態が、使用環境下で接合具に錆を生じさせるおそれがある場合には、耐用年数に応じた防錆処理を施す。",
+   "ボルト接合では、一般に、接合部が降伏する前に、木材に割裂・せん断・引張り等による脆性的破壊が生じないようにする。",
+   "木ねじ接合部は、ねじ部の存在により、一般に、釘接合部に比べて変形性能が大きい。",
+   "木材の比重は、一般に、接合部の接合耐力に影響を与える。"],
+  point:"木ねじ接合は釘接合に比べ変形性能（粘り）が小さく脆性的。大きいは誤り。"},
+ {id:"T01", topic:"荷重・外力", src:"類題（定番）", ans:5,
+  stem:"建築物に作用する荷重・外力に関する記述のうち、最も不適当なものはどれか。",
+  opts:[
+   "地震層せん断力係数Ciは、一般に、上階ほど大きくなる。",
+   "許容応力度計算に用いる標準せん断力係数C₀は、原則として、0.2以上とする。",
+   "風圧力の計算に用いる速度圧は、その地方の基準風速の2乗に比例する。",
+   "多雪区域における長期の積雪荷重は、短期の積雪荷重の0.7倍とする。",
+   "地震地域係数Zは、地域にかかわらず1.0である。"],
+  point:"Zは地域により0.7〜1.0で異なる。一律1.0は誤り。"},
+ {id:"T02", topic:"RC（各部）", src:"類題（定番）", ans:5,
+  stem:"鉄筋コンクリート構造の各部に関する記述のうち、最も不適当なものはどれか。",
+  opts:[
+   "柱の主筋は、4本以上とする。",
+   "帯筋比及びあばら筋比は、0.2%以上とする。",
+   "柱の小径は、構造耐力上主要な支点間の距離の1/15以上とする。",
+   "あばら筋（スターラップ）は、主としてせん断補強のために設ける。",
+   "現場打ち鉄筋コンクリートスラブの厚さは、一般に、6cm以上とする。"],
+  point:"RCスラブ厚は8cm以上（かつ短辺有効スパンの1/40以上）。6cmは誤り。"},
+ {id:"T03", topic:"木造（軸組）", src:"類題（定番）", ans:5,
+  stem:"木造建築物に関する記述のうち、最も不適当なものはどれか。",
+  opts:[
+   "火打材は、床組・小屋梁組の水平構面の変形を防ぐために用いる。",
+   "引張力を負担する筋かいは、厚さ1.5cm以上・幅9cm以上の木材とする。",
+   "筋かいには、原則として、欠込みをしてはならない。",
+   "筋かいプレートは、筋かいの端部を柱と横架材に緊結するために用いる。",
+   "圧縮力を負担する筋かいは、厚さ1.5cm以上・幅9cm以上の木材とする。"],
+  point:"圧縮筋かいは厚さ3cm以上・幅9cm以上。1.5cmは引張筋かいの規定で、圧縮には不足。"},
+];
+
+let idx=0, hits=0, locked=false;
+let ACTIVE=[]; let misses=[]; let storedWrong=[];
+const STORE_KEY="gensen_kozo_wrong";
+const $=id=>document.getElementById(id);
+const CIRC=["①","②","③","④","⑤"];
+
+async function loadStored(){
+  try{ const r=await window.storage.get(STORE_KEY); storedWrong=r&&r.value?JSON.parse(r.value):[]; }
+  catch(e){ storedWrong=[]; }
+  refreshRetryButton();
+}
+async function saveStored(){ try{ await window.storage.set(STORE_KEY, JSON.stringify(storedWrong)); }catch(e){} }
+function refreshRetryButton(){
+  const btn=$("retryStore");
+  if(storedWrong.length>0){ $("retryStoreSub").textContent="まだ間違いとして残っている "+storedWrong.length+" 問"; btn.style.display="flex"; }
+  else btn.style.display="none";
+}
+
+function startSet(list){
+  if(!list.length) return;
+  ACTIVE=list.slice(); idx=0; hits=0; locked=false; misses=[];
+  $("home").className="home hide"; $("result").className="result"; $("hdr").className="";
+  $("main").style.display="flex"; render(); window.scrollTo({top:0,behavior:"smooth"});
+}
+function startAll(){ startSet(QUESTIONS); }
+function startStoredWrong(){ startSet(QUESTIONS.filter(q=>storedWrong.includes(q.id))); }
+
+function render(){
+  const q=ACTIVE[idx]; locked=false;
+  $("topic").textContent=q.topic;
+  $("src").textContent=q.src;
+  $("stem").textContent=q.stem;
+  $("cur").textContent=idx+1; $("total").textContent=ACTIVE.length; $("hit").textContent=hits;
+  $("bar").style.width=((idx)/ACTIVE.length*100)+"%";
+  const box=$("opts"); box.innerHTML="";
+  q.opts.forEach((t,i)=>{
+    const b=document.createElement("button");
+    b.className="opt";
+    b.innerHTML='<span class="num">'+CIRC[i]+'</span><span>'+t+'</span>';
+    b.onclick=()=>answer(i+1);
+    box.appendChild(b);
+  });
+  $("fb").className="fb";
+  const nb=$("next"); nb.textContent="選んでください"; nb.disabled=true; nb.onclick=()=>{};
+}
+
+function answer(choice){
+  if(locked) return; locked=true;
+  const q=ACTIVE[idx];
+  const correct=(choice===q.ans);
+  if(correct) hits++; else misses.push(q);
+  $("hit").textContent=hits;
+
+  const btns=$("opts").querySelectorAll(".opt");
+  btns.forEach((b,i)=>{
+    b.disabled=true;
+    const n=i+1;
+    if(n===q.ans) b.classList.add("correct");
+    else if(n===choice) b.classList.add("wrong");
+    else b.classList.add("dim");
+  });
+
+  $("verdict").className="verdict "+(correct?"y":"n");
+  $("vtext").textContent=correct?"正解":"不正解";
+  $("ans").textContent=CIRC[q.ans-1];
+  $("point").textContent=q.point;
+  $("fb").className="fb show";
+
+  const nb=$("next"); nb.disabled=false;
+  nb.textContent=idx===ACTIVE.length-1?"結果を見る":"次の問題へ →";
+  nb.onclick=nextQ;
+}
+
+function nextQ(){
+  if(!locked) return;
+  if(idx===ACTIVE.length-1){ showResult(); return; }
+  idx++; render(); window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function showResult(){
+  $("main").style.display="none"; $("bar").style.width="100%";
+  const missIds=misses.map(m=>m.id);
+  ACTIVE.forEach(q=>{
+    const inStore=storedWrong.includes(q.id);
+    if(missIds.includes(q.id)){ if(!inStore) storedWrong.push(q.id); }
+    else if(inStore){ storedWrong=storedWrong.filter(x=>x!==q.id); }
+  });
+  saveStored(); refreshRetryButton();
+
+  const total=ACTIVE.length;
+  $("rScore").textContent=hits; $("rSub").textContent="／ "+total+" 問正解";
+  $("rPct").textContent="正答率 "+Math.round(hits/total*100)+"％";
+
+  if(misses.length===0){
+    $("reviewWrap").innerHTML='<h3 style="color:var(--ok)">全問正解！復習なし</h3>';
+    $("retryNow").style.display="none";
+  }else{
+    $("reviewWrap").innerHTML='<h3>復習リスト（間違えた問題）</h3><div id="missList"></div>';
+    const list=$("missList");
+    misses.forEach(m=>{
+      const d=document.createElement("div"); d.className="miss";
+      d.innerHTML='<span class="mno">'+m.src+'</span><span>'+m.stem+'<br><span style="color:var(--ink-soft)">→ 不適当は '+CIRC[m.ans-1]+'</span></span>';
+      list.appendChild(d);
+    });
+    $("retryNow").style.display="block";
+    $("retryNow").textContent="間違えた問題だけ再テスト（"+misses.length+"問）";
+  }
+  $("result").className="result show";
+}
+
+function retryMisses(){ startSet(misses); }
+function goHome(){
+  $("result").className="result"; $("main").style.display="none";
+  $("hdr").className="compact"; $("home").className="home";
+  refreshRetryButton(); window.scrollTo({top:0,behavior:"smooth"});
+}
+
+loadStored();
+</script>
+</body>
+</html>
