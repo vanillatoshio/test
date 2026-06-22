@@ -9,8 +9,7 @@
     --ink:#1b1830; --ink-soft:#494363;
     --paper:#edecf4; --paper-2:#f9f9fc; --line:#d4d2e2;
     --accent:#5a51a0; --accent-soft:#e7e3f4;
-    --amber:#b07d24; --amber-soft:#f3e9d6;
-    --teal:#2f7d72; --teal-soft:#dcefec;
+    --amber:#b07d24; --teal:#2f7d72;
     --mono:"SFMono-Regular",ui-monospace,"Roboto Mono",Menlo,monospace;
     --jp:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP",system-ui,sans-serif;
   }
@@ -20,17 +19,14 @@
     line-height:1.7;min-height:100dvh;display:flex;justify-content:center;}
   .app{width:100%;max-width:560px;min-height:100dvh;background:var(--paper-2);
     border-left:1px solid var(--line);border-right:1px solid var(--line);display:flex;flex-direction:column;}
-
   header{padding:24px 20px 18px;border-bottom:2px solid var(--ink);}
   .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--accent);text-transform:uppercase;}
   h1{font-size:21px;font-weight:800;letter-spacing:.02em;margin-top:4px;}
   .sub{font-size:13px;color:var(--ink-soft);margin-top:6px;}
-
   main{flex:1;padding:22px 20px 40px;}
   .group{margin-bottom:26px;}
   .glabel{font-family:var(--mono);font-size:11px;letter-spacing:.15em;color:var(--ink-soft);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
   .glabel::after{content:"";flex:1;height:1px;background:var(--line);}
-
   a.card{display:flex;align-items:center;gap:14px;text-decoration:none;color:inherit;
     border:1.5px solid var(--ink);background:var(--paper-2);border-radius:16px;padding:16px 18px;margin-bottom:12px;
     transition:transform .08s ease,background .15s ease;}
@@ -42,7 +38,6 @@
   .ttl{font-size:16px;font-weight:700;}
   .desc{font-size:12.5px;color:var(--ink-soft);margin-top:2px;}
   .arw{font-size:20px;color:var(--ink-soft);flex-shrink:0;}
-
   .note{font-size:11.5px;color:var(--ink-soft);text-align:center;padding:16px 20px 30px;font-family:var(--mono);line-height:1.8;}
 </style>
 </head>
@@ -53,69 +48,54 @@
     <h1>学習アプリ メニュー</h1>
     <p class="sub">タップして各トレーナーを開く。間違えた問題は各アプリ内で自動記録されます。</p>
   </header>
-
   <main>
     <div class="group">
       <div class="glabel">100問トレーナー（科目別）</div>
       <a class="card" href="kozo%20quiz.html">
         <span class="ic a">構造</span>
         <span class="txt"><span class="ttl">建築構造 100問</span><span class="desc">構造計算・強度・荷重・接合ほか</span></span>
-        <span class="arw">→</span>
+        <span class="arw">&rarr;</span>
       </a>
       <a class="card" href="sekou%20quiz.html">
         <span class="ic t">施工</span>
         <span class="txt"><span class="ttl">建築施工 100問</span><span class="desc">各種工事・施工管理・安全</span></span>
-        <span class="arw">→</span>
+        <span class="arw">&rarr;</span>
       </a>
       <a class="card" href="keikaku%20quiz.html">
         <span class="ic p">計画</span>
         <span class="txt"><span class="ttl">建築計画 100問</span><span class="desc">計画・環境・設備・各種建築物</span></span>
-        <span class="arw">→</span>
+        <span class="arw">&rarr;</span>
       </a>
     </div>
-
     <div class="group">
       <div class="glabel">厳選問題（〇✕）</div>
-      <a class="card" href="gensen_d_quiz.html">
-        <span class="ic p">D</span>
-        <span class="txt"><span class="ttl">厳選問題D 全76問</span><span class="desc">法規＋構造＋施工 まとめ</span></span>
-        <span class="arw">→</span>
-      </a>
-      <a class="card" href="gensen_b_quiz.html">
-        <span class="ic p">B</span>
-        <span class="txt"><span class="ttl">厳選問題B</span><span class="desc">構造・法規ほか</span></span>
-        <span class="arw">→</span>
-      </a>
-      <a class="card" href="gensen_b2_quiz.html">
+      <a class="card" href="gensen%20b2%20quiz.html">
         <span class="ic p">B2</span>
         <span class="txt"><span class="ttl">厳選問題B 第2弾 全27問</span><span class="desc">壁式RC・建築士法・避難・集合住宅ほか</span></span>
-        <span class="arw">→</span>
+        <span class="arw">&rarr;</span>
       </a>
       <a class="card" href="kozo%20gensen.html">
         <span class="ic a">5択</span>
         <span class="txt"><span class="ttl">構造 厳選（5択）</span><span class="desc">5肢択一タイプ</span></span>
-        <span class="arw">→</span>
+        <span class="arw">&rarr;</span>
       </a>
     </div>
-
     <div class="group">
       <div class="glabel">まとめノート暗記（〇✕）</div>
-      <a class="card" href="houki_note_quiz.html">
+      <a class="card" href="houki%20note%20quiz.html">
         <span class="ic p">法規</span>
         <span class="txt"><span class="ttl">法規まとめノート 全45問</span><span class="desc">容積・建蔽・斜線・内装・避難の重要数値</span></span>
-        <span class="arw">→</span>
+        <span class="arw">&rarr;</span>
       </a>
-      <a class="card" href="houki_kouzou_quiz.html">
+      <a class="card" href="houki%20kouzou%20quiz.html">
         <span class="ic p">厳選</span>
         <span class="txt"><span class="ttl">法規・構造 厳選25問</span><span class="desc">頻出ポイント〇✕</span></span>
-        <span class="arw">→</span>
+        <span class="arw">&rarr;</span>
       </a>
     </div>
   </main>
-
   <div class="note">
-    リンクが開かない場合は、ファイル名がGitHub上の名前と一致しているか確認してください。<br>
-    （例: kozo quiz.html ／ kozo_quiz.html）
+    リンクが開かない場合は、GitHub上の実際のファイル名と<br>このメニューのリンク名が一致しているか確認してください。
   </div>
 </div>
 </body>
