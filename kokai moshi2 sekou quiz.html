@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>公開模試② 施工 ○×トレーナー</title>
+<style>
+  :root{
+    --accent:#5a51a0;
+    --accent-light:#7a71c0;
+    --accent-bg:#f0eef9;
+    --maru:#2e9e6b;
+    --batsu:#d9534f;
+    --ink:#2a2733;
+    --muted:#8a8696;
+    --line:#e6e3f0;
+    --card:#ffffff;
+    --bg:#f6f5fb;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+    background:var(--bg);color:var(--ink);
+    line-height:1.7;-webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:560px;margin:0 auto;padding:16px 16px 48px;}
+
+  header.top{text-align:center;padding:24px 0 8px;}
+  header.top .eyebrow{font-size:12px;letter-spacing:.18em;color:var(--accent);font-weight:700;}
+  header.top h1{font-size:22px;margin:6px 0 2px;font-weight:800;}
+  header.top .sub{font-size:13px;color:var(--muted);}
+
+  .home-intro{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:16px 18px;margin:16px 0;font-size:13.5px;color:#55525f;
+  }
+  .home-intro b{color:var(--accent);}
+  .sec-grid{display:flex;flex-direction:column;gap:12px;margin-top:8px;}
+  .sec-btn{
+    display:flex;align-items:center;justify-content:space-between;
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:18px 20px;cursor:pointer;transition:.15s;text-align:left;width:100%;
+    font-family:inherit;color:inherit;
+  }
+  .sec-btn:active{transform:scale(.98);}
+  .sec-btn .name{font-size:17px;font-weight:700;}
+  .sec-btn .meta{font-size:12px;color:var(--muted);margin-top:2px;}
+  .sec-btn .count{
+    background:var(--accent-bg);color:var(--accent);font-weight:700;
+    border-radius:999px;padding:4px 12px;font-size:13px;white-space:nowrap;
+  }
+  .sec-btn.all{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .sec-btn.all .meta{color:#d7d2f0;}
+  .sec-btn.all .count{background:rgba(255,255,255,.22);color:#fff;}
+  .sec-btn.review{background:#fff7f6;border-color:#f3d6d4;}
+  .sec-btn.review .name{color:var(--batsu);}
+  .sec-btn.review .count{background:#fae3e2;color:var(--batsu);}
+  .sec-btn:disabled{opacity:.45;cursor:default;}
+
+  .bar{display:flex;align-items:center;gap:12px;margin:8px 0 14px;}
+  .back{
+    background:none;border:none;color:var(--accent);font-size:15px;font-weight:700;
+    cursor:pointer;font-family:inherit;padding:6px 0;
+  }
+  .progress{flex:1;height:8px;background:var(--line);border-radius:999px;overflow:hidden;}
+  .progress > i{display:block;height:100%;background:var(--accent);width:0;transition:.3s;}
+  .counter{font-size:13px;color:var(--muted);font-weight:700;white-space:nowrap;}
+
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:20px;
+    padding:22px 20px;box-shadow:0 6px 20px rgba(60,50,120,.05);
+  }
+  .src-tag{
+    display:inline-block;background:var(--accent-bg);color:var(--accent);
+    font-size:12px;font-weight:700;border-radius:8px;padding:3px 10px;margin-bottom:14px;
+  }
+  .q-text{font-size:17px;line-height:1.85;font-weight:500;}
+
+  .choices{display:flex;gap:14px;margin-top:22px;}
+  .choice{
+    flex:1;border:2px solid var(--line);background:var(--card);border-radius:16px;
+    padding:18px 0;font-size:30px;font-weight:800;cursor:pointer;font-family:inherit;
+    transition:.12s;color:var(--ink);
+  }
+  .choice:active{transform:scale(.96);}
+  .choice.maru{color:var(--maru);}
+  .choice.batsu{color:var(--batsu);}
+  .choice:disabled{cursor:default;}
+  .choice.sel-correct{border-color:var(--maru);background:#eef9f3;}
+  .choice.sel-wrong{border-color:var(--batsu);background:#fdeeed;}
+  .choice.dim{opacity:.35;}
+
+  .result{margin-top:18px;border-radius:16px;padding:16px 18px;display:none;}
+  .result.show{display:block;animation:fade .25s;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  .result.ok{background:#eef9f3;border:1px solid #bfe6d2;}
+  .result.ng{background:#fdeeed;border:1px solid #f3cecb;}
+  .result .verdict{font-weight:800;font-size:15px;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+  .result.ok .verdict{color:var(--maru);}
+  .result.ng .verdict{color:var(--batsu);}
+  .result .ans{font-size:13px;color:var(--muted);font-weight:700;}
+  .result .point{font-size:14.5px;line-height:1.8;margin-top:8px;color:#3d3a47;}
+  .result .point b{color:var(--accent);}
+
+  .next{
+    width:100%;margin-top:16px;background:var(--accent);color:#fff;border:none;
+    border-radius:14px;padding:16px;font-size:16px;font-weight:800;cursor:pointer;
+    font-family:inherit;display:none;
+  }
+  .next.show{display:block;}
+  .next:active{transform:scale(.98);}
+
+  .summary{text-align:center;padding-top:10px;}
+  .summary .ring{
+    width:150px;height:150px;border-radius:50%;margin:18px auto;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:conic-gradient(var(--accent) var(--deg,0deg),var(--line) 0);
+  }
+  .summary .ring .inner{
+    width:122px;height:122px;border-radius:50%;background:var(--card);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+  }
+  .summary .ring .pct{font-size:34px;font-weight:800;color:var(--accent);}
+  .summary .ring .lbl{font-size:12px;color:var(--muted);}
+  .summary h2{font-size:20px;margin:6px 0;}
+  .summary .score{font-size:15px;color:var(--muted);margin-bottom:18px;}
+  .summary .acts{display:flex;flex-direction:column;gap:10px;}
+  .summary .acts button{
+    border-radius:14px;padding:15px;font-size:15px;font-weight:800;cursor:pointer;
+    font-family:inherit;border:none;
+  }
+  .btn-primary{background:var(--accent);color:#fff;}
+  .btn-ghost{background:var(--card);color:var(--accent);border:1px solid var(--line)!important;}
+  .btn-review{background:#fff7f6;color:var(--batsu);border:1px solid #f3d6d4!important;}
+
+  .hidden{display:none!important;}
+  footer{text-align:center;font-size:11px;color:#b6b2c4;margin-top:28px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HOME -->
+  <section id="home">
+    <header class="top">
+      <div class="eyebrow">2級建築士 公開模擬試験③</div>
+      <h1>施工 ○× トレーナー</h1>
+      <div class="sub">学科Ⅳ 建築施工 ／ 全19問</div>
+    </header>
+    <div class="home-intro">
+      黄色マーク部分の選択肢を <b>○×形式</b> で出題します（全19問）。<br>
+      正解すると<b>ポイント解説</b>が表示されます。間違えた問題はその場で<b>解き直し</b>でき、正解するまで繰り返せます。
+    </div>
+    <div class="sec-grid" id="secGrid"></div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" class="hidden">
+    <div class="bar">
+      <button class="back" id="backBtn">← 戻る</button>
+      <div class="progress"><i id="prog"></i></div>
+      <div class="counter" id="counter">1/19</div>
+    </div>
+    <div class="card">
+      <span class="src-tag" id="srcTag">No.</span>
+      <div class="q-text" id="qText"></div>
+      <div class="choices">
+        <button class="choice maru" id="cMaru">○</button>
+        <button class="choice batsu" id="cBatsu">×</button>
+      </div>
+      <div class="result" id="result">
+        <div class="verdict" id="verdict"></div>
+        <div class="ans" id="ansLine"></div>
+        <div class="point" id="pointText"></div>
+      </div>
+    </div>
+    <button class="next" id="nextBtn">次の問題 →</button>
+  </section>
+
+  <!-- SUMMARY -->
+  <section id="summary" class="hidden">
+    <div class="summary">
+      <div class="ring" id="ring"><div class="inner">
+        <div class="pct" id="pct">0%</div><div class="lbl">正答率</div>
+      </div></div>
+      <h2 id="sumTitle">おつかれさまでした</h2>
+      <div class="score" id="sumScore"></div>
+      <div class="acts">
+        <button class="btn-review hidden" id="sumReview"></button>
+        <button class="btn-primary" id="sumRetry">最初から全19問</button>
+        <button class="btn-ghost" id="sumHome">ホームに戻る</button>
+      </div>
+    </div>
+  </section>
+
+  <footer>※ 日建学院 公開模擬試験③ 学科Ⅳ(建築施工) より作成（個人学習用）</footer>
+</div>
+
+<script>
+/* n:通し番号 / src:出典 / a:正解(true=○,false=×) / q:問題文 / p:ポイント */
+const QUESTIONS = [
+  {n:1, src:"No.2-3", a:false,
+   q:"押出成形セメント板を、屋内の平坦で乾燥した場所に、台木を用いて積み上げ高さを床面より1.5mにして保管した。",
+   p:"押出成形セメント板の積み置き高さは<b>1m以下</b>とする(JASS27)。「1.5m」は誤り。"},
+  {n:2, src:"No.3-1", a:false,
+   q:"吊り足場の作業床は、幅を40cm以上とし、床材間の隙間を3cm以下とした。",
+   p:"吊り足場の作業床は、幅40cm以上とし、かつ<b>隙間がないよう</b>にする(労働安全衛生規則)。「3cm以下」は通常の足場の基準で、吊り足場には不適当。"},
+  {n:3, src:"No.5-5", a:false,
+   q:"枠組足場の構面からの墜落防止措置として、交差筋かい及び高さ10cmの幅木を設置した。",
+   p:"枠組足場(構面)は、交さ筋かい＋高さ15cm以上40cm以下の下桟、もしくは高さ<b>15cm以上</b>の幅木等とする。「10cm」は不足で誤り。"},
+  {n:4, src:"No.6-1", a:false,
+   q:"布基礎の根入れ深さを、地面から200mmとした。",
+   p:"布基礎の根入れ深さは、地面より<b>240mm以上</b>とし、かつ凍結深度より深くする(木造住宅工事仕様書)。「200mm」は誤り。"},
+  {n:5, src:"No.7-1", a:false,
+   q:"場所打ちコンクリート杭の杭頭処理を、コンクリートの打込みから48時間経過した後に、平らにはつり取り所定の高さにそろえた。",
+   p:"場所打ちコンクリート杭の杭頭処理は、打込みから<b>14日程度</b>経過後に行う(公共建築工事標準仕様書)。「48時間」は早すぎて誤り。"},
+  {n:6, src:"No.7-2", a:true,
+   q:"リバース工法において、地下水位を確認し、水頭差を2m以上保つように掘進した。",
+   p:"正しい。リバース工法は孔内水の水頭圧で孔壁の崩壊を防ぐため、<b>水頭差を2m以上</b>保つよう注意する。"},
+  {n:7, src:"No.9-4", a:false,
+   q:"せき板・支保工・締付け金物などの材料の品質管理・検査は、搬入時に行うとともに、型枠の組立後にも行った。",
+   p:"材料の検査は<b>搬入時及び組立て中随時</b>に行う。組立後では不合格品を発見しても措置が困難なため、「組立後」では遅く不適当。"},
+  {n:8, src:"No.10-1", a:true,
+   q:"レディーミクストコンクリートの受入検査において、指定した空気量4.5%に対して3.0%であったので許容した。",
+   p:"正しい。空気量の許容差は<b>±1.5%</b>。4.5%なら3.0〜6.0%が許容範囲で、3.0%は許容できる。"},
+  {n:9, src:"No.10-2", a:false,
+   q:"調合管理強度の判定を、1回の試験における圧縮強度の平均値が調合管理強度の80%、かつ、3回の試験における圧縮強度の総平均値が調合管理強度以上であったので、合格とした。",
+   p:"1回の試験結果は調合管理強度の<b>85%以上</b>が必要(かつ3回平均が管理強度以上)。「80%」では不合格で誤り。"},
+  {n:10, src:"No.14-2", a:false,
+   q:"補強コンクリートブロック造工事において、ブロックはフェイスシェル厚の厚いほうを下にして積み上げた。",
+   p:"水平目地のモルタル塗布と組積の安定のため、原則<b>フェイスシェルの薄いほうを下</b>にして積む(JASS7)。「厚いほうを下」は誤り。"},
+  {n:11, src:"No.15-2", a:false,
+   q:"軒桁の継手は、小屋梁の掛かる位置とし、追掛け大栓継ぎとした。",
+   p:"軒桁の継手は、小屋梁の掛かる位置を<b>避け</b>、柱心より150mm内外持出した位置とする(JASS11)。「小屋梁の掛かる位置とし」は誤り。"},
+  {n:12, src:"No.16-1", a:false,
+   q:"接合金物の組合せ：「かど金物」＝通し柱と胴差しの取合い。",
+   p:"かど金物は<b>引張りを受ける柱の上下(柱と土台・軒桁等)</b>に用いる。通し柱と胴差しの取合いはかね折り金物・くら金物等。組合せは誤り。"},
+  {n:13, src:"No.16-4", a:true,
+   q:"接合金物の組合せ：「山形プレート」＝引張りを受ける柱と軒桁の接合。",
+   p:"正しい組合せ。山形プレートは<b>引張りを受ける柱の上下(柱と土台・軒桁等)</b>の接合に用いる。"},
+  {n:14, src:"No.17-3", a:true,
+   q:"塩化ビニル樹脂系ルーフィングシートを用いた防水工事において、平場のシートの重ね幅を縦横方向いずれも40mmとした。",
+   p:"正しい。塩ビ系シートの重ね幅は幅方向・長手方向とも<b>40mm以上</b>(端部は液状シール材でシール)。"},
+  {n:15, src:"No.17-4", a:false,
+   q:"ウレタンゴム系塗膜防水工事において、防水層の下地は、出隅は通りよく直角とし、入隅は通りよく45度の面取りとした。",
+   p:"塗膜防水の下地は、<b>出隅は45°の面取り、入隅は直角</b>とする。出隅・入隅が逆で誤り。"},
+  {n:16, src:"No.18-5", a:true,
+   q:"外壁乾式工法による石張り工事において、石材の最大寸法を、安全性・施工性等を考慮して、幅1,000mm・高さ800mmとした。",
+   p:"正しい。外壁乾式工法は<b>幅・高さ1,200mm以下、重量70kg以下</b>(かつ石材1枚の面積0.8m²以下)。幅1,000×高さ800mmは適合。"},
+  {n:17, src:"No.24-2", a:false,
+   q:"建築積算の用語：直接仮設とは、複数の工事種目に共通して使用する仮設をいう。",
+   p:"「複数の工事種目に共通」は<b>共通仮設</b>の説明。直接仮設は工事種目ごとの複数の工事科目に共通して使用する仮設(遣方・墨出し・足場等)。"},
+  {n:18, src:"No.24-3", a:true,
+   q:"建築積算の用語：計画数量とは、設計図書に基づいた施工計画により求めた数量をいう。",
+   p:"正しい。計画数量は施工計画により求めた数量で、<b>仮設・土工</b>の数量等が該当する(建築数量積算基準)。"},
+  {n:19, src:"No.25-4", a:false,
+   q:"民間建設工事標準請負契約約款(甲)：発注者は、工事中、出来形部分及び搬入した工事材料・建築設備の機器等に火災保険又は建設工事保険を付し、それらの証券の写しを受注者に提出する。",
+   p:"火災保険等を付すのは<b>受注者</b>で、証券の写しは<b>発注者</b>に提出する(第22条)。主体が逆で誤り。"},
+];
+
+const STORE_KEY = "kokai_moshi2_sekou_wrong";
+
+let pool = [];
+let idx = 0;
+let correctCount = 0;
+let sessionWrong = [];
+
+const el = id => document.getElementById(id);
+const homeSec = el("home"), quizSec = el("quiz"), sumSec = el("summary");
+
+async function getWrongSet(){
+  try{
+    const r = await window.storage.get(STORE_KEY);
+    if(r && r.value) return new Set(JSON.parse(r.value));
+  }catch(e){}
+  return new Set();
+}
+async function saveWrongSet(set){
+  try{ await window.storage.set(STORE_KEY, JSON.stringify([...set])); }catch(e){}
+}
+
+async function renderHome(){
+  const grid = el("secGrid");
+  grid.innerHTML = "";
+  const wrongSet = await getWrongSet();
+
+  grid.appendChild(makeSecBtn({
+    name:"全19問に挑戦", meta:"施工 ○×トレーニング",
+    count:QUESTIONS.length, cls:"all",
+    onClick:()=>startQuiz(QUESTIONS)
+  }));
+
+  const wrongQs = QUESTIONS.filter(q=>wrongSet.has(q.n));
+  const rev = makeSecBtn({
+    name:"間違い復習", meta:wrongQs.length? "間違えた問題だけ解き直す":"間違いはまだありません",
+    count:wrongQs.length, cls:"review",
+    onClick:()=>startQuiz(wrongQs)
+  });
+  if(!wrongQs.length) rev.disabled = true;
+  grid.appendChild(rev);
+}
+
+function makeSecBtn({name,meta,count,cls,onClick}){
+  const b = document.createElement("button");
+  b.className = "sec-btn "+cls;
+  b.innerHTML = `<span><span class="name">${name}</span><span class="meta">${meta}</span></span>
+                 <span class="count">${count}問</span>`;
+  b.addEventListener("click", onClick);
+  return b;
+}
+
+function startQuiz(set){
+  if(!set.length) return;
+  pool = [...set];
+  idx = 0; correctCount = 0; sessionWrong = [];
+  homeSec.classList.add("hidden");
+  sumSec.classList.add("hidden");
+  quizSec.classList.remove("hidden");
+  showQuestion();
+}
+
+function showQuestion(){
+  const q = pool[idx];
+  el("srcTag").textContent = `${q.src}　【施工】`;
+  el("qText").textContent = q.q;
+  el("counter").textContent = `${idx+1}/${pool.length}`;
+  el("prog").style.width = `${(idx/pool.length)*100}%`;
+
+  const cM = el("cMaru"), cB = el("cBatsu");
+  [cM,cB].forEach(c=>{
+    c.disabled = false;
+    c.classList.remove("sel-correct","sel-wrong","dim");
+  });
+  el("result").className = "result";
+  el("nextBtn").className = "next";
+
+  cM.onclick = ()=>answer(true);
+  cB.onclick = ()=>answer(false);
+}
+
+async function answer(choice){
+  const q = pool[idx];
+  const cM = el("cMaru"), cB = el("cBatsu");
+  cM.disabled = true; cB.disabled = true;
+
+  const isCorrect = (choice === q.a);
+  const chosenEl = choice ? cM : cB;
+  const otherEl  = choice ? cB : cM;
+
+  if(isCorrect){
+    chosenEl.classList.add("sel-correct");
+    otherEl.classList.add("dim");
+    correctCount++;
+  }else{
+    chosenEl.classList.add("sel-wrong");
+    (q.a ? cM : cB).classList.add("sel-correct");
+    sessionWrong.push(q.n);
+  }
+
+  const res = el("result");
+  res.classList.add("show", isCorrect ? "ok":"ng");
+  el("verdict").textContent = isCorrect ? "正解！" : "不正解";
+  el("ansLine").textContent = `正解は「${q.a ? "○":"×"}」`;
+  el("pointText").innerHTML = `<b>ポイント：</b>${q.p}`;
+
+  el("prog").style.width = `${((idx+1)/pool.length)*100}%`;
+
+  const wrongSet = await getWrongSet();
+  if(isCorrect) wrongSet.delete(q.n);
+  else wrongSet.add(q.n);
+  await saveWrongSet(wrongSet);
+
+  const nb = el("nextBtn");
+  nb.classList.add("show");
+  nb.textContent = (idx+1 < pool.length) ? "次の問題 →" : "結果を見る →";
+  nb.onclick = nextQuestion;
+}
+
+function nextQuestion(){
+  idx++;
+  if(idx < pool.length) showQuestion();
+  else showSummary();
+}
+
+async function showSummary(){
+  quizSec.classList.add("hidden");
+  sumSec.classList.remove("hidden");
+
+  const total = pool.length;
+  const pct = Math.round((correctCount/total)*100);
+  el("pct").textContent = pct+"%";
+  el("ring").style.setProperty("--deg", (pct*3.6)+"deg");
+  el("sumScore").textContent = `${total}問中 ${correctCount}問 正解`;
+
+  const isReviewRound = pool.length < QUESTIONS.length;
+  let title = "おつかれさまでした";
+  if(pct===100) title = isReviewRound ? "間違いをすべてクリア！🎯" : "全問正解！ 完璧です🎯";
+  else if(pct>=80) title = "good! あと少し";
+  else if(pct>=50) title = "復習で固めましょう";
+  else title = "間違いを見直そう";
+  el("sumTitle").textContent = title;
+
+  const wrongQs = pool.filter(q => sessionWrong.includes(q.n));
+  const rb = el("sumReview");
+  if(wrongQs.length){
+    rb.classList.remove("hidden");
+    rb.textContent = `間違えた${wrongQs.length}問を解き直す`;
+    rb.onclick = ()=>startQuiz(wrongQs);
+  }else{
+    rb.classList.add("hidden");
+  }
+
+  el("sumRetry").textContent = "最初から全19問";
+  el("sumRetry").onclick = ()=>startQuiz(QUESTIONS);
+  el("sumHome").onclick = goHome;
+}
+
+function goHome(){
+  quizSec.classList.add("hidden");
+  sumSec.classList.add("hidden");
+  homeSec.classList.remove("hidden");
+  renderHome();
+}
+el("backBtn").addEventListener("click", goHome);
+
+renderHome();
+</script>
+</body>
+</html>

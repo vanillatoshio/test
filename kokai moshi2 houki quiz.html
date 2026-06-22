@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>公開模試② 法規 ○×トレーナー</title>
+<style>
+  :root{
+    --accent:#5a51a0;
+    --accent-light:#7a71c0;
+    --accent-bg:#f0eef9;
+    --maru:#2e9e6b;
+    --batsu:#d9534f;
+    --ink:#2a2733;
+    --muted:#8a8696;
+    --line:#e6e3f0;
+    --card:#ffffff;
+    --bg:#f6f5fb;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+    background:var(--bg);color:var(--ink);
+    line-height:1.7;-webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:560px;margin:0 auto;padding:16px 16px 48px;}
+
+  header.top{text-align:center;padding:24px 0 8px;}
+  header.top .eyebrow{font-size:12px;letter-spacing:.18em;color:var(--accent);font-weight:700;}
+  header.top h1{font-size:22px;margin:6px 0 2px;font-weight:800;}
+  header.top .sub{font-size:13px;color:var(--muted);}
+
+  .home-intro{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:16px 18px;margin:16px 0;font-size:13.5px;color:#55525f;
+  }
+  .home-intro b{color:var(--accent);}
+  .sec-grid{display:flex;flex-direction:column;gap:12px;margin-top:8px;}
+  .sec-btn{
+    display:flex;align-items:center;justify-content:space-between;
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:18px 20px;cursor:pointer;transition:.15s;text-align:left;width:100%;
+    font-family:inherit;color:inherit;
+  }
+  .sec-btn:active{transform:scale(.98);}
+  .sec-btn .name{font-size:17px;font-weight:700;}
+  .sec-btn .meta{font-size:12px;color:var(--muted);margin-top:2px;}
+  .sec-btn .count{
+    background:var(--accent-bg);color:var(--accent);font-weight:700;
+    border-radius:999px;padding:4px 12px;font-size:13px;white-space:nowrap;
+  }
+  .sec-btn.all{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .sec-btn.all .meta{color:#d7d2f0;}
+  .sec-btn.all .count{background:rgba(255,255,255,.22);color:#fff;}
+  .sec-btn.review{background:#fff7f6;border-color:#f3d6d4;}
+  .sec-btn.review .name{color:var(--batsu);}
+  .sec-btn.review .count{background:#fae3e2;color:var(--batsu);}
+  .sec-btn:disabled{opacity:.45;cursor:default;}
+
+  .bar{display:flex;align-items:center;gap:12px;margin:8px 0 14px;}
+  .back{
+    background:none;border:none;color:var(--accent);font-size:15px;font-weight:700;
+    cursor:pointer;font-family:inherit;padding:6px 0;
+  }
+  .progress{flex:1;height:8px;background:var(--line);border-radius:999px;overflow:hidden;}
+  .progress > i{display:block;height:100%;background:var(--accent);width:0;transition:.3s;}
+  .counter{font-size:13px;color:var(--muted);font-weight:700;white-space:nowrap;}
+
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:20px;
+    padding:22px 20px;box-shadow:0 6px 20px rgba(60,50,120,.05);
+  }
+  .src-tag{
+    display:inline-block;background:var(--accent-bg);color:var(--accent);
+    font-size:12px;font-weight:700;border-radius:8px;padding:3px 10px;margin-bottom:14px;
+  }
+  .q-text{font-size:17px;line-height:1.85;font-weight:500;}
+
+  .choices{display:flex;gap:14px;margin-top:22px;}
+  .choice{
+    flex:1;border:2px solid var(--line);background:var(--card);border-radius:16px;
+    padding:18px 0;font-size:30px;font-weight:800;cursor:pointer;font-family:inherit;
+    transition:.12s;color:var(--ink);
+  }
+  .choice:active{transform:scale(.96);}
+  .choice.maru{color:var(--maru);}
+  .choice.batsu{color:var(--batsu);}
+  .choice:disabled{cursor:default;}
+  .choice.sel-correct{border-color:var(--maru);background:#eef9f3;}
+  .choice.sel-wrong{border-color:var(--batsu);background:#fdeeed;}
+  .choice.dim{opacity:.35;}
+
+  .result{margin-top:18px;border-radius:16px;padding:16px 18px;display:none;}
+  .result.show{display:block;animation:fade .25s;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  .result.ok{background:#eef9f3;border:1px solid #bfe6d2;}
+  .result.ng{background:#fdeeed;border:1px solid #f3cecb;}
+  .result .verdict{font-weight:800;font-size:15px;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+  .result.ok .verdict{color:var(--maru);}
+  .result.ng .verdict{color:var(--batsu);}
+  .result .ans{font-size:13px;color:var(--muted);font-weight:700;}
+  .result .point{font-size:14.5px;line-height:1.8;margin-top:8px;color:#3d3a47;}
+  .result .point b{color:var(--accent);}
+
+  .next{
+    width:100%;margin-top:16px;background:var(--accent);color:#fff;border:none;
+    border-radius:14px;padding:16px;font-size:16px;font-weight:800;cursor:pointer;
+    font-family:inherit;display:none;
+  }
+  .next.show{display:block;}
+  .next:active{transform:scale(.98);}
+
+  .summary{text-align:center;padding-top:10px;}
+  .summary .ring{
+    width:150px;height:150px;border-radius:50%;margin:18px auto;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:conic-gradient(var(--accent) var(--deg,0deg),var(--line) 0);
+  }
+  .summary .ring .inner{
+    width:122px;height:122px;border-radius:50%;background:var(--card);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+  }
+  .summary .ring .pct{font-size:34px;font-weight:800;color:var(--accent);}
+  .summary .ring .lbl{font-size:12px;color:var(--muted);}
+  .summary h2{font-size:20px;margin:6px 0;}
+  .summary .score{font-size:15px;color:var(--muted);margin-bottom:18px;}
+  .summary .acts{display:flex;flex-direction:column;gap:10px;}
+  .summary .acts button{
+    border-radius:14px;padding:15px;font-size:15px;font-weight:800;cursor:pointer;
+    font-family:inherit;border:none;
+  }
+  .btn-primary{background:var(--accent);color:#fff;}
+  .btn-ghost{background:var(--card);color:var(--accent);border:1px solid var(--line)!important;}
+  .btn-review{background:#fff7f6;color:var(--batsu);border:1px solid #f3d6d4!important;}
+
+  .hidden{display:none!important;}
+  footer{text-align:center;font-size:11px;color:#b6b2c4;margin-top:28px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HOME -->
+  <section id="home">
+    <header class="top">
+      <div class="eyebrow">2級建築士 公開模擬試験③</div>
+      <h1>法規 ○× トレーナー</h1>
+      <div class="sub">学科Ⅱ 建築法規 ／ 全19問</div>
+    </header>
+    <div class="home-intro">
+      黄色マーク部分の選択肢を <b>○×形式</b> で出題します（全19問）。<br>
+      正解すると<b>ポイント解説</b>が表示されます。間違えた問題はその場で<b>解き直し</b>でき、正解するまで繰り返せます。
+    </div>
+    <div class="sec-grid" id="secGrid"></div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" class="hidden">
+    <div class="bar">
+      <button class="back" id="backBtn">← 戻る</button>
+      <div class="progress"><i id="prog"></i></div>
+      <div class="counter" id="counter">1/19</div>
+    </div>
+    <div class="card">
+      <span class="src-tag" id="srcTag">No.</span>
+      <div class="q-text" id="qText"></div>
+      <div class="choices">
+        <button class="choice maru" id="cMaru">○</button>
+        <button class="choice batsu" id="cBatsu">×</button>
+      </div>
+      <div class="result" id="result">
+        <div class="verdict" id="verdict"></div>
+        <div class="ans" id="ansLine"></div>
+        <div class="point" id="pointText"></div>
+      </div>
+    </div>
+    <button class="next" id="nextBtn">次の問題 →</button>
+  </section>
+
+  <!-- SUMMARY -->
+  <section id="summary" class="hidden">
+    <div class="summary">
+      <div class="ring" id="ring"><div class="inner">
+        <div class="pct" id="pct">0%</div><div class="lbl">正答率</div>
+      </div></div>
+      <h2 id="sumTitle">おつかれさまでした</h2>
+      <div class="score" id="sumScore"></div>
+      <div class="acts">
+        <button class="btn-review hidden" id="sumReview"></button>
+        <button class="btn-primary" id="sumRetry">最初から全19問</button>
+        <button class="btn-ghost" id="sumHome">ホームに戻る</button>
+      </div>
+    </div>
+  </section>
+
+  <footer>※ 日建学院 公開模擬試験③ 学科Ⅱ(建築法規) より作成（個人学習用）</footer>
+</div>
+
+<script>
+/* n:通し番号 / src:出典 / a:正解(true=○,false=×) / q:問題文 / p:ポイント */
+const QUESTIONS = [
+  {n:1, src:"No.2-1", a:true,
+   q:"木造2階建て、延べ面積100m²の一戸建て住宅の新築は、全国どの場所においても、建築確認(確認済証の交付)を受ける必要がある。",
+   p:"正しい。木造2階建ては<b>法6条1項二号</b>に該当し、全国どこでも建築確認が必要。"},
+  {n:2, src:"No.2-2", a:false,
+   q:"鉄筋コンクリート造、高さ4mの記念塔の築造は、全国どの場所においても、建築確認(確認済証の交付)を受ける必要がある。",
+   p:"記念塔(工作物)は高さが<b>4mを「超える」</b>ものが確認対象(法88条1項・令138条1項二号)。高さ4mちょうどは対象外で確認不要。"},
+  {n:3, src:"No.3-2", a:false,
+   q:"特定行政庁は、所定の建築物の構造について劣化が生じ、そのまま放置すれば保安上危険となるおそれがあると認める場合、当該建築物の所有者等に対し、維持保全に必要な措置をとることを「勧告」することができる。",
+   p:"この場合(法9条の4)に特定行政庁が行えるのは<b>「指導及び助言」</b>。「勧告」は著しく保安上危険・衛生上有害な場合(法10条)。本問は勧告ではない。"},
+  {n:4, src:"No.3-3", a:true,
+   q:"法6条1項の確認申請書に添える床面積求積図には、床面積の求積に必要な建築物の各部分の寸法及び算式を明示しなければならない。",
+   p:"正しい(規則1条の3)。床面積求積図には各部分の<b>寸法・算式の明示</b>が必要。"},
+  {n:5, src:"No.6-2", a:true,
+   q:"木造一戸建て住宅において、布基礎の立上り部分の鉄筋に対するコンクリートのかぶり厚さを4cmとした。(構造計算等による安全確認は行わない)",
+   p:"正しい(令79条1項)。布基礎の立上り部分のかぶり厚さは<b>4cm以上</b>。4cmは適合する。"},
+  {n:6, src:"No.8-1", a:false,
+   q:"密実な砂質地盤の短期に生ずる力に対する許容応力度は、国土交通大臣が定める方法による地盤調査を行わない場合、200kN/m²としなければならない。",
+   p:"200kN/m²は「長期」の値(令93条表)。<b>短期は長期の2倍＝400kN/m²</b>とすることができる。"},
+  {n:7, src:"No.8-3", a:true,
+   q:"風圧力の計算に当たり、建築物に近接してその建築物を風の方向に対して有効にさえぎる他の建築物がある場合、その方向における速度圧は、所定の数値の1/2まで減らすことができる。",
+   p:"正しい(令87条3項)。有効にさえぎる他の建築物等がある場合、その方向の速度圧は<b>1/2まで低減</b>できる。"},
+  {n:8, src:"No.9-1", a:true,
+   q:"防火壁に設ける開口部の幅及び高さは、原則として、それぞれ2.5m以下とし、かつ、これに特定防火設備で所定の構造であるものを設けなければならない。",
+   p:"正しい(令113条1項四号)。開口部は<b>幅・高さ各2.5m以下＋特定防火設備</b>。"},
+  {n:9, src:"No.9-2", a:false,
+   q:"2階建ての建築物(各階の床面積が100m²)で、1階が飲食店、2階が事務所であるものは、飲食店の部分とその他の部分とを防火区画(異種用途区画)しなければならない。",
+   p:"この規模の飲食店は法27条の対象とならないため、<b>異種用途区画(令112条18項)は不要</b>。「しなければならない」が誤り。"},
+  {n:10, src:"No.10-1", a:true,
+   q:"木造2階建て(主要構造部を準耐火構造)、延べ面積800m²(2階の宿泊室の床面積250m²)の旅館で、2階から1階又は地上に通ずる2以上の直通階段を設けなければならない。",
+   p:"正しい(令121条1項五号・2項)。宿泊室の床面積合計が基準を超えるため、<b>2以上の直通階段</b>が必要。"},
+  {n:11, src:"No.10-2", a:false,
+   q:"上記の旅館で、宿泊室及び主たる廊下・階段等の壁・天井の室内に面する仕上げを準不燃材料とした場合、各宿泊室から直通階段の一に至る歩行距離を50m以下としなければならない。",
+   p:"主要構造部が準耐火構造で内装を準不燃とした場合、令120条2項により歩行距離の上限に<b>＋10m</b>される。50m+10m＝<b>60m以下</b>でよく、「50m以下」に限定する点が誤り。"},
+  {n:12, src:"No.12-ロ", a:false,
+   q:"特定行政庁は、特殊建築物等の用途・規模・位置の特殊性により避難・通行の安全の目的を達成困難と認めるときは、条例で、建築物の敷地が道路に接する部分の長さに関し必要な制限を付加することができる。",
+   p:"接道部分の長さ等の制限を条例で付加できるのは<b>「地方公共団体」</b>(法43条3項)。「特定行政庁」ではない。"},
+  {n:13, src:"No.13-3", a:false,
+   q:"第二種住居地域内において、「客にダンスをさせ、かつ、客に飲食をさせる営業(客の接待をするものを除く。)を営む施設」(2階建て・延べ面積300m²)は、新築することができる。",
+   p:"法別表第2(へ)項二号・令130条の7の3。当該営業施設は<b>第二種住居地域では新築できない</b>(近隣商業・商業・準工業地域等で可)。"},
+  {n:14, src:"No.19-2", a:false,
+   q:"準防火地域内にある地上3階建て、延べ面積300m²の診療所(患者の収容施設がないもの)は、耐火建築物又はこれと同等以上の延焼防止時間となる建築物としなければならない。",
+   p:"準防火地域・地上3階建て・延べ1,500m²以下は、<b>準耐火建築物</b>(又は同等以上の延焼防止建築物)でよい(法61条・令136条の2第二号)。「耐火建築物」とする点が誤り。"},
+  {n:15, src:"No.23-1", a:true,
+   q:"バリアフリー法上、移動等円滑化経路を構成する廊下の幅は、120cm以上でなければならない。",
+   p:"正しい(令19条2項三号イ)。移動等円滑化経路の廊下幅は<b>120cm以上</b>。"},
+  {n:16, src:"No.23-2", a:false,
+   q:"バリアフリー法上、建築主等は、床面積30m²の公衆便所を改築するとき、当該建築物を建築物移動等円滑化基準に適合させなければならない。",
+   p:"公衆便所は<b>床面積の合計50m²以上</b>が適合義務の対象(令9条)。30m²は規模に該当せず、適合義務はない。"},
+  {n:17, src:"No.24-3", a:false,
+   q:"品確法上、住宅新築請負契約において、請負人は引渡しから10年間、構造耐力上主要な部分等の瑕疵について担保責任を負うが、特約によりその期間を短縮することができる。",
+   p:"注文者に不利な特約は無効で、<b>短縮はできない</b>(品確法94条)。なお伸長は20年以内まで可(同法97条)。"},
+  {n:18, src:"No.25-2", a:true,
+   q:"景観法上、景観計画区域内において建築物の建築等をしようとする者は、あらかじめ、行為の種類・場所・設計又は施行方法・着手予定日等を景観行政団体の長に届け出なければならない場合がある。",
+   p:"正しい(景観法16条1項)。景観計画区域内の建築等は、原則あらかじめ<b>景観行政団体の長へ届出</b>が必要。"},
+  {n:19, src:"No.25-5", a:false,
+   q:"都市計画法上、市街化調整区域内で、林業を営む者の居住の用に供する建築物の建築の用に供する目的で行う開発行為をしようとする者は、都道府県知事等の許可を受けなければならない。",
+   p:"農林漁業を営む者の居住用建築物等のための開発行為は、<b>開発許可不要</b>(都計法29条1項二号)。「許可必要」とする点が誤り。"},
+];
+
+const STORE_KEY = "kokai_moshi2_houki_wrong";
+
+let pool = [];
+let idx = 0;
+let correctCount = 0;
+let sessionWrong = [];
+
+const el = id => document.getElementById(id);
+const homeSec = el("home"), quizSec = el("quiz"), sumSec = el("summary");
+
+async function getWrongSet(){
+  try{
+    const r = await window.storage.get(STORE_KEY);
+    if(r && r.value) return new Set(JSON.parse(r.value));
+  }catch(e){}
+  return new Set();
+}
+async function saveWrongSet(set){
+  try{ await window.storage.set(STORE_KEY, JSON.stringify([...set])); }catch(e){}
+}
+
+async function renderHome(){
+  const grid = el("secGrid");
+  grid.innerHTML = "";
+  const wrongSet = await getWrongSet();
+
+  grid.appendChild(makeSecBtn({
+    name:"全19問に挑戦", meta:"法規 ○×トレーニング",
+    count:QUESTIONS.length, cls:"all",
+    onClick:()=>startQuiz(QUESTIONS)
+  }));
+
+  const wrongQs = QUESTIONS.filter(q=>wrongSet.has(q.n));
+  const rev = makeSecBtn({
+    name:"間違い復習", meta:wrongQs.length? "間違えた問題だけ解き直す":"間違いはまだありません",
+    count:wrongQs.length, cls:"review",
+    onClick:()=>startQuiz(wrongQs)
+  });
+  if(!wrongQs.length) rev.disabled = true;
+  grid.appendChild(rev);
+}
+
+function makeSecBtn({name,meta,count,cls,onClick}){
+  const b = document.createElement("button");
+  b.className = "sec-btn "+cls;
+  b.innerHTML = `<span><span class="name">${name}</span><span class="meta">${meta}</span></span>
+                 <span class="count">${count}問</span>`;
+  b.addEventListener("click", onClick);
+  return b;
+}
+
+function startQuiz(set){
+  if(!set.length) return;
+  pool = [...set];
+  idx = 0; correctCount = 0; sessionWrong = [];
+  homeSec.classList.add("hidden");
+  sumSec.classList.add("hidden");
+  quizSec.classList.remove("hidden");
+  showQuestion();
+}
+
+function showQuestion(){
+  const q = pool[idx];
+  el("srcTag").textContent = `${q.src}　【法規】`;
+  el("qText").textContent = q.q;
+  el("counter").textContent = `${idx+1}/${pool.length}`;
+  el("prog").style.width = `${(idx/pool.length)*100}%`;
+
+  const cM = el("cMaru"), cB = el("cBatsu");
+  [cM,cB].forEach(c=>{
+    c.disabled = false;
+    c.classList.remove("sel-correct","sel-wrong","dim");
+  });
+  el("result").className = "result";
+  el("nextBtn").className = "next";
+
+  cM.onclick = ()=>answer(true);
+  cB.onclick = ()=>answer(false);
+}
+
+async function answer(choice){
+  const q = pool[idx];
+  const cM = el("cMaru"), cB = el("cBatsu");
+  cM.disabled = true; cB.disabled = true;
+
+  const isCorrect = (choice === q.a);
+  const chosenEl = choice ? cM : cB;
+  const otherEl  = choice ? cB : cM;
+
+  if(isCorrect){
+    chosenEl.classList.add("sel-correct");
+    otherEl.classList.add("dim");
+    correctCount++;
+  }else{
+    chosenEl.classList.add("sel-wrong");
+    (q.a ? cM : cB).classList.add("sel-correct");
+    sessionWrong.push(q.n);
+  }
+
+  const res = el("result");
+  res.classList.add("show", isCorrect ? "ok":"ng");
+  el("verdict").textContent = isCorrect ? "正解！" : "不正解";
+  el("ansLine").textContent = `正解は「${q.a ? "○":"×"}」`;
+  el("pointText").innerHTML = `<b>ポイント：</b>${q.p}`;
+
+  el("prog").style.width = `${((idx+1)/pool.length)*100}%`;
+
+  const wrongSet = await getWrongSet();
+  if(isCorrect) wrongSet.delete(q.n);
+  else wrongSet.add(q.n);
+  await saveWrongSet(wrongSet);
+
+  const nb = el("nextBtn");
+  nb.classList.add("show");
+  nb.textContent = (idx+1 < pool.length) ? "次の問題 →" : "結果を見る →";
+  nb.onclick = nextQuestion;
+}
+
+function nextQuestion(){
+  idx++;
+  if(idx < pool.length) showQuestion();
+  else showSummary();
+}
+
+async function showSummary(){
+  quizSec.classList.add("hidden");
+  sumSec.classList.remove("hidden");
+
+  const total = pool.length;
+  const pct = Math.round((correctCount/total)*100);
+  el("pct").textContent = pct+"%";
+  el("ring").style.setProperty("--deg", (pct*3.6)+"deg");
+  el("sumScore").textContent = `${total}問中 ${correctCount}問 正解`;
+
+  const isReviewRound = pool.length < QUESTIONS.length;
+  let title = "おつかれさまでした";
+  if(pct===100) title = isReviewRound ? "間違いをすべてクリア！🎯" : "全問正解！ 完璧です🎯";
+  else if(pct>=80) title = "good! あと少し";
+  else if(pct>=50) title = "復習で固めましょう";
+  else title = "間違いを見直そう";
+  el("sumTitle").textContent = title;
+
+  const wrongQs = pool.filter(q => sessionWrong.includes(q.n));
+  const rb = el("sumReview");
+  if(wrongQs.length){
+    rb.classList.remove("hidden");
+    rb.textContent = `間違えた${wrongQs.length}問を解き直す`;
+    rb.onclick = ()=>startQuiz(wrongQs);
+  }else{
+    rb.classList.add("hidden");
+  }
+
+  el("sumRetry").textContent = "最初から全19問";
+  el("sumRetry").onclick = ()=>startQuiz(QUESTIONS);
+  el("sumHome").onclick = goHome;
+}
+
+function goHome(){
+  quizSec.classList.add("hidden");
+  sumSec.classList.add("hidden");
+  homeSec.classList.remove("hidden");
+  renderHome();
+}
+el("backBtn").addEventListener("click", goHome);
+
+renderHome();
+</script>
+</body>
+</html>
