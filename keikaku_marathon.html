@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>計画 ○×マラソン｜2級建築士 マラソンテスト</title>
+<style>
+  :root{
+    --accent:#2f8f5b;
+    --accent-light:#46a771;
+    --accent-bg:#e9f6ee;
+    --maru:#2e9e6b;
+    --batsu:#d9534f;
+    --ink:#2a2733;
+    --muted:#85889a;
+    --line:#e2e6ef;
+    --card:#ffffff;
+    --bg:#f5f7fb;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+    background:var(--bg);color:var(--ink);
+    line-height:1.7;-webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:560px;margin:0 auto;padding:16px 16px 48px;}
+
+  header.top{text-align:center;padding:24px 0 8px;}
+  header.top .eyebrow{font-size:12px;letter-spacing:.18em;color:var(--accent);font-weight:700;}
+  header.top h1{font-size:22px;margin:6px 0 2px;font-weight:800;}
+  header.top .sub{font-size:13px;color:var(--muted);}
+
+  .home-intro{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:16px 18px;margin:16px 0;font-size:13.5px;color:#55525f;
+  }
+  .home-intro b{color:var(--accent);}
+  .home-nav{display:flex;justify-content:center;margin:4px 0 4px;}
+  .home-nav a{font-size:13px;color:var(--accent);font-weight:700;text-decoration:none;}
+  .sec-grid{display:flex;flex-direction:column;gap:12px;margin-top:8px;}
+  .sec-btn{
+    display:flex;align-items:center;justify-content:space-between;
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:18px 20px;cursor:pointer;transition:.15s;text-align:left;width:100%;
+    font-family:inherit;color:inherit;
+  }
+  .sec-btn:active{transform:scale(.98);}
+  .sec-btn .name{font-size:17px;font-weight:700;}
+  .sec-btn .meta{font-size:12px;color:var(--muted);margin-top:2px;}
+  .sec-btn .count{
+    background:var(--accent-bg);color:var(--accent);font-weight:700;
+    border-radius:999px;padding:4px 12px;font-size:13px;white-space:nowrap;
+  }
+  .sec-btn.all{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .sec-btn.all .meta{color:rgba(255,255,255,.8);}
+  .sec-btn.all .count{background:rgba(255,255,255,.22);color:#fff;}
+  .sec-btn.review{background:#fff7f6;border-color:#f3d6d4;}
+  .sec-btn.review .name{color:var(--batsu);}
+  .sec-btn.review .count{background:#fae3e2;color:var(--batsu);}
+  .sec-btn:disabled{opacity:.45;cursor:default;}
+  .cat-head{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.05em;margin:14px 2px 2px;}
+
+  .bar{display:flex;align-items:center;gap:12px;margin:8px 0 14px;}
+  .back{
+    background:none;border:none;color:var(--accent);font-size:15px;font-weight:700;
+    cursor:pointer;font-family:inherit;padding:6px 0;
+  }
+  .progress{flex:1;height:8px;background:var(--line);border-radius:999px;overflow:hidden;}
+  .progress > i{display:block;height:100%;background:var(--accent);width:0;transition:.3s;}
+  .counter{font-size:13px;color:var(--muted);font-weight:700;white-space:nowrap;}
+
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:20px;
+    padding:22px 20px;box-shadow:0 6px 20px rgba(40,70,140,.05);
+  }
+  .src-tag{
+    display:inline-block;background:var(--accent-bg);color:var(--accent);
+    font-size:12px;font-weight:700;border-radius:8px;padding:3px 10px;margin-bottom:14px;
+  }
+  .q-text{font-size:16.5px;line-height:1.9;font-weight:500;}
+
+  .choices{display:flex;gap:14px;margin-top:22px;}
+  .choice{
+    flex:1;border:2px solid var(--line);background:var(--card);border-radius:16px;
+    padding:18px 0;font-size:30px;font-weight:800;cursor:pointer;font-family:inherit;
+    transition:.12s;color:var(--ink);
+  }
+  .choice:active{transform:scale(.96);}
+  .choice.maru{color:var(--maru);}
+  .choice.batsu{color:var(--batsu);}
+  .choice:disabled{cursor:default;}
+  .choice.sel-correct{border-color:var(--maru);background:#eef9f3;}
+  .choice.sel-wrong{border-color:var(--batsu);background:#fdeeed;}
+  .choice.dim{opacity:.35;}
+
+  .result{margin-top:18px;border-radius:16px;padding:16px 18px;display:none;}
+  .result.show{display:block;animation:fade .25s;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  .result.ok{background:#eef9f3;border:1px solid #bfe6d2;}
+  .result.ng{background:#fdeeed;border:1px solid #f3cecb;}
+  .result .verdict{font-weight:800;font-size:15px;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+  .result.ok .verdict{color:var(--maru);}
+  .result.ng .verdict{color:var(--batsu);}
+  .result .ans{font-size:13px;color:var(--muted);font-weight:700;}
+  .result .point{font-size:14.5px;line-height:1.8;margin-top:8px;color:#3d3a47;}
+  .result .point b{color:var(--accent);}
+  .result .point .hl{background:#fff3bf;padding:0 2px;border-radius:3px;}
+
+  .next{
+    width:100%;margin-top:16px;background:var(--accent);color:#fff;border:none;
+    border-radius:14px;padding:16px;font-size:16px;font-weight:800;cursor:pointer;
+    font-family:inherit;display:none;
+  }
+  .next.show{display:block;}
+  .next:active{transform:scale(.98);}
+
+  .summary{text-align:center;padding-top:10px;}
+  .summary .ring{
+    width:150px;height:150px;border-radius:50%;margin:18px auto;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:conic-gradient(var(--accent) var(--deg,0deg),var(--line) 0);
+  }
+  .summary .ring .inner{
+    width:122px;height:122px;border-radius:50%;background:var(--card);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+  }
+  .summary .ring .pct{font-size:34px;font-weight:800;color:var(--accent);}
+  .summary .ring .lbl{font-size:12px;color:var(--muted);}
+  .summary h2{font-size:20px;margin:6px 0;}
+  .summary .score{font-size:15px;color:var(--muted);margin-bottom:18px;}
+  .summary .acts{display:flex;flex-direction:column;gap:10px;}
+  .summary .acts button{
+    border-radius:14px;padding:15px;font-size:15px;font-weight:800;cursor:pointer;
+    font-family:inherit;border:none;
+  }
+  .btn-primary{background:var(--accent);color:#fff;}
+  .btn-ghost{background:var(--card);color:var(--accent);border:1px solid var(--line)!important;}
+  .btn-review{background:#fff7f6;color:var(--batsu);border:1px solid #f3d6d4!important;}
+
+  .hidden{display:none!important;}
+  footer{text-align:center;font-size:11px;color:#b6bccb;margin-top:28px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HOME -->
+  <section id="home">
+    <header class="top">
+      <div class="eyebrow">2級建築士 マラソンテスト</div>
+      <h1>計画 ○×マラソン</h1>
+      <div class="sub">全100問</div>
+    </header>
+    <div class="home-nav"><a href="index.html">← メニューへ</a></div>
+    <div class="home-intro">黄色マーク等の要点を <b>○×形式</b>（全100問）で出題します。<br>正解すると<b>ポイント解説</b>が表示され、間違えた問題は<b>復習</b>でまとめて解き直せます。</div>
+    <div class="sec-grid" id="secGrid"></div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" class="hidden">
+    <div class="bar">
+      <button class="back" id="backBtn">← 戻る</button>
+      <div class="progress"><i id="prog"></i></div>
+      <div class="counter" id="counter"></div>
+    </div>
+    <div class="card">
+      <span class="src-tag" id="srcTag">No.</span>
+      <div class="q-text" id="qText"></div>
+      <div class="choices">
+        <button class="choice maru" id="cMaru">○</button>
+        <button class="choice batsu" id="cBatsu">×</button>
+      </div>
+      <div class="result" id="result">
+        <div class="verdict" id="verdict"></div>
+        <div class="ans" id="ansLine"></div>
+        <div class="point" id="pointText"></div>
+      </div>
+    </div>
+    <button class="next" id="nextBtn">次の問題 →</button>
+  </section>
+
+  <!-- SUMMARY -->
+  <section id="summary" class="hidden">
+    <div class="summary">
+      <div class="ring" id="ring"><div class="inner">
+        <div class="pct" id="pct">0%</div><div class="lbl">正答率</div>
+      </div></div>
+      <h2 id="sumTitle">おつかれさまでした</h2>
+      <div class="score" id="sumScore"></div>
+      <div class="acts">
+        <button class="btn-review hidden" id="sumReview"></button>
+        <button class="btn-primary" id="sumRetry"></button>
+        <button class="btn-ghost" id="sumHome">ホームに戻る</button>
+      </div>
+    </div>
+  </section>
+
+  <footer>2級建築士 学習用 ○×トレーナー（個人学習用）</footer>
+</div>
+
+<script>
+const QUESTIONS = [
+  {n:1, src:"066・2", cat:"屋外気候・室内環境", a:false, q:"ヒートアイランド現象は、大気中の二酸化炭素などの温室効果ガスが増えることを主たる要因として気温が上昇する現象である。", p:"ヒートアイランドの主因は都市化（舗装・排熱・緑地の減少）。温室効果ガスによる地球温暖化とは別物。"},
+  {n:2, src:"010・3", cat:"屋外気候・室内環境", a:true, q:"一般に、全天積算日射量は夏至の頃に最大となるが、月平均気温は地面の熱容量のため、夏至より遅れて最高となる。", p:"気温のピークは日射のピークより遅れる（地面の蓄熱のため）。正しい。"},
+  {n:3, src:"012・3", cat:"屋外気候・室内環境", a:true, q:"快晴日における屋外の絶対湿度は、一般に、1日の中ではあまり変化しないので、相対湿度は気温の高い日中に低く、気温の低い夜間に高くなる。", p:"絶対湿度がほぼ一定なら、気温が上がる日中は相対湿度が下がる。正しい。"},
+  {n:4, src:"006・1", cat:"屋外気候・室内環境", a:true, q:"絶対湿度が同じであれば、空気を加熱・冷却しても、その空気の露点温度は変化しない。", p:"露点は水蒸気量（絶対湿度）で決まる。水蒸気量が同じなら露点は不変。正しい。"},
+  {n:5, src:"005・2", cat:"屋外気候・室内環境", a:false, q:"乾球温度が同じであれば、乾球温度と湿球温度との差が大きいほうが、相対湿度は高い。", p:"乾湿差が大きい＝乾いている＝相対湿度は低い。「高い」は誤り。"},
+  {n:6, src:"007・4", cat:"空気汚染・換気", a:true, q:"透湿とは、多孔質材料等の壁の両側に水蒸気圧差がある場合、水蒸気圧の高いほうから低いほうへ壁を通して湿気が移動することである。", p:"透湿の定義として正しい。"},
+  {n:7, src:"009・5", cat:"空気汚染・換気", a:true, q:"JIS及びJASのホルムアルデヒド放散量による等級区分の表示記号では、「F☆☆☆」より「F☆☆☆☆」のほうが放散量は小さい。", p:"☆が多いほど放散量が少ない。F☆☆☆☆が最も少ない。正しい。"},
+  {n:8, src:"009・3", cat:"空気汚染・換気", a:true, q:"居室の必要換気量は、一般に、居室内の二酸化炭素濃度の許容値を基準にして算出する。", p:"CO₂濃度（許容1,000ppm）を基準に必要換気量を求める。正しい。"},
+  {n:9, src:"018・3", cat:"空気汚染・換気", a:false, q:"冬期、屋内の温度より外気温のほうが低い場合、屋内外の温度差によって、上部には外気が流入する力が生じ、下部には屋内の空気が流出する力が生じる。", p:"温度差換気は逆。暖かい室内空気は上昇し、上部から流出・下部から外気が流入する。記述は上下が逆で誤り。"},
+  {n:10, src:"016・2", cat:"空気汚染・換気", a:true, q:"居室の空気中において、一般に、二酸化炭素の許容濃度は0.1％(1,000ppm)であり、毒性の強い一酸化炭素の許容濃度は0.0006％(6ppm)である。", p:"CO₂＝1,000ppm、CO＝6ppm。いずれも基準値どおりで正しい。"},
+  {n:11, src:"063・5", cat:"伝熱・結露", a:true, q:"対流熱伝達は、壁面などの固体表面とそれに接している空気との間に生じる熱移動現象のことである。", p:"対流熱伝達の定義として正しい。"},
+  {n:12, src:"023・5", cat:"伝熱・結露", a:false, q:"物質の熱容量が小さくなると、熱の吸収による温度上昇と放出による温度降下とが遅くなり、蓄熱という現象が生じる。", p:"熱容量が小さいほど温度変化は速く、蓄熱しにくい。記述は逆で誤り。"},
+  {n:13, src:"024・4", cat:"伝熱・結露", a:false, q:"白色ペイント塗りの壁においては、短波長放射である可視光線の反射率は低く、長波長放射である赤外線の反射率は高い。", p:"白色は可視光（短波長）の反射率が高い。赤外線（長波長）はむしろ吸収・放射しやすい。逆で誤り。"},
+  {n:14, src:"032・1", cat:"伝熱・結露", a:true, q:"冬期において、外壁の室内側に生じる表面結露は、防湿層を設けても防ぐことができない。", p:"防湿層は壁内部の内部結露対策。表面結露は断熱強化や湿度低下で防ぐ。防湿層では防げない、で正しい。"},
+  {n:15, src:"024・5", cat:"伝熱・結露", a:false, q:"壁体の外気側表面の熱伝達抵抗の値は、一般に、室内側の熱伝達抵抗の値に比べて大きい。", p:"外気側は風で熱が伝わりやすく、熱伝達抵抗は小さい。「大きい」は誤り。"},
+  {n:16, src:"034・2", cat:"日照・日射・採光", a:true, q:"地表面放射と大気放射の差を、実効放射(夜間放射)という。", p:"実効放射（夜間放射）の定義として正しい。"},
+  {n:17, src:"038・2", cat:"日照・日射・採光", a:true, q:"窓の日射遮蔽係数は、その値が大きいほど日射の遮蔽効果は低い。", p:"遮蔽係数が大きい＝日射が多く入る＝遮蔽効果は低い。正しい。"},
+  {n:18, src:"038・4", cat:"日照・日射・採光", a:false, q:"建築物の開口部に水平な庇を設ける場合、夏期における日射遮蔽効果は、南面より西面のほうが大きい。", p:"水平庇は太陽高度の高い南面で効果大。低い西日には効きにくい。南＞西なので記述は誤り。"},
+  {n:19, src:"036・3", cat:"日照・日射・採光", a:true, q:"冬至の日の1日当たりの直達日射量は、水平面より南向き鉛直面のほうが大きい。", p:"冬は太陽高度が低く、南向き鉛直面のほうが日射を多く受ける。正しい。"},
+  {n:20, src:"053・1", cat:"日照・日射・採光", a:false, q:"昼光率は、室内の壁や天井の表面の反射の影響を受けない。", p:"昼光率には反射光（間接昼光率）が含まれる。表面反射の影響を受ける。「受けない」は誤り。"},
+  {n:21, src:"047・5", cat:"音響", a:false, q:"板状材料と剛壁の間に空気層を設けた吸音構造は、一般に、低音域の吸音よりも高音域の吸音に効果がある。", p:"板（膜）振動型の吸音は低音域に効く。高音域ではない。記述は逆で誤り。"},
+  {n:22, src:"050・3", cat:"音響", a:false, q:"壁体における透過損失の値が小さいほど、遮音性能が優れている。", p:"透過損失が大きいほど遮音性能が高い。「小さいほど優れる」は逆で誤り。"},
+  {n:23, src:"048・2", cat:"音響", a:true, q:"日本産業規格(JIS)における床衝撃音遮断性能の等級Lrについては、その数値が小さくなるほど床衝撃音の遮断性能が高くなる。", p:"Lrは小さいほど遮断性能が高い。正しい。"},
+  {n:24, src:"042・3", cat:"音響", a:false, q:"室用途による室内騒音の評価値(NC値)は、その値が大きいほど、許容される騒音レベルは低くなる。", p:"NC値が大きい＝より大きな騒音を許容する。記述は逆で誤り。"},
+  {n:25, src:"049・2", cat:"音響", a:false, q:"音が球面状に一様に広がる点音源の場合、音源からの距離が1/2になると音圧レベルは、約3dB上昇する。", p:"点音源は距離1/2で約+6dB（距離2倍で−6dB）。「3dB」は誤り。"},
+  {n:26, src:"052・2", cat:"光・色彩", a:false, q:"色光の加法混色において、赤(R)、緑(G)、青(B)を同じ割合で混色すると、黒色になる。", p:"光の加法混色でRGBを等量混ぜると白色になる。黒は誤り。"},
+  {n:27, src:"059・3", cat:"光・色彩", a:true, q:"マンセル表色系における明度は、面の色の明るさを示す指標であり、反射率の高低に応じて変化する。", p:"明度（Value）は反射率に対応して変化する。正しい。"},
+  {n:28, src:"052・4", cat:"光・色彩", a:true, q:"マンセル色相環において、対角線上に位置する色同士を同じ割合で混色すると、無彩色になる。", p:"補色同士（色相環の反対）を混ぜると無彩色になる。正しい。"},
+  {n:29, src:"061・2", cat:"環境用語・単位", a:true, q:"日射量は、ある面が受ける単位面積・単位時間当たりの日射エネルギー量で表される。", p:"正しい（単位はW/m²）。"},
+  {n:30, src:"R07・03・2", cat:"環境用語・単位", a:true, q:"音の強さは、音波の進行方向に垂直な単位面積を単位時間当たりに通過する音響エネルギー量で表され、その単位はW/m²である。", p:"音の強さ（音響インテンシティ）の定義と単位として正しい。"},
+  {n:31, src:"078・4", cat:"空気調和設備", a:false, q:"定風量単一ダクト方式は、ファンコイルユニットと定風量単一ダクトとを併用した方式に比べて、必要とするダクトスペースを小さくすることができる。", p:"全空気の単一ダクトは風量が多くダクトが大きい。FCU併用方式のほうがダクトは小さい。記述は逆で誤り。"},
+  {n:32, src:"078・2", cat:"空気調和設備", a:true, q:"変風量単一ダクト方式は、低負荷時においては、必要換気量の確保と空気清浄度の維持が困難な場合がある。", p:"VAVは低負荷で風量を絞るため、換気不足になりうる。正しい。"},
+  {n:33, src:"081・3", cat:"空気調和設備", a:false, q:"空気熱源ヒートポンプ方式のルームエアコンの暖房能力は、外気の温度が低くなるほど向上する。", p:"外気温が下がると暖房能力は低下する（着霜・効率低下）。「向上」は誤り。"},
+  {n:34, src:"083・3", cat:"空気調和設備", a:false, q:"最下階に蓄熱槽を設けた開放回路配管方式は、密閉回路配管方式に比べて、一般に、ポンプ動力を低減することができる。", p:"開放回路は水を汲み上げる必要があり、密閉回路よりポンプ動力は大きい。「低減」は誤り。"},
+  {n:35, src:"083・4", cat:"空気調和設備", a:false, q:"開放式冷却塔の冷却効果は、主として、「冷却水に接触する空気の温度」と「冷却水の温度」との差によって得られる。", p:"冷却塔は主に蒸発（潜熱）で冷却し、基準は空気の湿球温度。乾球の「空気の温度」差ではない。誤り。"},
+  {n:36, src:"075・1", cat:"空気調和設備", a:true, q:"床吹出し空調方式は、冷房時には、通常の天井吹出し空調方式よりも給気温度を高くする必要がある。", p:"足元の冷え過ぎを防ぐため、床吹出しは給気温度を高めにする。正しい。"},
+  {n:37, src:"123・5", cat:"空気調和設備", a:true, q:"窓システムにおいて、日射による窓部からの熱負荷低減を図るには、一般に、エアバリアよりダブルスキンのほうが効果が高い。", p:"ダブルスキンは日射による熱負荷の低減効果が高い。正しい（類似・参考問題）。"},
+  {n:38, src:"077・2", cat:"空気調和設備", a:true, q:"10〜12℃程度の低温冷風を利用した低温送風空調方式は、送風搬送動力の低減が可能であり、空調機やダクトサイズを小さくすることができる。", p:"低温で送ると必要風量が減り、ダクト・送風機を小型化できる。正しい。"},
+  {n:39, src:"088・1", cat:"給水・給湯設備", a:true, q:"水道直結増圧方式において、水道本管への逆流を防止するためには、一般に、増圧ポンプの吸込み側に逆流防止装置を設置する。", p:"増圧ポンプの吸込み側に逆流防止装置を設ける。正しい。"},
+  {n:40, src:"085・2", cat:"給水・給湯設備", a:true, q:"事務所ビルにおける飲料水の受水槽の有効容量は、一般に、1日当たりの予想給水量の1/3〜1/2程度とする。", p:"受水槽は1日使用量のおよそ1/2を目安とする（高置水槽は1/10程度）。記述は適当。"},
+  {n:41, src:"098・4", cat:"給水・給湯設備", a:true, q:"飲料水用受水槽のオーバーフロー管の排水は、一般排水系統の配管に間接排水とする。", p:"逆流・汚染防止のため、排水口空間を設けた間接排水とする。正しい。"},
+  {n:42, src:"098・1", cat:"給水・給湯設備", a:true, q:"クロスコネクションは、飲料水の給水・給湯系統とその他の系統とが、配管・装置により直接接続されることをいう。", p:"クロスコネクションの定義として正しい（禁止事項）。"},
+  {n:43, src:"088・4", cat:"排水・衛生設備", a:false, q:"通気立て管の下部は、最低位の排水横枝管より高い位置において、排水立て管に接続する。", p:"通気立て管の下部は最低位の排水横枝管より「低い位置」で接続する。「高い位置」は誤り。"},
+  {n:44, src:"095・5", cat:"排水・衛生設備", a:true, q:"自然流下式の排水立て管の管径は、どの階においても、最下部の最も大きな排水負荷を負担する部分の管径と同一にする必要がある。", p:"排水立て管は上階で細くせず、最下部に合わせた同一管径とする。正しい。"},
+  {n:45, src:"091・3", cat:"排水・衛生設備", a:false, q:"トラップの封水深は、トラップの管径が25mmの場合は管径と同寸法である25mm程度とする。", p:"封水深は管径によらず50〜100mm。25mmは浅すぎる。誤り。"},
+  {n:46, src:"102・4", cat:"電気・照明設備", a:false, q:"中小規模の事務所ビルにおいて、電灯・コンセント用幹線の電気方式には、一般に、単相2線式100Vが用いられる。", p:"一般には単相3線式100/200Vを用いる。単相2線式100Vは誤り。"},
+  {n:47, src:"104・1", cat:"電気・照明設備", a:false, q:"同一電線管に収める電線本数が多くなると、電線の許容電流は大きくなる。", p:"本数が増えると放熱が悪くなり、許容電流は小さくなる（電流減少係数）。「大きくなる」は誤り。"},
+  {n:48, src:"102・1", cat:"電気・照明設備", a:false, q:"接地工事の種類は、接地工事の施設方法、接地抵抗値及び接地線の太さに応じて、A種、B種、C種の3種類である。", p:"接地工事はA・B・C・D種の4種類。3種類は誤り。"},
+  {n:49, src:"109・4", cat:"電気・照明設備", a:true, q:"昼光利用制御は、室内に入る自然光を利用して、照明器具の調光を行うものである。", p:"昼光利用制御（デイライト制御）の説明として正しい。"},
+  {n:50, src:"108・2", cat:"電気・照明設備", a:true, q:"LEDランプは、水銀の使用がなく、蛍光ランプに比べて熱放射が少なく寿命が長い。", p:"LEDの特徴として正しい（水銀フリー・低発熱・長寿命）。"},
+  {n:51, src:"114・2", cat:"消火・防災設備", a:true, q:"屋外消火栓設備は、屋外から建築物の1階及び2階の火災を消火し、隣接する建築物への延焼等を防止するための設備である。", p:"屋外消火栓は主に1・2階の火災消火と延焼防止用。正しい。"},
+  {n:52, src:"115・5", cat:"消火・防災設備", a:false, q:"水噴霧消火設備は、油火災の消火には適さない。", p:"水噴霧は霧状の水で窒息・冷却し、油火災にも有効。「適さない」は誤り。"},
+  {n:53, src:"115・2", cat:"消火・防災設備", a:true, q:"閉鎖型スプリンクラー設備には、湿式、乾式及び予作動式の3種類がある。", p:"閉鎖型は湿式・乾式・予作動式の3種類。正しい。"},
+  {n:54, src:"115・1", cat:"消火・防災設備", a:true, q:"非常警報設備の非常ベルは、音響装置の中心から1m離れた位置で90dB以上の音圧が必要である。", p:"非常ベルは中心から1mで90dB以上。正しい。"},
+  {n:55, src:"116・1", cat:"消火・防災設備", a:false, q:"自動火災報知設備の定温式感知器は、周囲温度が一定の温度上昇率になったときに作動する。", p:"定温式は「一定の温度」に達したとき作動。「温度上昇率」で作動するのは差動式。誤り。"},
+  {n:56, src:"R07・25・5", cat:"環境への配慮・省エネ", a:true, q:"ZEHは、室内環境の質を維持しつつ大幅な省エネルギーを実現したうえで、再生可能エネルギーを導入することにより、年間の一次エネルギー消費量の収支をゼロ又はマイナスとすることを目指した住宅である。", p:"ZEH（ネット・ゼロ・エネルギー・ハウス）の定義として正しい。"},
+  {n:57, src:"119・4", cat:"環境への配慮・省エネ", a:true, q:"CASBEE(建築環境総合性能評価システム)におけるBEE(建築物の環境性能効率)を高めるため、建築物の環境品質(Q)の数値を大きく、かつ、建築物の環境負荷(L)の数値が小さくなるように計画した。", p:"BEE＝Q/L。Qを大きく・Lを小さくするとBEEは高くなる。正しい。"},
+  {n:58, src:"121・5", cat:"環境への配慮・省エネ", a:true, q:"太陽熱利用のダイレクトゲイン方式とは、窓から入射する日射熱を直接、床や壁に蓄熱し、夜間時に放熱させる方式である。", p:"ダイレクトゲイン方式の説明として正しい。"},
+  {n:59, src:"131・2", cat:"設備用語", a:false, q:"UPS ── 構内電話交換機のことであり、「事業所内などでの電話機相互の接続」と「電話局の回線と事業所内の電話機との接続」を行う装置である。", p:"これはPBX（構内交換機）の説明。UPSは無停電電源装置。組合せが誤り。"},
+  {n:60, src:"131・3", cat:"設備用語", a:true, q:"SHF ── 空調機により空気に加えられる、又は、空気から除去される熱量のうち、顕熱量の占める割合である。", p:"SHF（顕熱比）の説明として正しい。"},
+  {n:61, src:"159・5", cat:"住宅", a:false, q:"ツインベッドを用いる夫婦寝室の広さを、収納スペースを含めて、内法面積で9m²とした。", p:"ツインの夫婦寝室は収納込みで13〜15m²程度必要。9m²は狭すぎ。誤り。"},
+  {n:62, src:"177・1", cat:"住宅", a:true, q:"食器棚(幅1,800mm、奥行450mm)と6人掛けの食卓があるダイニングの広さを、内法面積で13m²とした。", p:"6人掛け食卓＋食器棚なら13m²程度は妥当。正しい。"},
+  {n:63, src:"182・4", cat:"高齢者配慮の住宅", a:true, q:"階段の昇り口の側壁に設ける足元灯の高さは、昇り口の1段目の踏面から上方に300mmとした。", p:"足元灯の取付け高さとして妥当。正しい。"},
+  {n:64, src:"185・1", cat:"高齢者配慮の住宅", a:true, q:"高齢者に配慮して、階段の手摺の直径を35mmとし、段鼻からの高さを750mmとした。", p:"手摺径32〜36mm、高さ750〜800mm程度。正しい。"},
+  {n:65, src:"179・3", cat:"高齢者配慮の住宅", a:true, q:"車椅子使用者に配慮し、居室の出入口扉の前後は段差を避け、内法寸法で1,400mm×1,400mm程度のスペースを確保した。", p:"車椅子の回転に1,400mm角程度を確保する。正しい。"},
+  {n:66, src:"188・1", cat:"集合住宅", a:false, q:"テラスハウスは、共用の中庭を中心に、それを囲んで配置される集合住宅の形式である。", p:"これはコートハウス（中庭型）の説明。テラスハウスは各戸に専用庭をもつ連続住宅。誤り。"},
+  {n:67, src:"190・3", cat:"集合住宅", a:false, q:"コレクティブハウスは、住宅入居希望者が組合を作り、協力して企画・設計から入居・管理まで運営していく方式の集合住宅である。", p:"これはコーポラティブハウスの説明。コレクティブハウスは家事等を共同化し共用空間をもつ形式。誤り。"},
+  {n:68, src:"192・4", cat:"集合住宅", a:true, q:"スケルトンインフィル住宅は、「建築物の躯体や共用設備部分」と「住戸専有部分の内装や設備」とを明確に分けて計画することによって、住戸の更新性や可変性を高めた集合住宅である。", p:"SI住宅の説明として正しい。"},
+  {n:69, src:"187・3", cat:"集合住宅", a:false, q:"専用面積が小さい住戸で構成する集合住宅を、メゾネット型とした。", p:"メゾネットは1住戸で2層を使う形式で、専用面積の大きい住戸向き。小住戸には不向き。誤り。"},
+  {n:70, src:"190・4", cat:"集合住宅", a:true, q:"スキップフロア型は、一般に、共用廊下を介さずに、外気に接する2方向の開口部を有した住戸を設けることができる。", p:"スキップフロア型の特徴として正しい。"},
+  {n:71, src:"198・1", cat:"事務所", a:false, q:"レンタブル比は、貸事務所ビルの収益性に関する指標の一つであり、収益部分の床面積に対する非収益部分の床面積の割合である。", p:"レンタブル比は延べ（基準階）面積に対する収益部分の割合。記述は分母・分子が逆で誤り。"},
+  {n:72, src:"201・3", cat:"事務所", a:true, q:"事務室の在席率が50〜60％と想定されたので、執務空間の効率的な活用を考慮し、フリーアドレス方式を採用した。", p:"在席率が低い場合のフリーアドレスは合理的。正しい。"},
+  {n:73, src:"196・5", cat:"事務所", a:true, q:"基準階の平面プランとして、片コア(偏心コア)タイプを採用したので、コア部分にも、外光・外気を取入れやすい計画とした。", p:"片コアはコアが外周側に寄るため外光・外気を取り入れやすい。正しい。"},
+  {n:74, src:"198・3", cat:"事務所", a:false, q:"事務室の机の配置方式において、特に業務に集中することが必要な場合、一般に、並行式レイアウトよりも対向式レイアウトのほうが適している。", p:"集中作業には同じ向きの並行式が適する。向かい合う対向式は協働向き。記述は逆で誤り。"},
+  {n:75, src:"195・5", cat:"商業建築", a:true, q:"レストランにおいて、厨房の床面積は、一般に、延べ面積の25〜40％程度である。", p:"レストランの厨房は延べ面積の25〜40％程度。正しい。"},
+  {n:76, src:"195・3", cat:"商業建築", a:false, q:"量販店において、「延べ面積」に対する「売場部分の床面積の合計(売場内の通路を含む。)」の割合を50％とした。", p:"量販店の売場率は一般に60〜65％程度。50％は低すぎ。誤り。"},
+  {n:77, src:"209・4", cat:"商業建築", a:true, q:"劇場において、客席側から見て右側を、舞台の上手といい、周囲の諸室の関係性を含めて計画した。", p:"客席から見て右が上手（かみて）、左が下手。正しい。"},
+  {n:78, src:"213・1", cat:"商業建築", a:true, q:"劇場において、演目に応じて舞台と観客席との関係を変化させることができるように、アダプタブルステージ形式を採用した。", p:"可変舞台（アダプタブルステージ）の説明として正しい。"},
+  {n:79, src:"200・4", cat:"商業建築", a:true, q:"ビジネスホテルにおいて、客室部門の床面積の合計は、一般に、延べ面積の60〜70％程度である。", p:"ビジネスホテルの客室部門は延べ面積の60〜70％程度。正しい。"},
+  {n:80, src:"204・5", cat:"公共建築", a:false, q:"教科教室型の中学校において、学校生活の拠点となるホームベースを、教室移動の動線から離して、落ち着いた奥まった位置に設けた。", p:"ホームベースは生徒の生活拠点で、移動動線に沿った使いやすい位置に設ける。動線から離した奥まった位置は不適。誤り。"},
+  {n:81, src:"219・5", cat:"公共建築", a:false, q:"保育所において、保育室は、乳児用と幼児用とを間仕切りのないワンルームとし、乳児と幼児の人数比の変動に対応できるようにした。", p:"乳児と幼児は発達段階・安全管理が異なるため保育室は分ける。間仕切りなしのワンルームは不適。誤り。"},
+  {n:82, src:"R07・14・5", cat:"公共建築", a:false, q:"地域図書館において、書架を設置しない40席の閲覧室の床面積を、50m²とした。", p:"閲覧室は1席当たり約1.6〜3m²。40席なら64m²以上必要。50m²は狭すぎ。誤り。"},
+  {n:83, src:"214・3", cat:"公共建築", a:true, q:"美術館において、展示室の床面積の合計を、延べ面積の40％程度となるように計画した。", p:"美術館の展示室は延べ面積の30〜50％程度。40％は妥当。正しい。"},
+  {n:84, src:"157・1", cat:"公共建築", a:false, q:"病院において、患者4人収容の一般病室の内法面積を、20m²とした。", p:"一般病室は患者1人当たり内法6.4m²以上。4人なら25.6m²以上必要。20m²は不足。誤り。"},
+  {n:85, src:"218・4", cat:"公共建築", a:true, q:"ケアハウスは、家族による援助を受けることが困難な高齢者が、日常生活上必要なサービスを受けながら自立的な生活をする施設である。", p:"ケアハウス（軽費老人ホームC型）の説明として正しい。"},
+  {n:86, src:"154・3", cat:"計画一般（駐車・寸法・防災ほか）", a:true, q:"駐輪場において、自転車1台当たりの平置き駐輪スペースの幅を700mm、奥行きを2,000mmとした。", p:"自転車1台は幅600〜700mm・奥行1,900〜2,000mm程度。正しい。"},
+  {n:87, src:"155・4", cat:"計画一般（駐車・寸法・防災ほか）", a:false, q:"自走式の地下駐車場にある高低差4mの自動車専用傾斜路において、傾斜路の始まりから終わりまでの水平距離を、20mとした。", p:"自動車傾斜路の勾配は1/6（約17％）以下。高低差4mなら水平24m以上必要。20m（1/5）は急すぎ。誤り。"},
+  {n:88, src:"160・5", cat:"計画一般（駐車・寸法・防災ほか）", a:true, q:"小学校において、30人学級の普通教室の床面積を48m²とした。", p:"普通教室は1人当たり約1.5m²。30人で約45m²、48m²は妥当。正しい。"},
+  {n:89, src:"218・5", cat:"計画一般（駐車・寸法・防災ほか）", a:false, q:"特別養護老人ホームの定員2人の居室の最小床面積は、18m²である。", p:"特養の居室は1人当たり10.65m²以上。2人なら21.3m²以上必要。18m²は不足。誤り。"},
+  {n:90, src:"217・3", cat:"高齢者・身障者配慮の公共建築", a:false, q:"車椅子使用者に配慮し、エントランスから道路境界線まで50cmの高低差が生じるアプローチを計画する場合、スロープの勾配は、1/8程度を基本とする。", p:"車椅子用スロープは1/12以下が基本。1/8は急すぎ。誤り。"},
+  {n:91, src:"164・2", cat:"高齢者・身障者配慮の公共建築", a:true, q:"エレベーターのかご内の車椅子使用者対応の操作盤の位置は、床面から操作ボタンの中心までの高さを、1,000mmとした。", p:"車椅子用操作盤は床から約1,000mm。正しい。"},
+  {n:92, src:"168・5", cat:"高齢者・身障者配慮の公共建築", a:false, q:"駐車場において、車椅子使用者に配慮し、移乗動作も容易にできる乗降スペースの幅を110cmとした。", p:"車椅子使用者用駐車区画の乗降スペースは幅140cm以上必要。110cmは不足。誤り。"},
+  {n:93, src:"R07・18・1", cat:"建築生産", a:true, q:"CLTは、ひき板を幅方向に並べたものを、繊維方向が直交するように積層接着することで大きな面材にしたものである。", p:"CLT（直交集成板）の定義として正しい。"},
+  {n:94, src:"R07・18・3", cat:"建築生産", a:false, q:"カーテンウォールは、建築物の外周に設けられた、荷重を支持する壁のことである。", p:"カーテンウォールは荷重を支持しない非耐力の外壁。「荷重を支持する」は誤り。"},
+  {n:95, src:"169・1", cat:"防火・防災", a:true, q:"避難階段内に、緊急時に車椅子使用者が安全に避難でき、かつ、他の避難動線等の妨げにならないように、幅1.2mの一時待避スペースを設けた。", p:"車椅子使用者の一時待避スペースとして幅1.2m程度を確保。適当。"},
+  {n:96, src:"169・4", cat:"防火・防災", a:true, q:"便所及び便房内において、聴覚障がい者に非常警報がわかるように、フラッシュライトの光警報装置を設けた。", p:"聴覚障がい者向けに光（フラッシュ）警報装置を設けるのは適当。"},
+  {n:97, src:"222・1", cat:"地域計画", a:false, q:"ラドバーンシステムは、住宅地の道路において、自動車の速度を低く抑え、歩行者と自動車の共存を図るための手法である。", p:"ラドバーン方式は歩車を完全に分離する手法。歩行者と車の共存を図るのはボンエルフ。記述は誤り。"},
+  {n:98, src:"224・2", cat:"地域計画", a:true, q:"トランジットモールは、歩行者用の空間であるモールの形態の一つであり、一般の自動車の進入を排除して、路面電車やバスなどの公共交通機関に限って走行を認めたものである。", p:"トランジットモールの定義として正しい。"},
+  {n:99, src:"144・4", cat:"建築史", a:false, q:"薬師寺東塔(奈良県)は、本瓦葺きの五重塔であり、各重に裳階が付いた建築物である。", p:"薬師寺東塔は三重塔。各重に裳階が付き六重に見えるが構造は三重。「五重塔」は誤り。"},
+  {n:100, src:"151・C", cat:"建築史", a:false, q:"軽井沢の山荘(1963年、長野県)は、1階部分が土台を兼ねた鉄筋コンクリート造で、その上に大きく張り出した片流れ屋根の木造2階部分が特徴の住宅であり、坂倉準三が設計した。", p:"軽井沢の山荘の設計は吉村順三。坂倉準三ではない。誤り。"}
+];
+const STORE_KEY = "keikaku_marathon_wrong";
+
+/* ===== 誤答ストレージ：window.storage → localStorage → メモリ の3段フォールバック ===== */
+let memStore = {};
+async function storeGet(k){
+  try{ if(window.storage&&window.storage.get){const r=await window.storage.get(k); if(r&&r.value!=null) return r.value;} }catch(e){}
+  try{ const v=localStorage.getItem(k); if(v!=null) return v; }catch(e){}
+  return memStore[k]!=null?memStore[k]:null;
+}
+async function storeSet(k,v){
+  try{ if(window.storage&&window.storage.set){await window.storage.set(k,v);} }catch(e){}
+  try{ localStorage.setItem(k,v); }catch(e){}
+  memStore[k]=v;
+}
+async function getWrongSet(){
+  const v=await storeGet(STORE_KEY);
+  if(v){ try{ return new Set(JSON.parse(v)); }catch(e){} }
+  return new Set();
+}
+async function saveWrongSet(set){ await storeSet(STORE_KEY, JSON.stringify([...set])); }
+
+const catOf = q => q.cat || q.sec || "";
+
+let pool=[], idx=0, correctCount=0, sessionWrong=[];
+const el = id => document.getElementById(id);
+const homeSec=el("home"), quizSec=el("quiz"), sumSec=el("summary");
+
+function makeSecBtn({name,meta,count,cls,onClick}){
+  const b=document.createElement("button");
+  b.className="sec-btn "+(cls||"");
+  b.innerHTML=`<span><span class="name">${name}</span>${meta?`<span class="meta">${meta}</span>`:""}</span>
+               <span class="count">${count}問</span>`;
+  b.addEventListener("click",onClick);
+  return b;
+}
+
+async function renderHome(){
+  const grid=el("secGrid"); grid.innerHTML="";
+  const wrongSet=await getWrongSet();
+
+  grid.appendChild(makeSecBtn({
+    name:`全${QUESTIONS.length}問に挑戦`, meta:"すべての問題をランダム表示",
+    count:QUESTIONS.length, cls:"all", onClick:()=>startQuiz(QUESTIONS,true)
+  }));
+
+  const wrongQs=QUESTIONS.filter(q=>wrongSet.has(q.n));
+  const rev=makeSecBtn({
+    name:"間違い復習", meta:wrongQs.length?"間違えた問題だけ解き直す":"間違いはまだありません",
+    count:wrongQs.length, cls:"review", onClick:()=>startQuiz(wrongQs,true)
+  });
+  if(!wrongQs.length) rev.disabled=true;
+  grid.appendChild(rev);
+
+  /* 分野別（カテゴリがある場合のみ） */
+  const cats=[...new Set(QUESTIONS.map(catOf).filter(Boolean))];
+  if(cats.length>1){
+    const head=document.createElement("div"); head.className="cat-head"; head.textContent="分野別に解く";
+    grid.appendChild(head);
+    cats.forEach(c=>{
+      const qs=QUESTIONS.filter(q=>catOf(q)===c);
+      grid.appendChild(makeSecBtn({ name:c, count:qs.length, cls:"", onClick:()=>startQuiz(qs,false) }));
+    });
+  }
+}
+
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function startQuiz(set,doShuffle){
+  if(!set.length) return;
+  pool=doShuffle?shuffle(set):[...set];
+  idx=0; correctCount=0; sessionWrong=[];
+  homeSec.classList.add("hidden"); sumSec.classList.add("hidden");
+  quizSec.classList.remove("hidden"); showQuestion();
+}
+
+function showQuestion(){
+  const q=pool[idx];
+  const c=catOf(q);
+  el("srcTag").textContent = c?`${q.src}　【${c}】`:`${q.src}`;
+  el("qText").textContent=q.q;
+  el("counter").textContent=`${idx+1}/${pool.length}`;
+  el("prog").style.width=`${(idx/pool.length)*100}%`;
+  const cM=el("cMaru"), cB=el("cBatsu");
+  [cM,cB].forEach(x=>{x.disabled=false;x.classList.remove("sel-correct","sel-wrong","dim");});
+  el("result").className="result"; el("nextBtn").className="next";
+  cM.onclick=()=>answer(true); cB.onclick=()=>answer(false);
+}
+
+async function answer(choice){
+  const q=pool[idx];
+  const cM=el("cMaru"), cB=el("cBatsu");
+  cM.disabled=true; cB.disabled=true;
+  const isCorrect=(choice===q.a);
+  const chosenEl=choice?cM:cB, otherEl=choice?cB:cM;
+  if(isCorrect){ chosenEl.classList.add("sel-correct"); otherEl.classList.add("dim"); correctCount++; }
+  else{ chosenEl.classList.add("sel-wrong"); (q.a?cM:cB).classList.add("sel-correct"); sessionWrong.push(q.n); }
+  const res=el("result");
+  res.classList.add("show", isCorrect?"ok":"ng");
+  el("verdict").textContent=isCorrect?"正解！":"不正解";
+  el("ansLine").textContent=`正解は「${q.a?"○":"×"}」`;
+  el("pointText").innerHTML=`<b>ポイント：</b>${q.p||""}`;
+  el("prog").style.width=`${((idx+1)/pool.length)*100}%`;
+  const wrongSet=await getWrongSet();
+  if(isCorrect) wrongSet.delete(q.n); else wrongSet.add(q.n);
+  await saveWrongSet(wrongSet);
+  const nb=el("nextBtn"); nb.classList.add("show");
+  nb.textContent=(idx+1<pool.length)?"次の問題 →":"結果を見る →"; nb.onclick=nextQuestion;
+}
+
+function nextQuestion(){ idx++; if(idx<pool.length) showQuestion(); else showSummary(); }
+
+function showSummary(){
+  quizSec.classList.add("hidden"); sumSec.classList.remove("hidden");
+  const total=pool.length, pct=Math.round((correctCount/total)*100);
+  el("pct").textContent=pct+"%";
+  el("ring").style.setProperty("--deg",(pct*3.6)+"deg");
+  el("sumScore").textContent=`${total}問中 ${correctCount}問 正解`;
+  const isReview=pool.length<QUESTIONS.length;
+  let title="おつかれさまでした";
+  if(pct===100) title=isReview?"間違いをすべてクリア！🎯":"全問正解！ 完璧です🎯";
+  else if(pct>=80) title="good! あと少し";
+  else if(pct>=50) title="復習で固めましょう";
+  else title="間違いを見直そう";
+  el("sumTitle").textContent=title;
+  const wrongQs=pool.filter(q=>sessionWrong.includes(q.n));
+  const rb=el("sumReview");
+  if(wrongQs.length){ rb.classList.remove("hidden"); rb.textContent=`間違えた${wrongQs.length}問を解き直す`; rb.onclick=()=>startQuiz(wrongQs,true); }
+  else rb.classList.add("hidden");
+  el("sumRetry").textContent=`最初から全${QUESTIONS.length}問`;
+  el("sumRetry").onclick=()=>startQuiz(QUESTIONS,true);
+  el("sumHome").onclick=goHome;
+}
+
+function goHome(){ quizSec.classList.add("hidden"); sumSec.classList.add("hidden"); homeSec.classList.remove("hidden"); renderHome(); }
+el("backBtn").addEventListener("click",goHome);
+renderHome();
+</script>
+</body>
+</html>
