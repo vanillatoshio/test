@@ -47,6 +47,14 @@
   }
   .group.fresh .group-head .ttl{color:var(--accent);}
 
+  /* 区切り線（本日追加） */
+  .divider{
+    display:flex;align-items:center;gap:12px;
+    margin:36px 4px 22px;color:var(--accent);
+    font-size:12px;font-weight:800;letter-spacing:.12em;white-space:nowrap;
+  }
+  .divider::before,.divider::after{content:"";flex:1;height:2px;border-radius:2px;background:var(--line);}
+
   .cards{display:flex;flex-direction:column;gap:11px;}
   a.card{
     display:flex;align-items:center;gap:13px;text-decoration:none;color:inherit;
@@ -216,6 +224,49 @@
         <span class="ic">厳選</span>
         <span class="body"><span class="name">法規・構造 厳選</span><span class="desc">頻出ポイント〇✕</span></span>
         <span class="meta"><span class="cnt">25問</span><span class="arw">›</span></span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ====== 区切り線：本日追加 ====== -->
+  <div class="divider">本日追加</div>
+
+  <!-- 確認テスト① -->
+  <section class="group fresh">
+    <div class="group-head">
+      <span class="ttl">確認テスト①（〇✕）</span>
+      <span class="tag">NEW</span>
+    </div>
+    <div class="cards">
+      <a class="card" style="--c:var(--keikaku)" href="kakunin1%20keikaku%20quiz.html">
+        <span class="ic">計</span>
+        <span class="body"><span class="name">計画</span><span class="desc">建築計画（環境・設備）</span></span>
+        <span class="meta"><span class="cnt">17問</span><span class="arw">›</span></span>
+      </a>
+      <a class="card" style="--c:var(--houki)" href="kakunin1%20houki%20quiz.html">
+        <span class="ic">法</span>
+        <span class="body"><span class="name">法規</span><span class="desc">建築法規</span></span>
+        <span class="meta"><span class="cnt">9問</span><span class="arw">›</span></span>
+      </a>
+    </div>
+  </section>
+
+  <!-- 法規確認問題 糸島 -->
+  <section class="group fresh">
+    <div class="group-head">
+      <span class="ttl">法規確認問題 糸島（〇✕）</span>
+      <span class="tag">NEW</span>
+    </div>
+    <div class="cards">
+      <a class="card" style="--c:var(--houki)" href="houki%20kakunin%20itoshima%20quiz.html">
+        <span class="ic">法</span>
+        <span class="body"><span class="name">糸島①</span><span class="desc">建築法規</span></span>
+        <span class="meta"><span class="cnt">19問</span><span class="arw">›</span></span>
+      </a>
+      <a class="card" style="--c:var(--houki)" href="houki%20kakunin%20itoshima%202%20quiz.html">
+        <span class="ic">法</span>
+        <span class="body"><span class="name">糸島②</span><span class="desc">その他の関係法令</span></span>
+        <span class="meta"><span class="cnt">20問</span><span class="arw">›</span></span>
       </a>
     </div>
   </section>
