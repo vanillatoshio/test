@@ -218,6 +218,10 @@ function pickOX(o){
       if(/^(×|✕|ばつ|batsu|false|f|誤り|誤|不適当|x)$/i.test(s)) return "×";
     }
   }
+  // 解説の文頭から推定（「正しい。」「誤り。」など）
+  const pt = (pickPoint(o)||"").replace(/^[\s\u3000]+/,"");
+  if(/^(正しい|適当|妥当|○|◯)/.test(pt)) return "○";
+  if(/^(誤り|誤っ|不適当|不適切|逆|×|✕)/.test(pt)) return "×";
   // フォールバック：選択肢配列が無く（＝5択でなく）boolean値を持つキーがあれば答えとみなす
   const hasChoices = Array.isArray(o.choices)||Array.isArray(o.opts)||Array.isArray(o.options);
   if(!hasChoices){
