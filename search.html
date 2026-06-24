@@ -256,11 +256,15 @@ function renderErr(){
 }
 const norm = s => (s||"").toLowerCase();
 function esc(s){ return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
-function hl(text, kw){
-  if(!kw) return esc(text);
-  const t = esc(text);
-  const re = new RegExp("("+kw.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+")","gi");
-  return t.replace(re,"<mark>$1</mark>");
+function tokenize(kw){ return kw.split(/[\s\u3000,\u3001]+/).map(x=>x.trim()).filter(Boolean); }
+function hl(text, toks){
+  let t = esc(text);
+  (Array.isArray(toks)?toks:[toks]).forEach(tok=>{
+    if(!tok) return;
+    const re = new RegExp("("+tok.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+")","gi");
+    t = t.replace(re,"<mark>$1</mark>");
+  });
+  return t;
 }
 
 function search(){
@@ -272,9 +276,11 @@ function search(){
     el("solveBtn").classList.remove("show"); el("note").textContent="";
     renderStatus(); curHits=[]; return;
   }
-  const nk = norm(kw);
-  curHits = INDEX.filter(it=>norm(it.blob).includes(nk));
-  renderStatus(`「<b>${esc(kw)}</b>」… <b>${curHits.length}</b> 件ヒット`);
+  const toks = tokenize(kw);
+  const ntoks = toks.map(norm);
+  curHits = INDEX.filter(it=>{ const b=norm(it.blob); return ntoks.some(t=>b.includes(t)); });
+  const orLabel = toks.length>1 ? `「${toks.map(esc).join(" / ")}」のいずれか` : `「<b>${esc(kw)}</b>」`;
+  renderStatus(`${orLabel}… <b>${curHits.length}</b> 件ヒット`);
 
   const solvable = curHits.filter(it=>it.ox==="○"||it.ox==="×");
   const sb = el("solveBtn"), note=el("note");
@@ -283,7 +289,9 @@ function search(){
     sb.classList.add("show");
     sb.onclick = ()=>startQuiz(solvable);
     const skipped = curHits.length - solvable.length;
-    note.textContent = skipped>0 ? `※ ○×で答えが決まらない${skipped}問（5択など）は演習から除外されます` : "";
+    let nt = skipped>0 ? `※ ○×で答えが決まらない${skipped}問（5択など）は演習から除外` : "";
+    if(toks.length>1){ nt = (nt?nt+"　/　":"") + "複数語は「いずれかを含む」検索"; }
+    note.textContent = nt;
   }else{ sb.classList.remove("show"); note.textContent=""; }
 
   if(!curHits.length){ res.innerHTML = `<div class="empty">「${esc(kw)}」に一致する問題は見つかりませんでした。</div>`; return; }
@@ -291,10 +299,10 @@ function search(){
   res.innerHTML = curHits.map(it=>{
     const oxClass = it.ox==="○"?"o":(it.ox==="×"?"x":"");
     const srcLine = it.src?`<span class="src">${esc(String(it.src))}</span>`:"";
-    const pLine = it.p?`<div class="p">${hl(it.p,kw)}</div>`:"";
+    const pLine = it.p?`<div class="p">${hl(it.p,toks)}</div>`:"";
     return `<a class="hit" style="--c:var(--${it.sub})" href="${encodeURI(it.file)}">
       <div class="top"><span class="badge">${esc(it.app)}</span>${it.ox?`<span class="ox ${oxClass}">${it.ox}</span>`:""}${srcLine}</div>
-      <div class="q">${hl(it.q,kw)}</div>${pLine}</a>`;
+      <div class="q">${hl(it.q,toks)}</div>${pLine}</a>`;
   }).join("");
 }
 
@@ -356,9 +364,14 @@ function backToSearch(){
 }
 el("qBack").onclick=backToSearch; el("sumBack").onclick=backToSearch;
 
-const SUGGEST=["斜線","断熱","界壁","防火区画","採光","換気","接合","溶接","基礎","宅建業","避難","容積率"];
-el("chips").innerHTML=SUGGEST.map(k=>`<button class="chip">${k}</button>`).join("");
-el("chips").addEventListener("click",e=>{ if(e.target.classList.contains("chip")){ el("q").value=e.target.textContent; search(); el("q").focus(); } });
+const CHIPS=[
+  {l:"確認申請",q:"確認"},{l:"斜線",q:"斜線"},{l:"断熱",q:"断熱"},
+  {l:"界壁",q:"界壁"},{l:"防火区画",q:"防火区画"},{l:"採光",q:"採光"},
+  {l:"換気",q:"換気"},{l:"接合",q:"接合 溶接"},{l:"基礎",q:"基礎"},
+  {l:"避難",q:"避難"},{l:"容積率",q:"容積"},{l:"宅建業",q:"宅地建物取引"}
+];
+el("chips").innerHTML=CHIPS.map(c=>`<button class="chip" data-q="${esc(c.q)}">${esc(c.l)}</button>`).join("");
+el("chips").addEventListener("click",e=>{ const b=e.target.closest(".chip"); if(b){ el("q").value=b.dataset.q; search(); el("q").focus(); } });
 el("q").addEventListener("input", search);
 el("clr").addEventListener("click", ()=>{ el("q").value=""; search(); el("q").focus(); });
 loadAll();
