@@ -34,9 +34,22 @@
 
   .lead{
     background:var(--card);border:1px solid var(--line);border-radius:16px;
-    padding:15px 18px;margin:16px 0 22px;font-size:13.5px;color:#55525f;
+    padding:15px 18px;margin:16px 0 12px;font-size:13.5px;color:#55525f;
   }
   .lead b{color:var(--accent);}
+
+  /* 横断検索ボタン */
+  .search-link{
+    display:flex;align-items:center;gap:12px;text-decoration:none;
+    background:var(--accent);color:#fff;border-radius:16px;
+    padding:15px 18px;margin:0 0 22px;transition:.15s;
+  }
+  .search-link:active{transform:scale(.985);}
+  .search-link .si{font-size:20px;flex:none;}
+  .search-link .st{flex:1;min-width:0;}
+  .search-link .st .n{font-size:15.5px;font-weight:800;}
+  .search-link .st .d{font-size:12px;color:#d7d2f0;margin-top:1px;}
+  .search-link .ar{font-size:18px;font-weight:700;color:#d7d2f0;flex:none;}
 
   .group{margin-bottom:28px;}
   .group-head{display:flex;align-items:baseline;gap:10px;margin:0 4px 12px;}
@@ -95,6 +108,16 @@
   <div class="lead">
     間違えた問題は各アプリ内で<b>自動記録</b>されます。「<b>間違い復習</b>」で前回までの間違いを再テストできます。
   </div>
+
+  <!-- 横断検索 -->
+  <a class="search-link" href="search.html">
+    <span class="si">🔍</span>
+    <span class="st">
+      <span class="n">問題を横断検索</span>
+      <span class="d">全アプリの問題・選択肢・解説をまとめて検索</span>
+    </span>
+    <span class="ar">›</span>
+  </a>
 
   <!-- 公開模擬試験② -->
   <section class="group fresh">
