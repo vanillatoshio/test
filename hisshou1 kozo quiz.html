@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>必勝テスト① 構造 ○×トレーナー</title>
+<style>
+  :root{
+    --accent:#c2740a;
+    --accent-light:#e0931f;
+    --accent-bg:#fdf1e0;
+    --maru:#2e9e6b;
+    --batsu:#d9534f;
+    --ink:#2a2733;
+    --muted:#8a8696;
+    --line:#ece4d8;
+    --card:#ffffff;
+    --bg:#fbf8f3;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+    background:var(--bg);color:var(--ink);
+    line-height:1.7;-webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:560px;margin:0 auto;padding:16px 16px 48px;}
+
+  header.top{text-align:center;padding:24px 0 8px;}
+  header.top .eyebrow{font-size:12px;letter-spacing:.18em;color:var(--accent);font-weight:700;}
+  header.top h1{font-size:22px;margin:6px 0 2px;font-weight:800;}
+  header.top .sub{font-size:13px;color:var(--muted);}
+
+  .home-intro{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:16px 18px;margin:16px 0;font-size:13.5px;color:#55525f;
+  }
+  .home-intro b{color:var(--accent);}
+  .sec-grid{display:flex;flex-direction:column;gap:12px;margin-top:8px;}
+  .sec-btn{
+    display:flex;align-items:center;justify-content:space-between;
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:18px 20px;cursor:pointer;transition:.15s;text-align:left;width:100%;
+    font-family:inherit;color:inherit;
+  }
+  .sec-btn:active{transform:scale(.98);}
+  .sec-btn .name{font-size:17px;font-weight:700;}
+  .sec-btn .meta{font-size:12px;color:var(--muted);margin-top:2px;}
+  .sec-btn .count{
+    background:var(--accent-bg);color:var(--accent);font-weight:700;
+    border-radius:999px;padding:4px 12px;font-size:13px;white-space:nowrap;
+  }
+  .sec-btn.all{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .sec-btn.all .meta{color:#f3dcc0;}
+  .sec-btn.all .count{background:rgba(255,255,255,.22);color:#fff;}
+  .sec-btn.review{background:#fff7f6;border-color:#f3d6d4;}
+  .sec-btn.review .name{color:var(--batsu);}
+  .sec-btn.review .count{background:#fae3e2;color:var(--batsu);}
+  .sec-btn:disabled{opacity:.45;cursor:default;}
+
+  .bar{display:flex;align-items:center;gap:12px;margin:8px 0 14px;}
+  .back{
+    background:none;border:none;color:var(--accent);font-size:15px;font-weight:700;
+    cursor:pointer;font-family:inherit;padding:6px 0;
+  }
+  .progress{flex:1;height:8px;background:var(--line);border-radius:999px;overflow:hidden;}
+  .progress > i{display:block;height:100%;background:var(--accent);width:0;transition:.3s;}
+  .counter{font-size:13px;color:var(--muted);font-weight:700;white-space:nowrap;}
+
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:20px;
+    padding:22px 20px;box-shadow:0 6px 20px rgba(120,80,20,.05);
+  }
+  .src-tag{
+    display:inline-block;background:var(--accent-bg);color:var(--accent);
+    font-size:12px;font-weight:700;border-radius:8px;padding:3px 10px;margin-bottom:14px;
+  }
+  .q-text{font-size:17px;line-height:1.85;font-weight:500;}
+
+  .choices{display:flex;gap:14px;margin-top:22px;}
+  .choice{
+    flex:1;border:2px solid var(--line);background:var(--card);border-radius:16px;
+    padding:18px 0;font-size:30px;font-weight:800;cursor:pointer;font-family:inherit;
+    transition:.12s;color:var(--ink);
+  }
+  .choice:active{transform:scale(.96);}
+  .choice.maru{color:var(--maru);}
+  .choice.batsu{color:var(--batsu);}
+  .choice:disabled{cursor:default;}
+  .choice.sel-correct{border-color:var(--maru);background:#eef9f3;}
+  .choice.sel-wrong{border-color:var(--batsu);background:#fdeeed;}
+  .choice.dim{opacity:.35;}
+
+  .result{margin-top:18px;border-radius:16px;padding:16px 18px;display:none;}
+  .result.show{display:block;animation:fade .25s;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  .result.ok{background:#eef9f3;border:1px solid #bfe6d2;}
+  .result.ng{background:#fdeeed;border:1px solid #f3cecb;}
+  .result .verdict{font-weight:800;font-size:15px;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+  .result.ok .verdict{color:var(--maru);}
+  .result.ng .verdict{color:var(--batsu);}
+  .result .ans{font-size:13px;color:var(--muted);font-weight:700;}
+  .result .point{font-size:14.5px;line-height:1.8;margin-top:8px;color:#3d3a47;}
+  .result .point b{color:var(--accent);}
+
+  .next{
+    width:100%;margin-top:16px;background:var(--accent);color:#fff;border:none;
+    border-radius:14px;padding:16px;font-size:16px;font-weight:800;cursor:pointer;
+    font-family:inherit;display:none;
+  }
+  .next.show{display:block;}
+  .next:active{transform:scale(.98);}
+
+  .summary{text-align:center;padding-top:10px;}
+  .summary .ring{
+    width:150px;height:150px;border-radius:50%;margin:18px auto;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:conic-gradient(var(--accent) var(--deg,0deg),var(--line) 0);
+  }
+  .summary .ring .inner{
+    width:122px;height:122px;border-radius:50%;background:var(--card);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+  }
+  .summary .ring .pct{font-size:34px;font-weight:800;color:var(--accent);}
+  .summary .ring .lbl{font-size:12px;color:var(--muted);}
+  .summary h2{font-size:20px;margin:6px 0;}
+  .summary .score{font-size:15px;color:var(--muted);margin-bottom:18px;}
+  .summary .acts{display:flex;flex-direction:column;gap:10px;}
+  .summary .acts button{
+    border-radius:14px;padding:15px;font-size:15px;font-weight:800;cursor:pointer;
+    font-family:inherit;border:none;
+  }
+  .btn-primary{background:var(--accent);color:#fff;}
+  .btn-ghost{background:var(--card);color:var(--accent);border:1px solid var(--line)!important;}
+  .btn-review{background:#fff7f6;color:var(--batsu);border:1px solid #f3d6d4!important;}
+
+  .hidden{display:none!important;}
+  footer{text-align:center;font-size:11px;color:#c4bba8;margin-top:28px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HOME -->
+  <section id="home">
+    <header class="top">
+      <div class="eyebrow">2級建築士 必勝テスト①</div>
+      <h1>構造 ○× トレーナー</h1>
+      <div class="sub">木構造・RC造・鉄骨造・地盤基礎／ 全8問</div>
+    </header>
+    <div class="home-intro">
+      黄色マーク部分の選択肢を <b>○×形式</b> で出題します（全8問）。<br>
+      正解すると<b>ポイント解説</b>が表示されます。間違えた問題はその場で<b>解き直し</b>でき、正解するまで繰り返せます。
+    </div>
+    <div class="sec-grid" id="secGrid"></div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" class="hidden">
+    <div class="bar">
+      <button class="back" id="backBtn">← 戻る</button>
+      <div class="progress"><i id="prog"></i></div>
+      <div class="counter" id="counter">1/8</div>
+    </div>
+    <div class="card">
+      <span class="src-tag" id="srcTag">No.</span>
+      <div class="q-text" id="qText"></div>
+      <div class="choices">
+        <button class="choice maru" id="cMaru">○</button>
+        <button class="choice batsu" id="cBatsu">×</button>
+      </div>
+      <div class="result" id="result">
+        <div class="verdict" id="verdict"></div>
+        <div class="ans" id="ansLine"></div>
+        <div class="point" id="pointText"></div>
+      </div>
+    </div>
+    <button class="next" id="nextBtn">次の問題 →</button>
+  </section>
+
+  <!-- SUMMARY -->
+  <section id="summary" class="hidden">
+    <div class="summary">
+      <div class="ring" id="ring"><div class="inner">
+        <div class="pct" id="pct">0%</div><div class="lbl">正答率</div>
+      </div></div>
+      <h2 id="sumTitle">おつかれさまでした</h2>
+      <div class="score" id="sumScore"></div>
+      <div class="acts">
+        <button class="btn-review hidden" id="sumReview"></button>
+        <button class="btn-primary" id="sumRetry">最初から全8問</button>
+        <button class="btn-ghost" id="sumHome">ホームに戻る</button>
+      </div>
+    </div>
+  </section>
+
+  <footer>※ 日建学院 2026 2級建築士 必勝テスト①（構造）より作成（個人学習用）</footer>
+</div>
+
+<script>
+/* n:ID / src:出典 / cat:分野 / a:正解(true=○,false=×) / q:問題文 / p:ポイント */
+const QUESTIONS = [
+  {n:1, src:"R05-20", cat:"木質材料", a:false,
+   q:"インシュレーションボードは、木材の小片（チップ）に接着剤を加えて、繊維方向・積層方向等によって強度・性能上の異方性を加えて熱圧成形したボードである。",
+   p:"これは<b>パーティクルボード</b>の説明。インシュレーションボード（軟質繊維板）は、十分に繊維化した<b>植物繊維</b>を加熱・加圧して成形した板材。"},
+  {n:2, src:"R03-14", cat:"RC造", a:false,
+   q:"部材の曲げ破壊は、脆性的な破壊であり、建築物の崩壊につながるおそれがあるので、せん断破壊よりも先行しないように設計する。",
+   p:"逆。急激で脆性的な破壊は<b>せん断破壊</b>。曲げ破壊は曲げ降伏後に十分な靭性が確保される延性的な破壊。よって<b>せん断破壊が曲げ破壊より先行しない</b>ように設計する。"},
+  {n:3, src:"R03-14", cat:"RC造", a:true,
+   q:"柱梁接合部における帯筋比は、一般に、0.2%以上とする。",
+   p:"正しい。柱梁接合部の帯筋比は、一般に<b>0.2%以上</b>とする（鉄筋コンクリート構造計算規準）。"},
+  {n:4, src:"R05-09", cat:"地盤・基礎", a:true,
+   q:"地下外壁に作用する土圧を静止土圧として算定する場合の静止土圧係数は、一般に、砂質土、粘性土のいずれの場合であっても、0.5とする。",
+   p:"正しい。静止土圧係数は、現場計測や室内試験から<b>砂質土・粘性土ともに一般に0.5程度</b>とする（建築基礎構造設計指針）。"},
+  {n:5, src:"R05-09", cat:"地盤・基礎", a:true,
+   q:"基礎に直接作用する固定荷重は、一般に、基礎構造各部の自重のほか、基礎スラブ上部の土かぶりの重量を考慮する。",
+   p:"正しい。基礎の固定荷重は、基礎構造各部の自重に加え、<b>基礎スラブ上部の土被り重量</b>を考慮する（建築基礎構造設計指針）。"},
+  {n:6, src:"R02-17", cat:"鉄骨造", a:true,
+   q:"山形鋼や溝形鋼をガセットプレートの片側にのみ接合する場合は、偏心の影響を考慮して設計する。",
+   p:"正しい。片側のみの接合は偏心が生じるため考慮する。なお偏心を考慮する場合、有効断面から<b>突出脚の1/2の断面を減じた断面</b>で算定してよい（鋼構造設計規準）。"},
+  {n:7, src:"木構造", cat:"木構造金物", a:true,
+   q:"山形プレートは、柱と土台又は桁の引張りを受ける柱の上下の接合に用いる。",
+   p:"正しい。山形プレートは、柱と土台・桁など横架材との<b>柱の上下接合</b>に用い、引張りに抵抗する。"},
+  {n:8, src:"木構造", cat:"木構造金物", a:true,
+   q:"火打金物は、床組及び小屋組の隅角部の補強に用いる。",
+   p:"正しい。火打金物は、<b>床組・小屋組の隅角部</b>（水平構面）の補強に用いる。"},
+];
+
+const STORE_KEY = "hisshou1_kozo_wrong";
+
+let pool = [];
+let idx = 0;
+let correctCount = 0;
+let sessionWrong = [];
+
+const el = id => document.getElementById(id);
+const homeSec = el("home"), quizSec = el("quiz"), sumSec = el("summary");
+
+async function getWrongSet(){
+  try{
+    const r = await window.storage.get(STORE_KEY);
+    if(r && r.value) return new Set(JSON.parse(r.value));
+  }catch(e){}
+  return new Set();
+}
+async function saveWrongSet(set){
+  try{ await window.storage.set(STORE_KEY, JSON.stringify([...set])); }catch(e){}
+}
+
+async function renderHome(){
+  const grid = el("secGrid");
+  grid.innerHTML = "";
+  const wrongSet = await getWrongSet();
+
+  grid.appendChild(makeSecBtn({
+    name:"全8問に挑戦", meta:"構造（木・RC・鉄骨・地盤基礎）○×トレーニング",
+    count:QUESTIONS.length, cls:"all",
+    onClick:()=>startQuiz(QUESTIONS)
+  }));
+
+  const wrongQs = QUESTIONS.filter(q=>wrongSet.has(q.n));
+  const rev = makeSecBtn({
+    name:"間違い復習", meta:wrongQs.length? "間違えた問題だけ解き直す":"間違いはまだありません",
+    count:wrongQs.length, cls:"review",
+    onClick:()=>startQuiz(wrongQs)
+  });
+  if(!wrongQs.length) rev.disabled = true;
+  grid.appendChild(rev);
+}
+
+function makeSecBtn({name,meta,count,cls,onClick}){
+  const b = document.createElement("button");
+  b.className = "sec-btn "+cls;
+  b.innerHTML = `<span><span class="name">${name}</span><span class="meta">${meta}</span></span>
+                 <span class="count">${count}問</span>`;
+  b.addEventListener("click", onClick);
+  return b;
+}
+
+function startQuiz(set){
+  if(!set.length) return;
+  pool = [...set];
+  idx = 0; correctCount = 0; sessionWrong = [];
+  homeSec.classList.add("hidden");
+  sumSec.classList.add("hidden");
+  quizSec.classList.remove("hidden");
+  showQuestion();
+}
+
+function showQuestion(){
+  const q = pool[idx];
+  el("srcTag").textContent = `${q.src}　【${q.cat}】`;
+  el("qText").textContent = q.q;
+  el("counter").textContent = `${idx+1}/${pool.length}`;
+  el("prog").style.width = `${(idx/pool.length)*100}%`;
+
+  const cM = el("cMaru"), cB = el("cBatsu");
+  [cM,cB].forEach(c=>{
+    c.disabled = false;
+    c.classList.remove("sel-correct","sel-wrong","dim");
+  });
+  el("result").className = "result";
+  el("nextBtn").className = "next";
+
+  cM.onclick = ()=>answer(true);
+  cB.onclick = ()=>answer(false);
+}
+
+async function answer(choice){
+  const q = pool[idx];
+  const cM = el("cMaru"), cB = el("cBatsu");
+  cM.disabled = true; cB.disabled = true;
+
+  const isCorrect = (choice === q.a);
+  const chosenEl = choice ? cM : cB;
+  const otherEl  = choice ? cB : cM;
+
+  if(isCorrect){
+    chosenEl.classList.add("sel-correct");
+    otherEl.classList.add("dim");
+    correctCount++;
+  }else{
+    chosenEl.classList.add("sel-wrong");
+    (q.a ? cM : cB).classList.add("sel-correct");
+    sessionWrong.push(q.n);
+  }
+
+  const res = el("result");
+  res.classList.add("show", isCorrect ? "ok":"ng");
+  el("verdict").textContent = isCorrect ? "正解！" : "不正解";
+  el("ansLine").textContent = `正解は「${q.a ? "○":"×"}」`;
+  el("pointText").innerHTML = `<b>ポイント：</b>${q.p}`;
+
+  el("prog").style.width = `${((idx+1)/pool.length)*100}%`;
+
+  const wrongSet = await getWrongSet();
+  if(isCorrect) wrongSet.delete(q.n);
+  else wrongSet.add(q.n);
+  await saveWrongSet(wrongSet);
+
+  const nb = el("nextBtn");
+  nb.classList.add("show");
+  nb.textContent = (idx+1 < pool.length) ? "次の問題 →" : "結果を見る →";
+  nb.onclick = nextQuestion;
+}
+
+function nextQuestion(){
+  idx++;
+  if(idx < pool.length) showQuestion();
+  else showSummary();
+}
+
+async function showSummary(){
+  quizSec.classList.add("hidden");
+  sumSec.classList.remove("hidden");
+
+  const total = pool.length;
+  const pct = Math.round((correctCount/total)*100);
+  el("pct").textContent = pct+"%";
+  el("ring").style.setProperty("--deg", (pct*3.6)+"deg");
+  el("sumScore").textContent = `${total}問中 ${correctCount}問 正解`;
+
+  const isReviewRound = pool.length < QUESTIONS.length;
+  let title = "おつかれさまでした";
+  if(pct===100) title = isReviewRound ? "間違いをすべてクリア！🎯" : "全問正解！ 完璧です🎯";
+  else if(pct>=80) title = "good! あと少し";
+  else if(pct>=50) title = "復習で固めましょう";
+  else title = "間違いを見直そう";
+  el("sumTitle").textContent = title;
+
+  const wrongQs = pool.filter(q => sessionWrong.includes(q.n));
+  const rb = el("sumReview");
+  if(wrongQs.length){
+    rb.classList.remove("hidden");
+    rb.textContent = `間違えた${wrongQs.length}問を解き直す`;
+    rb.onclick = ()=>startQuiz(wrongQs);
+  }else{
+    rb.classList.add("hidden");
+  }
+
+  el("sumRetry").textContent = "最初から全8問";
+  el("sumRetry").onclick = ()=>startQuiz(QUESTIONS);
+  el("sumHome").onclick = goHome;
+}
+
+function goHome(){
+  quizSec.classList.add("hidden");
+  sumSec.classList.add("hidden");
+  homeSec.classList.remove("hidden");
+  renderHome();
+}
+el("backBtn").addEventListener("click", goHome);
+
+renderHome();
+</script>
+</body>
+</html>
