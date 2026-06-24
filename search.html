@@ -31,6 +31,11 @@
   .solvebtn.show{display:block;}
   .solvebtn:active{transform:scale(.99);}
   .note{font-size:11.5px;color:var(--muted);margin:-8px 4px 14px;}
+  .batches{display:flex;flex-direction:column;gap:8px;margin:0 0 14px;}
+  .batch-h{font-size:12px;font-weight:800;color:var(--accent);margin:2px 4px 2px;}
+  .batchbtn{display:flex;align-items:center;justify-content:space-between;width:100%;border:1.5px solid var(--accent);background:var(--card);color:var(--accent);border-radius:13px;padding:13px 16px;font-size:14.5px;font-weight:800;cursor:pointer;font-family:inherit;}
+  .batchbtn:active{transform:scale(.99);}
+  .batchbtn .rng{font-size:12px;color:var(--muted);font-weight:700;}
   .chips{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 14px;}
   .chip{font-size:12px;font-weight:700;border:1px solid var(--line);background:var(--card);color:var(--muted);border-radius:999px;padding:5px 12px;cursor:pointer;font-family:inherit;}
   .chip:active{transform:scale(.96);}
@@ -119,6 +124,7 @@
     <div class="status" id="status">読み込み中…</div>
     <button class="solvebtn" id="solveBtn"></button>
     <div class="note" id="note"></div>
+    <div class="batches" id="batches"></div>
     <div class="chips" id="chips"></div>
     <div id="errBox"></div>
     <div class="res" id="res"></div>
@@ -155,6 +161,7 @@
       <div class="score" id="sumScore"></div>
       <div class="acts">
         <button class="btn-review hidden" id="sumReview"></button>
+        <button class="btn-primary hidden" id="sumNext"></button>
         <button class="btn-primary" id="sumRetry">もう一度すべて</button>
         <button class="btn-ghost" id="sumBack">検索に戻る</button>
       </div>
@@ -287,12 +294,34 @@ function search(){
   renderStatus(`${orLabel}… <b>${curHits.length}</b> 件ヒット`);
 
   const solvable = curHits.filter(it=>it.ox==="○"||it.ox==="×");
-  const sb = el("solveBtn"), note=el("note");
+  const sb = el("solveBtn"), note=el("note"), batchBox=el("batches");
+  const BATCH=20;
+  batchBox.innerHTML="";
   if(solvable.length){
-    sb.textContent = `▶ ${solvable.length}問 をまとめて解く`;
-    sb.classList.add("show");
-    sb.onclick = ()=>startQuiz(solvable);
     const skipped = curHits.length - solvable.length;
+    if(solvable.length<=BATCH){
+      // 20問以下：1ボタンでまとめて
+      sb.textContent = `▶ ${solvable.length}問 をまとめて解く`;
+      sb.classList.add("show");
+      sb.onclick = ()=>startQuiz(solvable);
+    }else{
+      // 20問より多い：全部 ＋ 20問ずつのバッチ
+      sb.textContent = `▶ 全${solvable.length}問 を一気に解く`;
+      sb.classList.add("show");
+      sb.onclick = ()=>startQuiz(solvable);
+      batches = [];
+      for(let i=0;i<solvable.length;i+=BATCH) batches.push(solvable.slice(i,i+BATCH));
+      const h=document.createElement("div"); h.className="batch-h";
+      h.textContent=`または 20問ずつ（全${batches.length}回）に分けて解く`;
+      batchBox.appendChild(h);
+      batches.forEach((chunk,i)=>{
+        const from=i*BATCH+1, to=i*BATCH+chunk.length;
+        const b=document.createElement("button"); b.className="batchbtn";
+        b.innerHTML=`<span>${i+1}回目を解く</span><span class="rng">${from}〜${to}問（${chunk.length}問）</span>`;
+        b.onclick=()=>startBatch(i);
+        batchBox.appendChild(b);
+      });
+    }
     let nt = skipped>0 ? `※ ○×で答えが決まらない${skipped}問（5択など）は演習から除外` : "";
     if(toks.length>1){ nt = (nt?nt+"　/　":"") + "複数語は「いずれかを含む」検索"; }
     note.textContent = nt;
@@ -312,12 +341,15 @@ function search(){
 
 /* ===== まとめて解く ===== */
 let pool=[], idx=0, correct=0, sessWrong=[];
+let batches=[], curBatch=null;
 const searchView=el("searchView"), quizView=el("quizView"), sumView=el("sumView");
-function startQuiz(list){
+function runQuiz(list){
   pool=list.slice(); idx=0; correct=0; sessWrong=[];
   searchView.classList.add("hidden"); sumView.classList.add("hidden"); quizView.classList.remove("hidden");
   window.scrollTo(0,0); showQ();
 }
+function startQuiz(list){ curBatch=null; runQuiz(list); }
+function startBatch(i){ curBatch=i; runQuiz(batches[i]); }
 function showQ(){
   const it=pool[idx];
   el("qBadge").innerHTML = `<span class="b" style="--c:var(--${it.sub})">${esc(it.app)}</span>${it.src?`<span class="s">${esc(String(it.src))}</span>`:""}`;
@@ -361,7 +393,17 @@ function showSum(){
   const rb=el("sumReview");
   if(wrongList.length){ rb.classList.remove("hidden"); rb.textContent=`間違えた${wrongList.length}問を解き直す`; rb.onclick=()=>startQuiz(wrongList); }
   else rb.classList.add("hidden");
-  el("sumRetry").onclick=()=>startQuiz(pool);
+  // 次の20問（バッチ演習中で次がある場合）
+  const nx=el("sumNext");
+  if(curBatch!==null && batches[curBatch+1]){
+    const next=batches[curBatch+1];
+    nx.classList.remove("hidden");
+    nx.textContent=`次の${next.length}問へ →`;
+    const ni=curBatch+1;
+    nx.onclick=()=>startBatch(ni);
+  }else{ nx.classList.add("hidden"); }
+  el("sumRetry").textContent = (curBatch!==null)?"この回をもう一度":"もう一度すべて";
+  el("sumRetry").onclick=()=>{ const c=curBatch; if(c!==null) startBatch(c); else startQuiz(pool); };
 }
 function backToSearch(){
   quizView.classList.add("hidden"); sumView.classList.add("hidden"); searchView.classList.remove("hidden"); window.scrollTo(0,0);
