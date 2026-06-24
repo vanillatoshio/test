@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>問題 横断検索｜2級建築士</title>
+<style>
+  :root{
+    --accent:#5a51a0;
+    --accent-bg:#f0eef9;
+    --ink:#2a2733;
+    --muted:#8a8696;
+    --line:#e6e3f0;
+    --card:#ffffff;
+    --bg:#f6f5fb;
+    --maru:#2e9e6b;
+    --batsu:#d9534f;
+    --keikaku:#2e9e6b;
+    --houki:#d99a2b;
+    --kouzou:#5a51a0;
+    --sekou:#d9534f;
+    --gensen:#4f73c4;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:600px;margin:0 auto;padding:14px 14px 48px;}
+
+  header.top{text-align:center;padding:18px 0 6px;}
+  header.top .eyebrow{font-size:12px;letter-spacing:.18em;color:var(--accent);font-weight:700;}
+  header.top h1{font-size:21px;margin:5px 0 2px;font-weight:800;}
+  header.top .sub{font-size:12.5px;color:var(--muted);}
+
+  .searchbar{
+    position:sticky;top:0;z-index:10;background:var(--bg);
+    padding:12px 0 10px;margin-bottom:6px;
+  }
+  .searchbox{
+    display:flex;align-items:center;gap:8px;background:var(--card);
+    border:1.5px solid var(--line);border-radius:14px;padding:11px 14px;
+  }
+  .searchbox:focus-within{border-color:var(--accent);}
+  .searchbox input{
+    flex:1;border:none;outline:none;font-size:16px;font-family:inherit;
+    background:transparent;color:var(--ink);min-width:0;
+  }
+  .searchbox .ic{font-size:17px;color:var(--muted);}
+  .searchbox .clr{
+    border:none;background:var(--line);color:#fff;border-radius:999px;
+    width:22px;height:22px;font-size:13px;cursor:pointer;flex:none;display:none;
+  }
+  .searchbox .clr.show{display:block;}
+
+  .status{font-size:12.5px;color:var(--muted);margin:2px 4px 12px;font-weight:600;}
+  .status b{color:var(--accent);}
+
+  .chips{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 14px;}
+  .chip{
+    font-size:12px;font-weight:700;border:1px solid var(--line);background:var(--card);
+    color:var(--muted);border-radius:999px;padding:5px 12px;cursor:pointer;font-family:inherit;
+  }
+  .chip:active{transform:scale(.96);}
+
+  .res{display:flex;flex-direction:column;gap:10px;}
+  a.hit{
+    display:block;text-decoration:none;color:inherit;background:var(--card);
+    border:1px solid var(--line);border-radius:14px;padding:13px 15px;
+    position:relative;overflow:hidden;transition:.12s;
+  }
+  a.hit:active{transform:scale(.99);}
+  a.hit::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--c,var(--accent));}
+  .hit .top{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;}
+  .hit .badge{
+    font-size:11px;font-weight:700;color:#fff;background:var(--c,var(--accent));
+    border-radius:6px;padding:2px 8px;white-space:nowrap;
+  }
+  .hit .ox{font-size:14px;font-weight:800;}
+  .hit .ox.o{color:var(--maru);}
+  .hit .ox.x{color:var(--batsu);}
+  .hit .src{font-size:11.5px;color:var(--muted);font-weight:700;}
+  .hit .q{font-size:14px;line-height:1.75;color:#33303d;}
+  .hit .p{font-size:12.5px;line-height:1.7;color:var(--muted);margin-top:5px;}
+  .hit mark{background:#fff2a8;color:inherit;border-radius:3px;padding:0 1px;font-weight:700;}
+
+  .empty{text-align:center;color:var(--muted);font-size:13.5px;padding:34px 10px;}
+  .err{
+    background:#fff7f6;border:1px solid #f3d6d4;border-radius:12px;
+    padding:11px 14px;font-size:12px;color:#a85; margin-bottom:12px;color:var(--batsu);
+  }
+  .err b{display:block;margin-bottom:3px;}
+  .spin{
+    width:26px;height:26px;border:3px solid var(--line);border-top-color:var(--accent);
+    border-radius:50%;animation:rot .8s linear infinite;margin:30px auto;
+  }
+  @keyframes rot{to{transform:rotate(360deg);}}
+  footer{text-align:center;font-size:11px;color:#b6b2c4;margin-top:26px;}
+  footer a{color:var(--accent);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="eyebrow">2級建築士 学習アプリ</div>
+    <h1>問題 横断検索</h1>
+    <div class="sub">全アプリの問題・選択肢・解説をまとめて検索</div>
+  </header>
+
+  <div class="searchbar">
+    <div class="searchbox">
+      <span class="ic">🔍</span>
+      <input id="q" type="search" placeholder="キーワード（例：斜線、断熱、界壁、宅建業…）" autocomplete="off" enterkeyhint="search">
+      <button class="clr" id="clr" aria-label="クリア">×</button>
+    </div>
+  </div>
+
+  <div class="status" id="status">読み込み中…</div>
+
+  <div class="chips" id="chips"></div>
+
+  <div id="errBox"></div>
+  <div class="res" id="res"></div>
+
+  <footer><a href="index.html">← メニューに戻る</a></footer>
+</div>
+
+<script>
+/* 検索対象のアプリ一覧（index.html のリンクと対応） */
+const APPS = [
+  {f:"moshi2-keikaku.html",                 label:"模試② 計画",    sub:"keikaku"},
+  {f:"moshi2-houki.html",                   label:"模試② 法規",    sub:"houki"},
+  {f:"moshi2-kozo.html",                    label:"模試② 構造",    sub:"kouzou"},
+  {f:"moshi2-sekou.html",                   label:"模試② 施工",    sub:"sekou"},
+  {f:"kokai moshi2 quiz.html",              label:"模試③ 計画",    sub:"keikaku"},
+  {f:"kokai moshi2 houki quiz.html",        label:"模試③ 法規",    sub:"houki"},
+  {f:"kokai moshi2 kouzou quiz.html",       label:"模試③ 構造",    sub:"kouzou"},
+  {f:"kokai moshi2 sekou quiz.html",        label:"模試③ 施工",    sub:"sekou"},
+  {f:"kozo quiz.html",                      label:"構造100問",     sub:"kouzou"},
+  {f:"sekou quiz.html",                     label:"施工100問",     sub:"sekou"},
+  {f:"keikaku quiz.html",                   label:"計画100問",     sub:"keikaku"},
+  {f:"gensen d quiz.html",                  label:"厳選D",         sub:"gensen"},
+  {f:"gensen b quiz.html",                  label:"厳選B",         sub:"gensen"},
+  {f:"gensen b2 quiz.html",                 label:"厳選B2",        sub:"gensen"},
+  {f:"kozo gensen.html",                    label:"構造厳選5択",   sub:"kouzou"},
+  {f:"houki note quiz.html",                label:"法規ノート",    sub:"houki"},
+  {f:"houki kouzou quiz.html",              label:"法規構造厳選",  sub:"gensen"},
+  {f:"kakunin1 keikaku quiz.html",          label:"確認① 計画",    sub:"keikaku"},
+  {f:"kakunin1 houki quiz.html",            label:"確認① 法規",    sub:"houki"},
+  {f:"houki kakunin itoshima quiz.html",    label:"糸島①",         sub:"houki"},
+  {f:"houki kakunin itoshima 2 quiz.html",  label:"糸島②",         sub:"houki"},
+  {f:"hisshou1 houki quiz.html",            label:"必勝① 法規",    sub:"houki"},
+  {f:"hisshou1 kozo quiz.html",             label:"必勝① 構造",    sub:"kouzou"},
+];
+
+const el = id => document.getElementById(id);
+let INDEX = [];   // {q, p, ox, app, file, sub, blob}
+let failed = [];
+
+/* HTMLテキストから QUESTIONS 配列を取り出す */
+function extractQuestions(html){
+  const m = html.match(/(?:const|let|var)\s+QUESTIONS\s*=\s*(\[[\s\S]*?\n\s*\]);/);
+  if(!m) return null;
+  try{
+    return (new Function("return " + m[1] + ";"))();
+  }catch(e){ return null; }
+}
+
+function pickText(obj){
+  // 問題文っぽいフィールド
+  return obj.q || obj.question || obj.text || "";
+}
+function allText(obj){
+  return Object.values(obj)
+    .filter(v => typeof v === "string")
+    .join("　");
+}
+function pickOX(obj){
+  if(typeof obj.a === "boolean") return obj.a ? "○" : "×";
+  return "";
+}
+
+async function loadAll(){
+  const results = await Promise.all(APPS.map(async app => {
+    try{
+      const r = await fetch(encodeURI(app.f), {cache:"no-store"});
+      if(!r.ok) throw new Error(r.status);
+      const html = await r.text();
+      const qs = extractQuestions(html);
+      if(!qs || !Array.isArray(qs)) throw new Error("no-data");
+      return qs.map(o => ({
+        q: pickText(o),
+        p: o.p || o.point || o.explain || "",
+        ox: pickOX(o),
+        src: o.src || "",
+        app: app.label, file: app.f, sub: app.sub,
+        blob: allText(o)
+      }));
+    }catch(e){
+      failed.push(app.label);
+      return [];
+    }
+  }));
+  INDEX = results.flat();
+  renderStatus();
+  renderErr();
+  search(); // 初期表示
+}
+
+function renderStatus(extra){
+  const total = INDEX.length;
+  if(extra !== undefined){
+    el("status").innerHTML = extra;
+  }else{
+    el("status").innerHTML = `<b>${APPS.length - failed.length}</b> アプリ・<b>${total}</b> 問を検索できます`;
+  }
+}
+function renderErr(){
+  if(!failed.length){ el("errBox").innerHTML=""; return; }
+  el("errBox").innerHTML =
+    `<div class="err"><b>読み込めなかったアプリ（${failed.length}）</b>`+
+    failed.join("、")+
+    `<br>※ ファイルがまだアップされていないか、ファイル名が違う可能性があります。</div>`;
+}
+
+const norm = s => (s||"").toLowerCase();
+function highlight(text, kw){
+  if(!kw) return escapeHtml(text);
+  const t = escapeHtml(text);
+  // 大文字小文字無視でハイライト
+  const re = new RegExp("("+kw.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+")","gi");
+  return t.replace(re, "<mark>$1</mark>");
+}
+function escapeHtml(s){
+  return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+function search(){
+  const kw = el("q").value.trim();
+  el("clr").classList.toggle("show", !!kw);
+  const res = el("res");
+
+  if(!kw){
+    res.innerHTML = `<div class="empty">キーワードを入力すると、全アプリの問題・選択肢・解説から該当する枝を一覧表示します。</div>`;
+    renderStatus();
+    return;
+  }
+
+  const nk = norm(kw);
+  const hits = INDEX.filter(it => norm(it.blob).includes(nk));
+
+  renderStatus(`「<b>${escapeHtml(kw)}</b>」… <b>${hits.length}</b> 件ヒット`);
+
+  if(!hits.length){
+    res.innerHTML = `<div class="empty">「${escapeHtml(kw)}」に一致する問題は見つかりませんでした。</div>`;
+    return;
+  }
+
+  res.innerHTML = hits.map(it => {
+    const oxClass = it.ox==="○" ? "o" : (it.ox==="×" ? "x" : "");
+    const srcLine = it.src ? `<span class="src">${escapeHtml(it.src)}</span>` : "";
+    const pLine = it.p ? `<div class="p">${highlight(it.p, kw)}</div>` : "";
+    return `<a class="hit" style="--c:var(--${it.sub})" href="${encodeURI(it.file)}">
+      <div class="top">
+        <span class="badge">${escapeHtml(it.app)}</span>
+        ${it.ox?`<span class="ox ${oxClass}">${it.ox}</span>`:""}
+        ${srcLine}
+      </div>
+      <div class="q">${highlight(it.q, kw)}</div>
+      ${pLine}
+    </a>`;
+  }).join("");
+}
+
+/* よく使うキーワードのチップ */
+const SUGGEST = ["斜線","断熱","界壁","防火区画","採光","換気","接合","溶接","基礎","宅建業","避難","容積率"];
+el("chips").innerHTML = SUGGEST.map(k=>`<button class="chip">${k}</button>`).join("");
+el("chips").addEventListener("click", e=>{
+  if(e.target.classList.contains("chip")){
+    el("q").value = e.target.textContent;
+    search();
+    el("q").focus();
+  }
+});
+
+el("q").addEventListener("input", search);
+el("clr").addEventListener("click", ()=>{ el("q").value=""; search(); el("q").focus(); });
+
+loadAll();
+</script>
+</body>
+</html>
