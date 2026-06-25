@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>採光補正係数 暗記｜2級建築士 ○×クイズ</title>
+<style>
+:root{
+  --accent:#c8851f; --bg:#fbf3e3;
+  --maru:#2e9e6b; --batsu:#d9534f;
+  --ink:#2b2418; --sub:#7a6f5a; --card:#fff; --line:#ece0c8;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+  background:var(--bg); color:var(--ink); line-height:1.7;
+  -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:560px;margin:0 auto;padding:16px 14px 40px;min-height:100vh}
+header{text-align:center;padding:8px 0 14px}
+header h1{font-size:1.15rem;margin:0;color:var(--accent);letter-spacing:.02em}
+header p{margin:4px 0 0;font-size:.78rem;color:var(--sub)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 16px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.formula{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:12px 0 2px;font-size:.9rem;line-height:2}
+.formula b{color:var(--accent)}
+.btn{display:block;width:100%;border:none;border-radius:12px;padding:15px;font-size:1.02rem;font-weight:700;cursor:pointer;margin-top:10px;font-family:inherit}
+.btn.primary{background:var(--accent);color:#fff}
+.btn.sub{background:#fff;color:var(--accent);border:1.5px solid var(--accent)}
+.btn.ghost{background:#f2ebd9;color:var(--sub)}
+.btn:disabled{opacity:.5}
+.cat-btn{background:#fff;color:var(--ink);border:1.5px solid var(--line);text-align:left;font-size:.95rem}
+.cat-btn .n{float:right;color:var(--sub);font-weight:600;font-size:.85rem}
+
+.topbar{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.count{font-size:.82rem;color:var(--sub);white-space:nowrap;font-weight:600}
+.bar{flex:1;height:8px;background:#ecdfc4;border-radius:99px;overflow:hidden}
+.bar > i{display:block;height:100%;background:var(--accent);width:0;transition:width .25s}
+.srclabel{font-size:.72rem;color:var(--sub);margin-bottom:6px}
+.cat-tag{display:inline-block;background:var(--bg);color:var(--accent);font-size:.7rem;font-weight:700;padding:2px 9px;border-radius:99px;margin-bottom:10px}
+.q{font-size:1.12rem;line-height:1.85;margin:2px 0 4px;min-height:3em}
+
+.ox{display:flex;gap:12px;margin-top:18px}
+.ox button{flex:1;border:none;border-radius:14px;padding:20px 0;font-size:2rem;font-weight:800;cursor:pointer;font-family:inherit}
+.ox .maru{background:#e7f6ee;color:var(--maru);border:2px solid #bce4cd}
+.ox .batsu{background:#fdeceb;color:var(--batsu);border:2px solid #f5c9c6}
+
+.judge{margin-top:16px;border-radius:14px;padding:14px;display:none}
+.judge.show{display:block;animation:pop .2s}
+@keyframes pop{from{transform:scale(.97);opacity:.4}to{transform:scale(1);opacity:1}}
+.judge .head{font-size:1.1rem;font-weight:800;margin-bottom:6px}
+.judge.ok{background:#e7f6ee;border:1.5px solid #bce4cd}
+.judge.ok .head{color:var(--maru)}
+.judge.ng{background:#fdeceb;border:1.5px solid #f5c9c6}
+.judge.ng .head{color:var(--batsu)}
+.judge .ans{font-size:.85rem;color:var(--sub);margin-bottom:8px}
+.judge .p{font-size:.95rem;line-height:1.8}
+.judge .p b{color:var(--accent)}
+
+.ring-wrap{display:flex;justify-content:center;margin:6px 0 4px}
+svg.ring{transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:#ecdfc4;stroke-width:14}
+.ring-fg{fill:none;stroke:var(--accent);stroke-width:14;stroke-linecap:round;transition:stroke-dashoffset 1s ease}
+.ring-txt{font-size:1.9rem;font-weight:800;fill:var(--ink)}
+.ring-sub{font-size:.7rem;fill:var(--sub)}
+.score-line{text-align:center;font-size:1.05rem;margin:4px 0 2px;font-weight:700}
+.score-sub{text-align:center;color:var(--sub);font-size:.85rem;margin-bottom:8px}
+.note{font-size:.78rem;color:var(--sub);text-align:center;margin-top:14px;line-height:1.6}
+.hide{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>採光補正係数 暗記</h1>
+    <p>2級建築士 法規｜○×クイズ</p>
+  </header>
+
+  <section id="home">
+    <div class="card">
+      <div style="font-weight:700;font-size:.92rem;color:var(--accent);margin-bottom:2px">覚える3つの式</div>
+      <div class="formula">
+        住居系：(d/h)×<b>6</b>−<b>1.4</b><br>
+        工業系：(d/h)×<b>8</b>−1.0<br>
+        商業系：(d/h)×<b>10</b>−1.0<br>
+        <span style="font-size:.82rem;color:var(--sub)">※掛ける数=6・8・10／引く数は住居だけ1.4、他は1.0</span>
+      </div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <button class="btn primary" id="startAllBtn">全<span id="totalN"></span>問に挑戦</button>
+      <button class="btn sub" id="wrongBtn">間違い復習（<span id="wrongN">0</span>問）</button>
+    </div>
+    <div class="card" style="margin-top:14px" id="catBox">
+      <div style="font-weight:700;font-size:.9rem;margin-bottom:8px;color:var(--sub)">分野別</div>
+      <div id="catList"></div>
+    </div>
+    <p class="note">○か×で答えてね。間違えた問題は自動で記録され、「間違い復習」でやり直せます。</p>
+  </section>
+
+  <section id="quiz" class="hide">
+    <div class="topbar">
+      <span class="count"><span id="cur">1</span>/<span id="len">1</span></span>
+      <div class="bar"><i id="barFill"></i></div>
+    </div>
+    <div class="card">
+      <div class="srclabel" id="src"></div>
+      <span class="cat-tag" id="catTag"></span>
+      <div class="q" id="qtext"></div>
+      <div class="ox" id="oxBtns">
+        <button class="maru" id="btnMaru">○</button>
+        <button class="batsu" id="btnBatsu">×</button>
+      </div>
+      <div class="judge" id="judge">
+        <div class="head" id="jhead"></div>
+        <div class="ans" id="jans"></div>
+        <div class="p" id="jp"></div>
+        <button class="btn primary" id="nextBtn">次へ</button>
+      </div>
+    </div>
+    <button class="btn ghost" style="margin-top:14px" id="abortBtn">中断してホームへ</button>
+  </section>
+
+  <section id="result" class="hide">
+    <div class="card">
+      <div class="ring-wrap">
+        <svg class="ring" width="150" height="150" viewBox="0 0 150 150">
+          <circle class="ring-bg" cx="75" cy="75" r="64"></circle>
+          <circle class="ring-fg" id="ringFg" cx="75" cy="75" r="64"></circle>
+          <text class="ring-txt" id="ringTxt" x="75" y="72" text-anchor="middle" transform="rotate(90 75 75)">0%</text>
+          <text class="ring-sub" x="75" y="92" text-anchor="middle" transform="rotate(90 75 75)">正答率</text>
+        </svg>
+      </div>
+      <div class="score-line" id="scoreLine"></div>
+      <div class="score-sub" id="scoreSub"></div>
+      <button class="btn primary" id="redoBtn">間違えた問題を解き直す</button>
+      <button class="btn sub" id="restartBtn">最初から全問</button>
+      <button class="btn ghost" id="homeBtn">ホーム</button>
+    </div>
+  </section>
+</div>
+
+<script>
+const QUESTIONS = [
+  {n:1, src:"令20条2項", cat:"3つの式・数値", a:true, q:"工業系地域の採光補正係数は、(d/h)×8−1.0 で求める。", p:"工業系（準工業・工業・工業専用）は<b>×8、引く1.0</b>。"},
+  {n:2, src:"令20条2項", cat:"3つの式・数値", a:true, q:"住居系地域の採光補正係数は、(d/h)×6−1.4 で求める。", p:"住居系は<b>×6、引く1.4</b>。引く数が1.4なのは住居系だけ。"},
+  {n:3, src:"令20条2項", cat:"3つの式・数値", a:true, q:"商業系地域の採光補正係数は、(d/h)×10−1.0 で求める。", p:"商業系（近隣商業・商業）は<b>×10、引く1.0</b>。用途無指定区域も同じ。"},
+  {n:4, src:"令20条2項", cat:"3つの式・数値", a:false, q:"工業系地域の採光補正係数は、(d/h)×6−1.4 で求める。", p:"それは<b>住居系</b>の式。工業系は<b>×8−1.0</b>。"},
+  {n:5, src:"令20条2項", cat:"3つの式・数値", a:false, q:"住居系地域の採光補正係数は、(d/h)×8−1.0 で求める。", p:"それは<b>工業系</b>の式。住居系は<b>×6−1.4</b>。"},
+  {n:6, src:"令20条2項", cat:"3つの式・数値", a:false, q:"商業系地域の採光補正係数は、(d/h)×8−1.0 で求める。", p:"商業系は<b>×10−1.0</b>。×8は工業系。"},
+  {n:7, src:"令20条2項", cat:"3つの式・数値", a:false, q:"工業系地域の採光補正係数を求める式で、引く数を1.4とした。", p:"工業系の引く数は<b>1.0</b>。引く数が<b>1.4なのは住居系だけ</b>。"},
+  {n:8, src:"令20条2項", cat:"3つの式・数値", a:true, q:"掛ける数は住居6・工業8・商業10、引く数は住居だけ1.4で工業・商業は1.0である。", p:"<b>6→8→10</b>と増え、引く数は<b>住居だけ1.4</b>。これが覚え方の軸。"},
+
+  {n:9, src:"令20条", cat:"用語・ルール", a:true, q:"式のdは、開口部から隣地境界線等までの水平距離である。", p:"<b>d＝水平距離</b>（隣地境界線等まで）。分子。"},
+  {n:10, src:"令20条", cat:"用語・ルール", a:true, q:"式のhは、開口部の中心までの垂直距離である。", p:"<b>h＝垂直距離</b>（開口部の中心まで）。分母。"},
+  {n:11, src:"令20条", cat:"用語・ルール", a:false, q:"採光関係比率は、h/d（垂直距離÷水平距離）である。", p:"正しくは<b>d/h（水平÷垂直）</b>。上下を逆にしない。"},
+  {n:12, src:"令20条2項", cat:"用語・ルール", a:true, q:"算定した採光補正係数が3.0を超える場合は、3.0を限度とする。", p:"採光補正係数の<b>上限は3.0</b>。"},
+  {n:13, src:"令20条1項", cat:"用語・ルール", a:true, q:"採光に有効な部分の面積は、開口部の面積に採光補正係数を乗じて求める。", p:"<b>有効面積＝開口部面積×採光補正係数</b>。"},
+  {n:14, src:"令20条2項", cat:"用語・ルール", a:true, q:"天窓（トップライト）にあっては、算定した採光補正係数を3倍した値とする。", p:"天窓は採光に有利なので<b>×3</b>（上限3.0は適用後）。"},
+  {n:15, src:"令20条2項", cat:"用語・ルール", a:true, q:"幅90cm以上の縁側等がある開口部は、算定した採光補正係数に0.7を乗じる。", p:"縁側等（幅90cm以上）は光が減るので<b>×0.7</b>。"},
+
+  {n:16, src:"計算例", cat:"計算例", a:true, q:"d=3m・h=6m・工業系のとき、採光補正係数は (3/6)×8−1.0＝3.0 となる。", p:"0.5×8＝4.0、4.0−1.0＝<b>3.0</b>。"},
+  {n:17, src:"計算例", cat:"計算例", a:true, q:"d=3m・h=6m・住居系のとき、採光補正係数は (3/6)×6−1.4＝1.6 となる。", p:"0.5×6＝3.0、3.0−1.4＝<b>1.6</b>。"},
+  {n:18, src:"計算例", cat:"計算例", a:true, q:"d=3m・h=6m・商業系のとき、計算値は4.0だが、上限により採光補正係数は3.0となる。", p:"0.5×10−1.0＝4.0 →上限<b>3.0</b>。"},
+  {n:19, src:"計算例", cat:"計算例", a:true, q:"開口部面積3m²、採光補正係数3.0のとき、採光に有効な部分の面積は9.0m²である。", p:"3m²×3.0＝<b>9.0m²</b>。"}
+];
+
+const CAT_ORDER = ["3つの式・数値","用語・ルール","計算例"];
+const STORE_KEY = "saikou_hosei_wrong";
+const CHUNK = 20;
+
+let memStore = {};
+async function storeGet(k){
+  try{ if(window.storage&&window.storage.get){const r=await window.storage.get(k);return r?r.value:null;} }catch(e){}
+  try{ return localStorage.getItem(k); }catch(e){}
+  return memStore[k]||null;
+}
+async function storeSet(k,v){
+  try{ if(window.storage&&window.storage.set){await window.storage.set(k,v);return;} }catch(e){}
+  try{ localStorage.setItem(k,v);return; }catch(e){}
+  memStore[k]=v;
+}
+async function getWrong(){
+  const raw=await storeGet(STORE_KEY);
+  if(!raw) return [];
+  try{ return JSON.parse(raw)||[]; }catch(e){ return []; }
+}
+async function setWrong(arr){ await storeSet(STORE_KEY, JSON.stringify([...new Set(arr)])); }
+async function addWrong(n){ const w=await getWrong(); if(!w.includes(n)){w.push(n); await setWrong(w);} }
+async function removeWrong(n){ let w=await getWrong(); w=w.filter(x=>x!==n); await setWrong(w); }
+
+let queue=[], idx=0, correct=0, wrongThisRun=[], mode="all";
+const el=id=>document.getElementById(id);
+function topScroll(){ try{ window.scrollTo(0,0); }catch(e){} }
+function show(sec){ ["home","quiz","result"].forEach(s=>el(s).classList.toggle("hide",s!==sec)); topScroll(); }
+
+async function initHome(){
+  el("totalN").textContent=QUESTIONS.length;
+  const w=await getWrong();
+  el("wrongN").textContent=w.length;
+  el("wrongBtn").disabled=w.length===0;
+  const present=CAT_ORDER.filter(c=>QUESTIONS.some(q=>q.cat===c));
+  el("catList").innerHTML="";
+  present.forEach(c=>{
+    const cnt=QUESTIONS.filter(q=>q.cat===c).length;
+    const b=document.createElement("button");
+    b.className="btn cat-btn";
+    b.innerHTML=`${c}<span class="n">${cnt}問</span>`;
+    b.addEventListener("click",()=>startCat(c));
+    el("catList").appendChild(b);
+  });
+  show("home");
+}
+
+async function start(kind){
+  mode=kind;
+  if(kind==="wrong"||kind==="redo"){
+    const src = kind==="wrong" ? await getWrong() : wrongThisRun.slice();
+    queue=QUESTIONS.filter(q=>src.includes(q.n));
+  }else{
+    queue=QUESTIONS.slice();
+  }
+  if(queue.length===0){ await initHome(); return; }
+  idx=0; correct=0; wrongThisRun=[];
+  show("quiz"); render();
+}
+function startCat(c){
+  mode="cat"; queue=QUESTIONS.filter(q=>q.cat===c);
+  idx=0; correct=0; wrongThisRun=[];
+  show("quiz"); render();
+}
+
+function render(){
+  const q=queue[idx];
+  el("cur").textContent=idx+1;
+  el("len").textContent=queue.length;
+  el("barFill").style.width=((idx)/queue.length*100)+"%";
+  el("src").textContent=q.src;
+  el("catTag").textContent=q.cat;
+  el("qtext").textContent=q.q;
+  el("judge").className="judge";
+  el("oxBtns").style.display="flex";
+  [...el("oxBtns").children].forEach(b=>b.disabled=false);
+  topScroll();
+}
+
+async function answer(val){
+  if(el("judge").classList.contains("show")) return;
+  const q=queue[idx];
+  [...el("oxBtns").children].forEach(b=>b.disabled=true);
+  const ok=(val===q.a);
+  const j=el("judge");
+  j.classList.add("show", ok?"ok":"ng");
+  el("jhead").textContent= ok ? "正解 ◎" : "不正解 …";
+  el("jans").textContent= "答え：" + (q.a?"○（正しい）":"×（誤り）");
+  el("jp").innerHTML=q.p;
+  el("barFill").style.width=((idx+1)/queue.length*100)+"%";
+  el("nextBtn").textContent=(idx===queue.length-1)?"結果を見る":"次へ";
+  if(ok){ correct++; await removeWrong(q.n); }
+  else{ wrongThisRun.push(q.n); await addWrong(q.n); }
+  setTimeout(()=>{ try{ el("nextBtn").scrollIntoView({behavior:"smooth", block:"center"}); }catch(e){} }, 80);
+}
+
+function next(){
+  idx++;
+  if(idx>=queue.length){ finish(); return; }
+  render();
+}
+
+function finish(){
+  const total=queue.length;
+  const pct=Math.round(correct/total*100);
+  const r=64, c=2*Math.PI*r;
+  const fg=el("ringFg");
+  fg.style.strokeDasharray=c;
+  fg.style.strokeDashoffset=c;
+  el("ringTxt").textContent=pct+"%";
+  el("scoreLine").textContent=`${total}問中 ${correct}問 正解`;
+  el("scoreSub").textContent= wrongThisRun.length ? `間違い ${wrongThisRun.length}問` : "全問正解！";
+  el("redoBtn").style.display= wrongThisRun.length ? "block" : "none";
+  show("result");
+  requestAnimationFrame(()=>{ setTimeout(()=>{ fg.style.strokeDashoffset=c*(1-pct/100); },60); });
+}
+
+function goHome(){ initHome(); }
+
+document.getElementById("startAllBtn").addEventListener("click",()=>start("all"));
+document.getElementById("wrongBtn").addEventListener("click",()=>start("wrong"));
+document.getElementById("btnMaru").addEventListener("click",()=>answer(true));
+document.getElementById("btnBatsu").addEventListener("click",()=>answer(false));
+document.getElementById("nextBtn").addEventListener("click",next);
+document.getElementById("abortBtn").addEventListener("click",goHome);
+document.getElementById("redoBtn").addEventListener("click",()=>start("redo"));
+document.getElementById("restartBtn").addEventListener("click",()=>start("all"));
+document.getElementById("homeBtn").addEventListener("click",goHome);
+
+initHome();
+</script>
+</body>
+</html>
