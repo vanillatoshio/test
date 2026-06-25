@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>施工確認問題 糸島｜2級建築士 ○×クイズ</title>
+<style>
+:root{
+  --accent:#0f8a82; --light:#2bb3a8; --bg:#e6f5f3;
+  --maru:#2e9e6b; --batsu:#d9534f;
+  --ink:#1d2a22; --sub:#5a6b61; --card:#fff; --line:#d6e6dc;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+  background:var(--bg); color:var(--ink); line-height:1.7;
+  -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:560px;margin:0 auto;padding:16px 14px 40px;min-height:100vh}
+header{text-align:center;padding:8px 0 14px}
+header h1{font-size:1.15rem;margin:0;color:var(--accent);letter-spacing:.02em}
+header p{margin:4px 0 0;font-size:.78rem;color:var(--sub)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 16px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.btn{display:block;width:100%;border:none;border-radius:12px;padding:15px;font-size:1.02rem;font-weight:700;cursor:pointer;margin-top:10px;font-family:inherit}
+.btn.primary{background:var(--accent);color:#fff}
+.btn.sub{background:#fff;color:var(--accent);border:1.5px solid var(--accent)}
+.btn.ghost{background:#eef4f0;color:var(--sub)}
+.btn:disabled{opacity:.5}
+.cat-btn{background:#fff;color:var(--ink);border:1.5px solid var(--line);text-align:left;font-size:.95rem}
+.cat-btn .n{float:right;color:var(--sub);font-weight:600;font-size:.85rem}
+
+.topbar{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.count{font-size:.82rem;color:var(--sub);white-space:nowrap;font-weight:600}
+.bar{flex:1;height:8px;background:#dfece4;border-radius:99px;overflow:hidden}
+.bar > i{display:block;height:100%;background:var(--accent);width:0;transition:width .25s}
+.srclabel{font-size:.72rem;color:var(--sub);margin-bottom:6px}
+.cat-tag{display:inline-block;background:var(--bg);color:var(--accent);font-size:.7rem;font-weight:700;padding:2px 9px;border-radius:99px;margin-bottom:10px}
+.q{font-size:1.12rem;line-height:1.85;margin:2px 0 4px;min-height:3em}
+
+.ox{display:flex;gap:12px;margin-top:18px}
+.ox button{flex:1;border:none;border-radius:14px;padding:20px 0;font-size:2rem;font-weight:800;cursor:pointer;font-family:inherit}
+.ox .maru{background:#e7f6ee;color:var(--maru);border:2px solid #bce4cd}
+.ox .batsu{background:#fdeceb;color:var(--batsu);border:2px solid #f5c9c6}
+
+.judge{margin-top:16px;border-radius:14px;padding:14px;display:none}
+.judge.show{display:block;animation:pop .2s}
+@keyframes pop{from{transform:scale(.97);opacity:.4}to{transform:scale(1);opacity:1}}
+.judge .head{font-size:1.1rem;font-weight:800;margin-bottom:6px}
+.judge.ok{background:#e7f6ee;border:1.5px solid #bce4cd}
+.judge.ok .head{color:var(--maru)}
+.judge.ng{background:#fdeceb;border:1.5px solid #f5c9c6}
+.judge.ng .head{color:var(--batsu)}
+.judge .ans{font-size:.85rem;color:var(--sub);margin-bottom:8px}
+.judge .p{font-size:.95rem;line-height:1.8}
+.judge .p b{color:var(--accent)}
+
+.ring-wrap{display:flex;justify-content:center;margin:6px 0 4px}
+svg.ring{transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:#e0ece5;stroke-width:14}
+.ring-fg{fill:none;stroke:var(--accent);stroke-width:14;stroke-linecap:round;transition:stroke-dashoffset 1s ease}
+.ring-txt{font-size:1.9rem;font-weight:800;fill:var(--ink)}
+.ring-sub{font-size:.7rem;fill:var(--sub)}
+.score-line{text-align:center;font-size:1.05rem;margin:4px 0 2px;font-weight:700}
+.score-sub{text-align:center;color:var(--sub);font-size:.85rem;margin-bottom:8px}
+.note{font-size:.78rem;color:var(--sub);text-align:center;margin-top:14px;line-height:1.6}
+.hide{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>施工確認問題 糸島</h1>
+    <p>2級建築士 学科｜○×クイズ</p>
+  </header>
+
+  <section id="home">
+    <div class="card">
+      <button class="btn primary" id="startAllBtn">全<span id="totalN"></span>問に挑戦</button>
+      <button class="btn sub" id="wrongBtn">間違い復習（<span id="wrongN">0</span>問）</button>
+    </div>
+    <div class="card" style="margin-top:14px" id="setBox">
+      <div style="font-weight:700;font-size:.9rem;margin-bottom:8px;color:var(--sub)">20問ずつ</div>
+      <div id="setList"></div>
+    </div>
+    <div class="card" style="margin-top:14px" id="catBox">
+      <div style="font-weight:700;font-size:.9rem;margin-bottom:8px;color:var(--sub)">分野別</div>
+      <div id="catList"></div>
+    </div>
+    <p class="note">○か×で答えてね。間違えた問題は自動で記録され、「間違い復習」でやり直せます。</p>
+  </section>
+
+  <section id="quiz" class="hide">
+    <div class="topbar">
+      <span class="count"><span id="cur">1</span>/<span id="len">1</span></span>
+      <div class="bar"><i id="barFill"></i></div>
+    </div>
+    <div class="card">
+      <div class="srclabel" id="src"></div>
+      <span class="cat-tag" id="catTag"></span>
+      <div class="q" id="qtext"></div>
+      <div class="ox" id="oxBtns">
+        <button class="maru" id="btnMaru">○</button>
+        <button class="batsu" id="btnBatsu">×</button>
+      </div>
+      <div class="judge" id="judge">
+        <div class="head" id="jhead"></div>
+        <div class="ans" id="jans"></div>
+        <div class="p" id="jp"></div>
+        <button class="btn primary" id="nextBtn">次へ</button>
+      </div>
+    </div>
+    <button class="btn ghost" style="margin-top:14px" id="abortBtn">中断してホームへ</button>
+  </section>
+
+  <section id="result" class="hide">
+    <div class="card">
+      <div class="ring-wrap">
+        <svg class="ring" width="150" height="150" viewBox="0 0 150 150">
+          <circle class="ring-bg" cx="75" cy="75" r="64"></circle>
+          <circle class="ring-fg" id="ringFg" cx="75" cy="75" r="64"></circle>
+          <text class="ring-txt" id="ringTxt" x="75" y="72" text-anchor="middle" transform="rotate(90 75 75)">0%</text>
+          <text class="ring-sub" x="75" y="92" text-anchor="middle" transform="rotate(90 75 75)">正答率</text>
+        </svg>
+      </div>
+      <div class="score-line" id="scoreLine"></div>
+      <div class="score-sub" id="scoreSub"></div>
+      <button class="btn primary" id="redoBtn">間違えた問題を解き直す</button>
+      <button class="btn sub" id="restartBtn">最初から全問</button>
+      <button class="btn ghost" id="homeBtn">ホーム</button>
+    </div>
+  </section>
+</div>
+
+<script>
+const QUESTIONS = [
+  {n:1, src:"R06 施工 施工計画", cat:"施工計画・契約", a:false, q:"総合施工計画書には、設計図書において指定された仮設物を除き、施工計画に関する事項を記載した。", p:"設計図書で<b>指定された仮設物</b>がある場合は、総合施工計画書にその内容を記述し、<b>監理者の承認</b>を受ける必要がある。"},
+  {n:2, src:"R05 施工 施工計画", cat:"施工計画・契約", a:false, q:"施工図には、総合仮設計画書やコンクリート躯体図などが含まれる。", p:"施工図は設計図を補うために作成される図面で、コンクリート躯体図などがある。<b>総合仮設計画書は含まれない</b>。"},
+  {n:3, src:"R05 施工 施工計画", cat:"施工計画・契約", a:true, q:"実施工程表は、工事の施工順序や所要時間を示したもので、全体工程表のほか週間・月間・工種別工程表などが含まれる。", p:"補足的な目的で週間・月間・工種別工程表などが含まれる。"},
+  {n:4, src:"R06 施工 施工計画", cat:"施工計画・契約", a:true, q:"工種別施工計画書における品質管理計画には、品質管理組織及び品質管理実施方法についても記載する。", p:"品質管理計画には品質管理組織・管理項目・実施方法・評価方法・措置などを含む。"},
+  {n:5, src:"H30 施工 施工計画", cat:"施工計画・契約", a:false, q:"設計図書に選ぶべき専門工事業者の候補が記載されていたが、施工者の責任で、候補として記載されていない専門工事業者を選定した。", p:"候補が記載されている場合は<b>その中から選定</b>する。記載がない場合に限り、内容・品質を達成し得る業者を選定する。"},
+  {n:6, src:"R06 施工 施工計画", cat:"施工計画・契約", a:true, q:"設計図書に指定がない施工方法で、品質・安全に多大な影響がある場合は、監理者と協議のうえ決定する。", p:"指定がない場合は施工者の責任で決定するが、品質・安全に多大な影響がある場合は<b>監理者と協議</b>する。"},
+  {n:7, src:"R03 施工 工事契約", cat:"施工計画・契約", a:false, q:"民間建設工事標準請負契約約款（甲）において、受注者は、発注者及び監理者立会いのもと、法定検査を受ける。", p:"法定検査を受けるのは<b>発注者</b>。この場合、受注者は必要な協力をする（第24条）。"},
+
+  {n:8, src:"R02 施工 安全", cat:"安全・届出", a:true, q:"軒の高さが5m以上の木造建築物の構造部材の組立て作業には、作業主任者を選任しなければならない。", p:"軒高<b>5m以上</b>の木造建築物の構造部材組立て・屋根下地・外壁下地の取付け作業には作業主任者の選任が必要。"},
+  {n:9, src:"R02 施工 安全", cat:"安全・届出", a:true, q:"高さが5m以上の鉄骨造の骨組の組立て・解体・変更の作業には、作業主任者を選任しなければならない。", p:"鉄骨造の骨組は<b>高さ5m以上</b>で作業主任者の選任が必要。"},
+  {n:10, src:"R02 施工 安全", cat:"安全・届出", a:true, q:"高さが5m以上のコンクリート造の工作物の解体・破壊の作業には、作業主任者を選任しなければならない。", p:"コンクリート造工作物の解体・破壊は<b>高さ5m以上</b>で選任が必要。"},
+  {n:11, src:"R02 施工 安全", cat:"安全・届出", a:true, q:"掘削面の高さが2m以上となる地山の掘削作業には、作業主任者を選任しなければならない。", p:"地山の掘削は<b>掘削面の高さ2m以上</b>で選任が必要。"},
+  {n:12, src:"R05 施工 安全", cat:"安全・届出", a:true, q:"高さ又は深さが1.5mを超える箇所で作業を行うときは、安全に昇降するための設備等を設ける。", p:"<b>1.5m超</b>で昇降設備が必要（設置が著しく困難なときを除く）。"},
+  {n:13, src:"R05 施工 安全", cat:"安全・届出", a:true, q:"墜落の危険のある箇所には、高さ85cm以上の手摺等及び高さ35cm以上50cm以下の中桟等を設ける。", p:"手摺は<b>85cm以上</b>、中桟は<b>35〜50cm</b>。やむを得ない場合は墜落制止用器具使用などで臨時に取り外せる。"},
+  {n:14, src:"R05 施工 安全", cat:"安全・届出", a:true, q:"高さ8m以上の登り桟橋には、高さ7m以内ごとに踊場を設ける。", p:"登り桟橋は<b>8m以上で7m以内ごと</b>に踊場。"},
+  {n:15, src:"R05 施工 安全", cat:"安全・届出", a:false, q:"高さ2mの作業構台において、作業床の床材間の隙間を5cmとした。", p:"高さ2m以上の作業床の床材間の隙間は<b>3cm以下</b>とする。"},
+  {n:16, src:"R05 施工 安全", cat:"安全・届出", a:true, q:"吊り足場の作業床は、幅を40cm以上とし、かつ、隙間がないようにする。", p:"吊り足場の作業床は<b>幅40cm以上・隙間なし</b>。"},
+  {n:17, src:"H28 施工 渉外", cat:"安全・届出", a:true, q:"建築工事届は、建築主が都道府県知事に提出する。", p:"建築工事届の提出先は<b>都道府県知事</b>（建築基準法）。"},
+  {n:18, src:"H28 施工 渉外", cat:"安全・届出", a:true, q:"道路使用許可申請書は、施工者が警察署長に提出する。", p:"道路使用許可申請書は<b>警察署長</b>（道路交通法）。道路占用や特殊車両通行許可は道路管理者。"},
+  {n:19, src:"H28 施工 渉外", cat:"安全・届出", a:false, q:"特定元方事業者の事業開始報告の提出先は、市町村長である。", p:"特定元方事業者の事業開始報告は<b>労働基準監督署長</b>に行う（労働安全衛生規則）。"},
+  {n:20, src:"H28 施工 渉外", cat:"安全・届出", a:true, q:"特殊車両通行許可申請書は、道路管理者に提出する。", p:"特殊車両通行許可申請書は<b>道路管理者</b>（道路法）。"},
+
+  {n:21, src:"R03 施工 仮設", cat:"仮設工事", a:true, q:"枠組足場（高さ5m以上）の壁つなぎの間隔は、垂直方向9m以下、水平方向8m以下とする。", p:"枠組足場は<b>垂直9m以下・水平8m以下</b>。"},
+  {n:22, src:"H30 施工 仮設", cat:"仮設工事", a:false, q:"高さ12mの枠組足場における壁つなぎの間隔を、垂直方向8m、水平方向9mとした。", p:"枠組足場は<b>垂直9m以下・水平8m以下</b>。数値が逆。"},
+  {n:23, src:"R03 施工 仮設", cat:"仮設工事", a:false, q:"はしご道のはしごの上端を、床から40cm突出させた。", p:"はしごの上端は床から<b>60cm以上</b>突出させる。"},
+  {n:24, src:"H30 施工 仮設", cat:"仮設工事", a:true, q:"単管足場の建地の間隔は、桁行方向1.85m以下、はり間方向1.5m以下とする。", p:"単管足場の建地は<b>桁行1.85m以下・はり間1.5m以下</b>。"},
+  {n:25, src:"H30 施工 仮設", cat:"仮設工事", a:true, q:"架設通路（登り桟橋）の勾配は30度以下とし、勾配が15度を超えるものには踏桟その他の滑り止めを設ける。", p:"登り桟橋の勾配は<b>30度以下</b>、<b>15度超</b>で滑り止めが必要。"},
+
+  {n:26, src:"R05 施工 地業", cat:"地業・地盤・測量", a:true, q:"場所打ちコンクリート杭工法には、アースドリル工法、オールケーシング工法、リバース工法などがある。", p:"場所打ち杭の代表的な3工法。"},
+  {n:27, src:"R05 施工 地業", cat:"地業・地盤・測量", a:false, q:"プレボーリング拡大根固め工法は、場所打ちコンクリート杭工法の一つである。", p:"プレボーリング拡大根固め工法は<b>既製コンクリート杭工法</b>の一つ。"},
+  {n:28, src:"R05 施工 地業", cat:"地業・地盤・測量", a:true, q:"セメントミルク工法で、アースオーガーの回転方向は、掘削時・引抜き時ともに正回転とする。", p:"逆回転すると付着した土砂が落下するため、掘削時・引抜き時とも<b>正回転</b>。"},
+  {n:29, src:"R05 施工 地業", cat:"地業・地盤・測量", a:true, q:"リバース工法では、孔内水位を地下水位より2m以上高く保ち、孔壁の崩壊を防ぐ。", p:"孔内水位を地下水位より<b>2m以上</b>高く保つ。"},
+  {n:30, src:"R02 施工 地盤", cat:"地業・地盤・測量", a:true, q:"ベーン試験は、軟らかい粘土質地盤のせん断強さを調べる試験である。", p:"十字形の抵抗翼（ベーン）を回転させ、<b>軟らかい粘土質地盤</b>のせん断強さを求める。"},
+  {n:31, src:"R02 施工 地盤", cat:"地業・地盤・測量", a:false, q:"砂質地盤において、地盤のせん断強度を把握するために、ベーン試験を行った。", p:"ベーン試験は<b>軟らかい粘土質地盤</b>用。砂質地盤には適さない。"},
+  {n:32, src:"R02 施工 地盤", cat:"地業・地盤・測量", a:true, q:"スクリューウエイト貫入試験（旧スウェーデン式サウンディング試験）の結果は、地盤の許容応力度の算定に利用できる。", p:"主に戸建住宅など小規模構造物の支持力把握に用いる。告示により許容応力度の算定に利用可。"},
+  {n:33, src:"R04 施工 測量", cat:"地業・地盤・測量", a:false, q:"平板測量において、敷地内に建築物があり見通しが悪いので、放射法により測量した。", p:"放射法は<b>見通しの良い場合</b>に用いる。見通しが悪い場合は<b>進測法</b>等を用いる。"},
+  {n:34, src:"R04 施工 測量", cat:"地業・地盤・測量", a:true, q:"傾斜地の距離測量で、高いほうから低いほうへ下がりながら進める降測法を用いた。", p:"降測法は昇測法に比べ疲れが少なく精度も高い。"},
+  {n:35, src:"R04 施工 測量", cat:"地業・地盤・測量", a:true, q:"真北は、測量地点の磁針偏差と磁北から求めることができる。", p:"真北と磁北のずれが<b>磁針偏差</b>。磁北と磁針偏差から真北を求められる。"},
+
+  {n:36, src:"R04 施工 木工事", cat:"木工事", a:false, q:"短期計算許容耐力が25kNのホールダウン専用アンカーボルトの、コンクリートへの埋込み長さを250mmとした。", p:"25kN以下のホールダウン専用アンカーボルトの埋込み長さは<b>360mm以上</b>。"},
+  {n:37, src:"R04 施工 木工事", cat:"木工事", a:true, q:"ねこ土台は、土台を浮かせて水湿を防ぐとともに、基礎に孔を設けずに床下換気を確保できる工法である。", p:"基礎パッキンで土台を浮かせ、<b>連続的に床下換気</b>を確保する。"},
+
+  {n:38, src:"R01 施工 鉄筋", cat:"鉄筋・鉄骨工事", a:true, q:"鉄筋の加工寸法の検査は、加工種別ごとに、搬入時又は現場加工後の最初の一組について行う。", p:"加工後にスケールで測定し、加工種別ごとに最初の一本又は一組について確認する。"},
+  {n:39, src:"R01 施工 鉄筋", cat:"鉄筋・鉄骨工事", a:true, q:"梁のスペーサーの配置は、特記がない場合、間隔を1.5m程度、端部を0.5m程度となるようにする。", p:"スペーサーの配置間隔は<b>1.5m程度</b>、端部は<b>0.5m程度</b>。"},
+  {n:40, src:"R01 施工 鉄筋", cat:"鉄筋・鉄骨工事", a:false, q:"D19の異形鉄筋の端部に設ける180度フックの折り曲げ余長を、3dとした。", p:"フックの余長は<b>180度で4d以上</b>。3dは不足。"},
+  {n:41, src:"R01 施工 鉄筋", cat:"鉄筋・鉄骨工事", a:true, q:"鉄筋のフックの余長は、180度で4d以上、135度で6d以上、90度で8d以上とする。", p:"<b>180度＝4d / 135度＝6d / 90度＝8d</b>（鉄筋の種類・径に関係なく）。"},
+  {n:42, src:"R01 施工 鉄筋", cat:"鉄筋・鉄骨工事", a:true, q:"ガス圧接継手で、ふくらみの直径や長さが規定値を満たさず不合格となった圧接部は、再加熱・加圧して修正できる。", p:"ふくらみが規定値（径1.4倍・長さ1.1倍）に満たない場合、鉄筋を切断せず再加熱・加圧で修正できる。"},
+  {n:43, src:"R05 施工 鉄骨", cat:"鉄筋・鉄骨工事", a:true, q:"板厚22mmの鋼材を突合せ継手とする完全溶込み溶接で、特記がなかったので余盛りの高さを2mmとした。", p:"完全溶込み溶接の余盛り高さは開先寸法により許容値が異なるが、<b>2mmは許容値以内</b>で適合。"},
+  {n:44, src:"R05 施工 鉄骨", cat:"鉄筋・鉄骨工事", a:true, q:"架構の倒壊防止用ワイヤロープを、建入れ直し用に兼用した。", p:"倒壊防止用ワイヤロープは<b>建入れ直し用に兼用してもよい</b>。"},
+  {n:45, src:"R04 施工 鉄骨", cat:"鉄筋・鉄骨工事", a:false, q:"柱のエレクションピースに使用する仮ボルトは、一群のボルト数の3/4を締め付ければよい。", p:"エレクションピースの仮ボルトは<b>高力ボルトを全数締め付ける</b>。"},
+
+  {n:46, src:"H30 施工 左官", cat:"仕上げ・工法", a:false, q:"コンクリート壁面へのモルタル塗りを、下塗り→中塗り→むら直し→上塗りの順で行った。", p:"正しい順は<b>下塗り→むら直し→中塗り→上塗り</b>。"},
+  {n:47, src:"H30 施工 左官", cat:"仕上げ・工法", a:true, q:"モルタル塗りの上塗りは、下塗りよりも貧調合とし、乾燥収縮を小さくしてひび割れを防ぐ。", p:"下塗りは富調合で付着を高め、上塗りは<b>貧調合</b>でひび割れを防ぐ。"},
+  {n:48, src:"H30 施工 タイル", cat:"仕上げ・工法", a:true, q:"内壁タイルの密着張りでは、タイルを上部から下部へ張り進める。", p:"密着張りは<b>上部から下部</b>へ、一段おきに数段張り付けた後その間を埋める。"},
+  {n:49, src:"R07 施工 工法", cat:"仕上げ・工法", a:true, q:"ノンスカラップ工法は、鉄骨工事の溶接で、ひずみ集中の原因となるスカラップを設けない工法である。", p:"梁ウェブの断面欠損がなく、力学的に望ましい。<b>鉄骨工事の溶接</b>の工法。"},
+  {n:50, src:"R07 施工 工法", cat:"仕上げ・工法", a:true, q:"シャーカッターは、鉄筋の切断に用いる機械である。", p:"シャーカッターは<b>鉄筋の切断</b>に用いる。ノンスカラップ工法（鉄骨溶接）とは関係がない。"},
+
+  {n:51, src:"H30 施工 地業", cat:"地業・地盤・測量", a:true, q:"場所打ちコンクリート杭のコンクリートの構造体強度補正値Sは、特記がなければ3N/mm²とする。", p:"調合管理強度＝設計基準強度Fc＋構造体強度補正値S。Sは特記がなければ<b>3N/mm²</b>。"},
+  {n:52, src:"H30 施工 地業", cat:"地業・地盤・測量", a:true, q:"既製コンクリート杭の継手は、特記がなければ、アーク溶接による溶接継手又は機械式継手とする。", p:"既製杭の継手は<b>アーク溶接</b>又は<b>機械式継手（無溶接継手）</b>。"},
+  {n:53, src:"H30 施工 地業", cat:"地業・地盤・測量", a:false, q:"オールケーシング工法などの場所打ちコンクリート杭で、近接している杭を連続して施工した。", p:"近接している杭は<b>連続して施工しない</b>。"},
+
+  {n:54, src:"R04 施工 鉄筋", cat:"鉄筋・鉄骨工事", a:true, q:"柱・梁等の鉄筋のかぶり厚さは、施工誤差を考慮し、最小かぶり厚さに10mmを加えた数値を標準とする。", p:"<b>最小かぶり厚さ＋10mm</b>を標準とする（JASS 5）。"},
+  {n:55, src:"R04 施工 鉄筋", cat:"鉄筋・鉄骨工事", a:false, q:"ガス圧接完了後の圧接部の外観検査（外観試験）の対象は、抜取りとすればよい。", p:"外観試験の対象は<b>全ての圧接部</b>。抜取りではない。"},
+  {n:56, src:"R04 施工 鉄筋", cat:"鉄筋・鉄骨工事", a:true, q:"ガス圧接では、圧接箇所1か所につき鉄筋径程度（1d〜1.5d）の縮み代を見込んで鉄筋を加工する。", p:"圧接で1箇所当たり<b>1d〜1.5d</b>縮むため、鉄筋径程度の縮み代を見込む。"},
+  {n:57, src:"R04 施工 鉄筋", cat:"鉄筋・鉄骨工事", a:true, q:"径の同じ鉄筋のガス圧接継手で、圧接部における鉄筋中心軸の偏心量は、鉄筋径の1/5以下とする。", p:"中心軸の偏心量は<b>1/5d以下</b>（径が異なる場合は細い方の径）。"},
+  {n:58, src:"R02 施工 鉄筋", cat:"鉄筋・鉄骨工事", a:true, q:"ガス圧接部のふくらみの直径は、鉄筋径（径が異なる場合は細い方）の1.4倍以上、長さは1.1倍以上とする。", p:"ふくらみ直径<b>1.4d以上</b>、長さ<b>1.1d以上</b>、圧接面のずれ1/4d以下。"},
+  {n:59, src:"R02 施工 鉄筋", cat:"鉄筋・鉄骨工事", a:false, q:"柱主筋のガス圧接継手の位置を、隣り合う主筋で同じ高さに揃え、300mmずらした。", p:"隣り合う継手の位置は、ガス圧接で<b>400mm以上</b>ずらす。"},
+  {n:60, src:"R02 施工 鉄筋", cat:"鉄筋・鉄骨工事", a:true, q:"隣り合う鉄筋の重ね継手の位置は、継手長さの0.5倍又は1.5倍ずらす。", p:"重ね継手は<b>継手長さの0.5倍又は1.5倍</b>ずらす。ガス圧接は400mm以上。"},
+  {n:61, src:"R06 施工 鉄筋", cat:"鉄筋・鉄骨工事", a:false, q:"D19の異形鉄筋の端部に設ける90度フックの折曲げ内法直径を、70mmとした。", p:"D19〜D41は<b>4d以上</b>。4×19＝76mm以上必要で70mmは不足。"},
+  {n:62, src:"R06 施工 鉄筋", cat:"鉄筋・鉄骨工事", a:true, q:"異形鉄筋D19〜D41の折曲げ内法直径は、4d以上とする。", p:"折曲げ内法直径：16φ/D16以下＝3d以上、D19〜D41＝<b>4d以上</b>、D41超＝5d以上。"},
+  {n:63, src:"R03 施工 鉄筋", cat:"鉄筋・鉄骨工事", a:false, q:"梁主筋を柱内に折り曲げて定着させる場合、投影定着長さを柱せいの1/2とした。", p:"投影定着長さは柱せいの<b>3/4倍以上</b>。"},
+  {n:64, src:"R06 施工 鉄筋", cat:"鉄筋・鉄骨工事", a:true, q:"鉄筋相互のあきは、粗骨材の最大寸法の1.25倍以上、25mm以上、かつ呼び名の数値の1.5倍以上とする。", p:"あき＝<b>粗骨材最大寸法×1.25</b>・<b>25mm</b>・<b>呼び名×1.5</b>のうち最大。"},
+  {n:65, src:"R06 施工 鉄筋", cat:"鉄筋・鉄骨工事", a:true, q:"径が異なる鉄筋の重ね継手の長さは、細い方の鉄筋径による。", p:"重ね継手長さは<b>細い方の鉄筋径（呼び名）</b>による。"},
+  {n:66, src:"R06 施工 鉄筋", cat:"鉄筋・鉄骨工事", a:false, q:"土に接する普通コンクリートを用いた基礎部分の鉄筋の最小かぶり厚さを、50mmとした。", p:"基礎の最小かぶり厚さは<b>60mm以上</b>（土に接する柱・梁・壁・床・布基礎立上りは40mm）。"},
+  {n:67, src:"H30 施工 鉄筋", cat:"鉄筋・鉄骨工事", a:false, q:"D25の主筋の加工寸法の許容差を、±25mmの範囲のものを合格とした。", p:"加工寸法許容差：主筋D25以下＝<b>±15mm</b>、D29〜D41＝±20mm、全長＝±20mm。"},
+  {n:68, src:"H30 施工 鉄筋", cat:"鉄筋・鉄骨工事", a:true, q:"あばら筋・帯筋・スパイラル筋の加工寸法の許容差は、±5mmとする。", p:"あばら筋・帯筋・スパイラル筋＝<b>±5mm</b>。主筋より厳しい。"},
+  {n:69, src:"H30 施工 鉄筋", cat:"鉄筋・鉄骨工事", a:true, q:"スラブ筋のスペーサーの間隔は0.9m程度とし、端部は0.1m以内とする。", p:"スラブ筋スペーサーは間隔<b>0.9m程度</b>・端部<b>0.1m以内</b>。"},
+  {n:70, src:"H28 施工 鉄筋", cat:"鉄筋・鉄骨工事", a:true, q:"柱の鉄筋のかぶり厚さは、帯筋の外側表面からコンクリート表面までの最短距離とする。", p:"柱では<b>帯筋の外側表面</b>からコンクリート表面までの最短距離。"},
+
+  {n:71, src:"施工 型枠", cat:"型枠・コンクリート", a:true, q:"パイプサポートを支柱として用い、高さが3.5mを超えるときは、高さ2m以内ごとに水平つなぎを2方向に設ける。", p:"3.5m超は<b>2m以内ごと</b>に水平つなぎを2方向に設け、変位を防止する。"},
+  {n:72, src:"施工 型枠", cat:"型枠・コンクリート", a:false, q:"高さ3.6mのパイプサポートで、高さ2.1mの位置にのみ水平つなぎを2方向に設けた。", p:"3.5m超は<b>2m以内ごと</b>。2.1mでは間隔が2mを超え不適。"},
+  {n:73, src:"施工 型枠", cat:"型枠・コンクリート", a:true, q:"パイプサポートを継いで用いるときは、4本以上のボルト又は専用金具を用いて継ぐ。", p:"継ぐときは<b>4本以上のボルト</b>又は専用金具で固定する。"},
+  {n:74, src:"施工 型枠", cat:"型枠・コンクリート", a:true, q:"パイプサポートは、支柱として用いる場合、3本以上継いで用いてはならない。", p:"パイプサポートは<b>2本まで</b>（3本以上継がない）。"},
+  {n:75, src:"R04 施工 型枠", cat:"型枠・コンクリート", a:true, q:"梁を貫通する配管用スリーブで、開口補強が不要で径が200mm以下の部分は、紙チューブを使用できる。", p:"スリーブは鋼管・つば付き鋼管などが基本だが、<b>径200mm以下・開口補強不要</b>なら紙チューブ可。"},
+  {n:76, src:"R04 施工 型枠", cat:"型枠・コンクリート", a:true, q:"スラブ下及び梁下の支保工の存置期間は、コンクリートの圧縮強度が12N/mm²以上であることが確認されるまでとする。", p:"スラブ下・梁下支保工は<b>圧縮強度12N/mm²以上</b>かつ安全確認まで存置。"},
+  {n:77, src:"施工 型枠", cat:"型枠・コンクリート", a:true, q:"普通ポルトランドセメントのコンクリート（計画供用期間が短期）で、せき板の最小存置期間は、平均気温20℃以上で4日、10℃以上20℃未満で6日とする。", p:"基礎・梁側・柱・壁のせき板存置：<b>20℃以上＝4日</b>、<b>10〜20℃＝6日</b>。"},
+  {n:78, src:"R06 施工 打込み", cat:"型枠・コンクリート", a:true, q:"内部振動機による締固めは、先端が先に打ち込まれた下層に入るように、ほぼ鉛直に挿入する。", p:"コールドジョイント防止のため、先端を<b>下層に入れほぼ鉛直</b>に挿入する。"},
+  {n:79, src:"R06 施工 打込み", cat:"型枠・コンクリート", a:true, q:"内部振動機の挿入間隔は60cm以下とし、加振はコンクリート上面にセメントペーストが浮くまでとする。", p:"挿入間隔<b>60cm以下</b>、加振は<b>セメントペーストが浮くまで</b>。"},
+  {n:80, src:"R05 施工 打込み", cat:"型枠・コンクリート", a:false, q:"コンクリートの打込みで、数本の柱を連続させて、バイブレーターで横流ししながら打ち込んだ。", p:"横流しすると鉄筋で粗骨材が阻害されモルタル過多になるため<b>横流ししてはならない</b>。"},
+  {n:81, src:"R06 施工 打込み", cat:"型枠・コンクリート", a:false, q:"片持ち形式のバルコニーの跳出し部は、構造体部分の強度が十分発現した後に、別に打ち込んだ。", p:"跳出し部はひび割れしやすいので、根元を<b>構造体部分と一緒に打ち込む</b>。"},
+  {n:82, src:"R05 施工 打込み", cat:"型枠・コンクリート", a:true, q:"暑中コンクリート（日平均気温の平年値が25℃を超える）で、打込み後の養生開始時期は、コンクリート上面のブリーディング水が消失した時点とする。", p:"暑中コンクリートの養生開始は<b>ブリーディング水が消失した時点</b>。"},
+  {n:83, src:"R05 施工 打込み", cat:"型枠・コンクリート", a:true, q:"寒中コンクリートで、凍結のおそれのある期間は、圧縮強度が5N/mm²以上となるまで初期養生を行う。", p:"凍結のおそれのある期間は<b>圧縮強度5N/mm²以上</b>になるまで初期養生。"},
+
+  {n:84, src:"R04 施工 打込み", cat:"コンクリート品質・管理", a:false, q:"梁のコンクリートは、柱及び壁のコンクリートと連続して、梁の上部まで打ち込んだ。", p:"梁の打込みは、柱・壁のコンクリートの<b>沈みが落ち着いた後</b>に行う。梁下で止めずに連続して打ち込むと、柱・壁の沈降によって梁にひび割れが発生するおそれがある。"},
+  {n:85, src:"R04 施工 その他", cat:"コンクリート品質・管理", a:true, q:"普通コンクリートの気乾単位容積質量を、2.3t/m³とした。", p:"普通コンクリートの気乾単位容積質量は、<b>2.1t/m³を超え2.5t/m³以下</b>を標準とする。2.3t/m³は範囲内で適。"},
+  {n:86, src:"H30 施工 打込み", cat:"コンクリート品質・管理", a:true, q:"捨てコンクリートの粗骨材の最大寸法を、25mmとした。", p:"捨てコンクリートの粗骨材の最大寸法は<b>25mm以下</b>とする（公共建築工事標準仕様書）。25mmは適。"},
+  {n:87, src:"R03 施工 打込み", cat:"コンクリート品質・管理", a:true, q:"構造体コンクリートの1回の強度試験は、打込み工区ごとに行い、1日の打込み量が150m³を超えるときは150m³以下に分割した単位ごとに行う。", p:"強度試験は<b>打込み工区ごと</b>、1日の打込み量が<b>150m³を超える</b>ときは150m³以下にほぼ均等に分割した単位ごと（JASS 5）。"},
+  {n:88, src:"R03 施工 暑中", cat:"コンクリート品質・管理", a:true, q:"暑中コンクリート（日平均気温の平年値が25℃を超える期間）を打ち込む場合、荷卸し時のコンクリートの温度を35℃以下とした。", p:"暑中コンクリートの<b>荷卸し時の温度は35℃以下</b>とする（公共建築工事標準仕様書）。"},
+  {n:89, src:"R02 施工 受入れ", cat:"コンクリート品質・管理", a:true, q:"レディーミクストコンクリートの受入検査で、指定スランプ18cmに対し測定値が20cmであったので合格とした。", p:"指定スランプ18cmの許容差は<b>±2.5cm</b>（15.5〜20.5cm）。20cmは範囲内で合格。"},
+  {n:90, src:"R02 施工 打込み", cat:"コンクリート品質・管理", a:false, q:"コンクリートの練混ぜから打込み終了までの時間を、外気温が28℃であったので120分を限度とした。", p:"練混ぜから打込み終了までの限度は、外気温<b>25℃以下＝120分</b>、<b>25℃超＝90分</b>。28℃なので90分以内とする。"},
+  {n:91, src:"R01 施工 打継ぎ", cat:"コンクリート品質・管理", a:true, q:"外壁の水平打継ぎ面について、止水性を考慮し、打継ぎ面に外側下がりの勾配を付ける方法とした。", p:"外壁部の水平打継ぎでは、止水性確保のため<b>外側下がりの勾配</b>をつける方法がある（JASS 5）。"},
+  {n:92, src:"R01 施工 かぶり", cat:"コンクリート品質・管理", a:true, q:"直接土に接する柱・梁・壁・スラブの設計かぶり厚さを、特記がなかったので50mmとした。", p:"土に接する部分の設計かぶり厚さ＝最小かぶり厚さ＋施工精度10mm。柱・梁・壁等は<b>40＋10＝50mm</b>（基礎は60＋10＝70mm）。"},
+  {n:93, src:"H28 施工 塩化物", cat:"コンクリート品質・管理", a:false, q:"構造耐力上主要な部分のコンクリートに含まれる塩化物量を、塩化物イオン量として0.35kg/m³とした。", p:"コンクリートに含まれる塩化物量は、塩化物イオン量として<b>0.30kg/m³以下</b>とする（JASS 5）。0.35は不適。"},
+  {n:94, src:"H28 施工 ひび割れ", cat:"コンクリート品質・管理", a:true, q:"コンクリートに幅0.4mmのひび割れが発生したので、耐久性上支障のないよう適切な処置を施したうえで、工事監理者の承認を受けた。", p:"許容ひび割れ幅は特記がなければ<b>0.3mm</b>。これを超える場合は耐久性上支障のないよう適切な処置を施し、<b>工事監理者の承認</b>を受ける（JASS 5）。"},
+  {n:95, src:"H29 施工 受入れ", cat:"コンクリート品質・管理", a:true, q:"荷卸し時のコンクリートの空気量が、指定された値に対して+1.0%であったので許容した。", p:"コンクリートの空気量の許容差は<b>±1.5%</b>。+1.0%は範囲内で許容できる。"},
+  {n:96, src:"H29 施工 強度試験", cat:"コンクリート品質・管理", a:false, q:"構造体コンクリートの1回の強度試験は、打込み日及び打込み工区ごとに、200m³以下にほぼ均等に分割した単位ごとに行うこととした。", p:"分割の単位は<b>150m³以下</b>（200m³ではない）。打込み日ごと・打込み工区ごとに150m³以下に分割する（JASS 5）。"},
+  {n:97, src:"R01 施工 強度判定", cat:"コンクリート品質・管理", a:true, q:"調合管理強度の判定で、1回の試験結果が調合管理強度の85%以上、かつ3回の試験結果の平均値が調合管理強度以上であったので、合格とした。", p:"判定基準：(1)1回の試験結果＝<b>調合管理強度の85%以上</b>、(2)3回の平均値＝<b>調合管理強度以上</b>。両方満たせば合格（公共建築工事標準仕様書）。"}
+];
+
+const CAT_ORDER = ["施工計画・契約","安全・届出","仮設工事","地業・地盤・測量","木工事","鉄筋・鉄骨工事","型枠・コンクリート","コンクリート品質・管理","仕上げ・工法"];
+const STORE_KEY = "sekou_kakunin_itoshima_wrong";
+const CHUNK = 20;
+
+let memStore = {};
+async function storeGet(k){
+  try{ if(window.storage&&window.storage.get){const r=await window.storage.get(k);return r?r.value:null;} }catch(e){}
+  try{ return localStorage.getItem(k); }catch(e){}
+  return memStore[k]||null;
+}
+async function storeSet(k,v){
+  try{ if(window.storage&&window.storage.set){await window.storage.set(k,v);return;} }catch(e){}
+  try{ localStorage.setItem(k,v);return; }catch(e){}
+  memStore[k]=v;
+}
+async function getWrong(){
+  const raw=await storeGet(STORE_KEY);
+  if(!raw) return [];
+  try{ return JSON.parse(raw)||[]; }catch(e){ return []; }
+}
+async function setWrong(arr){ await storeSet(STORE_KEY, JSON.stringify([...new Set(arr)])); }
+async function addWrong(n){ const w=await getWrong(); if(!w.includes(n)){w.push(n); await setWrong(w);} }
+async function removeWrong(n){ let w=await getWrong(); w=w.filter(x=>x!==n); await setWrong(w); }
+
+let queue=[], idx=0, correct=0, wrongThisRun=[], mode="all";
+const el=id=>document.getElementById(id);
+function topScroll(){ try{ window.scrollTo(0,0); }catch(e){} }
+function show(sec){ ["home","quiz","result"].forEach(s=>el(s).classList.toggle("hide",s!==sec)); topScroll(); }
+
+async function initHome(){
+  el("totalN").textContent=QUESTIONS.length;
+  const w=await getWrong();
+  el("wrongN").textContent=w.length;
+  el("wrongBtn").disabled=w.length===0;
+  const setCount=Math.ceil(QUESTIONS.length/CHUNK);
+  el("setList").innerHTML="";
+  for(let i=0;i<setCount;i++){
+    const s=i*CHUNK, e=Math.min(s+CHUNK, QUESTIONS.length);
+    const b=document.createElement("button");
+    b.className="btn cat-btn";
+    b.innerHTML=`セット${i+1}（問${s+1}〜${e}）<span class="n">${e-s}問</span>`;
+    b.addEventListener("click",()=>startSet(s,e));
+    el("setList").appendChild(b);
+  }
+  const present=CAT_ORDER.filter(c=>QUESTIONS.some(q=>q.cat===c));
+  el("catList").innerHTML="";
+  present.forEach(c=>{
+    const cnt=QUESTIONS.filter(q=>q.cat===c).length;
+    const b=document.createElement("button");
+    b.className="btn cat-btn";
+    b.innerHTML=`${c}<span class="n">${cnt}問</span>`;
+    b.addEventListener("click",()=>startCat(c));
+    el("catList").appendChild(b);
+  });
+  show("home");
+}
+
+async function start(kind){
+  mode=kind;
+  if(kind==="wrong"||kind==="redo"){
+    const src = kind==="wrong" ? await getWrong() : wrongThisRun.slice();
+    queue=QUESTIONS.filter(q=>src.includes(q.n));
+  }else{
+    queue=QUESTIONS.slice();
+  }
+  if(queue.length===0){ await initHome(); return; }
+  idx=0; correct=0; wrongThisRun=[];
+  show("quiz"); render();
+}
+function startCat(c){
+  mode="cat"; queue=QUESTIONS.filter(q=>q.cat===c);
+  idx=0; correct=0; wrongThisRun=[];
+  show("quiz"); render();
+}
+function startSet(s,e){
+  mode="set"; queue=QUESTIONS.slice(s,e);
+  idx=0; correct=0; wrongThisRun=[];
+  show("quiz"); render();
+}
+
+function render(){
+  const q=queue[idx];
+  el("cur").textContent=idx+1;
+  el("len").textContent=queue.length;
+  el("barFill").style.width=((idx)/queue.length*100)+"%";
+  el("src").textContent=q.src;
+  el("catTag").textContent=q.cat;
+  el("qtext").textContent=q.q;
+  el("judge").className="judge";
+  el("oxBtns").style.display="flex";
+  [...el("oxBtns").children].forEach(b=>b.disabled=false);
+  topScroll();
+}
+
+async function answer(val){
+  if(el("judge").classList.contains("show")) return; // 二重回答防止
+  const q=queue[idx];
+  [...el("oxBtns").children].forEach(b=>b.disabled=true);
+  const ok=(val===q.a);
+  const j=el("judge");
+  j.classList.add("show", ok?"ok":"ng");
+  el("jhead").textContent= ok ? "正解 ◎" : "不正解 …";
+  el("jans").textContent= "答え：" + (q.a?"○（正しい）":"×（誤り）");
+  el("jp").innerHTML=q.p;
+  el("barFill").style.width=((idx+1)/queue.length*100)+"%";
+  el("nextBtn").textContent=(idx===queue.length-1)?"結果を見る":"次へ";
+  if(ok){ correct++; await removeWrong(q.n); }
+  else{ wrongThisRun.push(q.n); await addWrong(q.n); }
+  // 「次へ」ボタンが画面内に来るようにスクロール
+  setTimeout(()=>{ try{ el("nextBtn").scrollIntoView({behavior:"smooth", block:"center"}); }catch(e){} }, 80);
+}
+
+function next(){
+  idx++;
+  if(idx>=queue.length){ finish(); return; }
+  render();
+}
+
+function finish(){
+  const total=queue.length;
+  const pct=Math.round(correct/total*100);
+  const r=64, c=2*Math.PI*r;
+  const fg=el("ringFg");
+  fg.style.strokeDasharray=c;
+  fg.style.strokeDashoffset=c;
+  el("ringTxt").textContent=pct+"%";
+  el("scoreLine").textContent=`${total}問中 ${correct}問 正解`;
+  el("scoreSub").textContent= wrongThisRun.length ? `間違い ${wrongThisRun.length}問` : "全問正解！";
+  el("redoBtn").style.display= wrongThisRun.length ? "block" : "none";
+  show("result");
+  requestAnimationFrame(()=>{ setTimeout(()=>{ fg.style.strokeDashoffset=c*(1-pct/100); },60); });
+}
+
+function goHome(){ initHome(); }
+
+// イベントはまとめて確実にバインド（インラインonclickを使わない）
+document.getElementById("startAllBtn").addEventListener("click",()=>start("all"));
+document.getElementById("wrongBtn").addEventListener("click",()=>start("wrong"));
+document.getElementById("btnMaru").addEventListener("click",()=>answer(true));
+document.getElementById("btnBatsu").addEventListener("click",()=>answer(false));
+document.getElementById("nextBtn").addEventListener("click",next);
+document.getElementById("abortBtn").addEventListener("click",goHome);
+document.getElementById("redoBtn").addEventListener("click",()=>start("redo"));
+document.getElementById("restartBtn").addEventListener("click",()=>start("all"));
+document.getElementById("homeBtn").addEventListener("click",goHome);
+
+initHome();
+</script>
+</body>
+</html>
