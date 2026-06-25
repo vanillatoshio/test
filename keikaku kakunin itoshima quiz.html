@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>計画確認 糸島｜2級建築士 ○×クイズ</title>
+<style>
+:root{
+  --accent:#2f8f5b; --light:#46a771; --bg:#e9f6ee;
+  --maru:#2e9e6b; --batsu:#d9534f;
+  --ink:#1d2a22; --sub:#5a6b61; --card:#fff; --line:#d6e6dc;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+  background:var(--bg); color:var(--ink); line-height:1.7;
+  -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:560px;margin:0 auto;padding:16px 14px 40px;min-height:100vh}
+header{text-align:center;padding:8px 0 14px}
+header h1{font-size:1.15rem;margin:0;color:var(--accent);letter-spacing:.02em}
+header p{margin:4px 0 0;font-size:.78rem;color:var(--sub)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 16px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.btn{display:block;width:100%;border:none;border-radius:12px;padding:15px;font-size:1.02rem;font-weight:700;cursor:pointer;margin-top:10px;font-family:inherit}
+.btn.primary{background:var(--accent);color:#fff}
+.btn.sub{background:#fff;color:var(--accent);border:1.5px solid var(--accent)}
+.btn.ghost{background:#eef4f0;color:var(--sub)}
+.btn:disabled{opacity:.5}
+.cat-btn{background:#fff;color:var(--ink);border:1.5px solid var(--line);text-align:left;font-size:.95rem}
+.cat-btn .n{float:right;color:var(--sub);font-weight:600;font-size:.85rem}
+
+.topbar{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.count{font-size:.82rem;color:var(--sub);white-space:nowrap;font-weight:600}
+.bar{flex:1;height:8px;background:#dfece4;border-radius:99px;overflow:hidden}
+.bar > i{display:block;height:100%;background:var(--accent);width:0;transition:width .25s}
+.srclabel{font-size:.72rem;color:var(--sub);margin-bottom:6px}
+.cat-tag{display:inline-block;background:var(--bg);color:var(--accent);font-size:.7rem;font-weight:700;padding:2px 9px;border-radius:99px;margin-bottom:10px}
+.q{font-size:1.12rem;line-height:1.85;margin:2px 0 4px;min-height:3em}
+
+.ox{display:flex;gap:12px;margin-top:18px}
+.ox button{flex:1;border:none;border-radius:14px;padding:20px 0;font-size:2rem;font-weight:800;cursor:pointer;font-family:inherit}
+.ox .maru{background:#e7f6ee;color:var(--maru);border:2px solid #bce4cd}
+.ox .batsu{background:#fdeceb;color:var(--batsu);border:2px solid #f5c9c6}
+
+.judge{margin-top:16px;border-radius:14px;padding:14px;display:none}
+.judge.show{display:block;animation:pop .2s}
+@keyframes pop{from{transform:scale(.97);opacity:.4}to{transform:scale(1);opacity:1}}
+.judge .head{font-size:1.1rem;font-weight:800;margin-bottom:6px}
+.judge.ok{background:#e7f6ee;border:1.5px solid #bce4cd}
+.judge.ok .head{color:var(--maru)}
+.judge.ng{background:#fdeceb;border:1.5px solid #f5c9c6}
+.judge.ng .head{color:var(--batsu)}
+.judge .ans{font-size:.85rem;color:var(--sub);margin-bottom:8px}
+.judge .p{font-size:.95rem;line-height:1.8}
+.judge .p b{color:var(--accent)}
+
+.ring-wrap{display:flex;justify-content:center;margin:6px 0 4px}
+svg.ring{transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:#e0ece5;stroke-width:14}
+.ring-fg{fill:none;stroke:var(--accent);stroke-width:14;stroke-linecap:round;transition:stroke-dashoffset 1s ease}
+.ring-txt{font-size:1.9rem;font-weight:800;fill:var(--ink)}
+.ring-sub{font-size:.7rem;fill:var(--sub)}
+.score-line{text-align:center;font-size:1.05rem;margin:4px 0 2px;font-weight:700}
+.score-sub{text-align:center;color:var(--sub);font-size:.85rem;margin-bottom:8px}
+.note{font-size:.78rem;color:var(--sub);text-align:center;margin-top:14px;line-height:1.6}
+.hide{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>計画確認 糸島</h1>
+    <p>2級建築士 学科｜○×クイズ</p>
+  </header>
+
+  <section id="home">
+    <div class="card">
+      <button class="btn primary" onclick="start('all')">全<span id="totalN"></span>問に挑戦</button>
+      <button class="btn sub" id="wrongBtn" onclick="start('wrong')">間違い復習（<span id="wrongN">0</span>問）</button>
+    </div>
+    <div class="card" style="margin-top:14px" id="setBox">
+      <div style="font-weight:700;font-size:.9rem;margin-bottom:8px;color:var(--sub)">20問ずつ</div>
+      <div id="setList"></div>
+    </div>
+    <div class="card" style="margin-top:14px" id="catBox">
+      <div style="font-weight:700;font-size:.9rem;margin-bottom:8px;color:var(--sub)">分野別</div>
+      <div id="catList"></div>
+    </div>
+    <p class="note">○か×で答えてね。間違えた問題は自動で記録され、「間違い復習」でやり直せます。</p>
+  </section>
+
+  <section id="quiz" class="hide">
+    <div class="topbar">
+      <span class="count"><span id="cur">1</span>/<span id="len">1</span></span>
+      <div class="bar"><i id="barFill"></i></div>
+    </div>
+    <div class="card">
+      <div class="srclabel" id="src"></div>
+      <span class="cat-tag" id="catTag"></span>
+      <div class="q" id="qtext"></div>
+      <div class="ox" id="oxBtns">
+        <button class="maru" onclick="answer(true)">○</button>
+        <button class="batsu" onclick="answer(false)">×</button>
+      </div>
+      <div class="judge" id="judge">
+        <div class="head" id="jhead"></div>
+        <div class="ans" id="jans"></div>
+        <div class="p" id="jp"></div>
+        <button class="btn primary" id="nextBtn" onclick="next()">次へ</button>
+      </div>
+    </div>
+    <button class="btn ghost" style="margin-top:14px" onclick="goHome()">中断してホームへ</button>
+  </section>
+
+  <section id="result" class="hide">
+    <div class="card">
+      <div class="ring-wrap">
+        <svg class="ring" width="150" height="150" viewBox="0 0 150 150">
+          <circle class="ring-bg" cx="75" cy="75" r="64"></circle>
+          <circle class="ring-fg" id="ringFg" cx="75" cy="75" r="64"></circle>
+          <text class="ring-txt" id="ringTxt" x="75" y="72" text-anchor="middle" transform="rotate(90 75 75)">0%</text>
+          <text class="ring-sub" x="75" y="92" text-anchor="middle" transform="rotate(90 75 75)">正答率</text>
+        </svg>
+      </div>
+      <div class="score-line" id="scoreLine"></div>
+      <div class="score-sub" id="scoreSub"></div>
+      <button class="btn primary" id="redoBtn" onclick="start('redo')">間違えた問題を解き直す</button>
+      <button class="btn sub" onclick="start('all')">最初から全問</button>
+      <button class="btn ghost" onclick="goHome()">ホーム</button>
+    </div>
+  </section>
+</div>
+
+<script>
+const QUESTIONS = [
+  {n:1, src:"計画 換気 04-04A", cat:"環境・空気", a:false, q:"汚染物質が発生している室における必要換気量は、汚染物質の発生量が同じ場合、その室の容積の大小によって変化する。", p:"必要換気量は<b>汚染質の発生量</b>と室内の許容濃度・外気中の濃度で決まり、<b>室の容積の大小によっては変化しない</b>。"},
+  {n:2, src:"R05 計画 空気環境", cat:"環境・空気", a:false, q:"空気齢とは、室内のある点の空気が、流出口までに達するのに要する平均時間のことをいう。", p:"空気齢は<b>流入口から室内のある点に到達するまで</b>の平均時間。ある点から流出口までは「<b>空気余命</b>」という。"},
+  {n:3, src:"H30 計画 採光・照明", cat:"採光・日照・日射", a:true, q:"反射グレアは、視対象そのものや視対象の方向のショーウィンドウなどに、輝度の高い部分が正反射して生じるグレアである。", p:"グレアは直接グレアと反射グレア（鏡面反射）に分けられ、反射グレアは輝度の高い部分の<b>正反射</b>で生じる。"},
+  {n:4, src:"H30 計画 採光・照明", cat:"採光・日照・日射", a:true, q:"細かい視作業を伴う事務作業の作業面に必要な照度は、一般に、1,000lx程度とされている。", p:"JIS照明基準では一般的な事務作業が<b>750lx</b>、<b>細かい視作業を伴う場合は1,000lx程度</b>が適当。"},
+  {n:5, src:"H30 計画 採光・照明", cat:"採光・日照・日射", a:true, q:"色温度は、光源が発する光の色に近似する色の光を放つ黒体の絶対温度（K）で示され、色温度が高いほど青みを帯び、低いほど赤み・黄みを帯びる。", p:"色温度が<b>高い→青白い</b>、<b>低い→赤み・黄み</b>。単位はケルビン（K）。"},
+  {n:6, src:"H30 計画 採光・照明", cat:"採光・日照・日射", a:true, q:"全天空照度は、一般に、快晴の日よりも薄曇りの日のほうが大きい。", p:"全天空照度は薄曇りの晴天日で約50,000lx、快晴日で約10,000lx。<b>薄曇りのほうが大きく</b>、室内照度も薄曇り時のほうが高くなる。"},
+  {n:7, src:"計画 空調設備", cat:"設備", a:false, q:"変風量単一ダクト方式は、室内ユニットを分散設置する空気熱源マルチパッケージ型空調方式に比べて、空気搬送エネルギーが小さくなる。", p:"マルチパッケージ方式は<b>冷媒を配管で送り空気搬送が少ない</b>。空気搬送エネルギーは<b>変風量単一ダクト方式のほうが大きい</b>。"},
+  {n:8, src:"R01 計画 給排水", cat:"設備", a:false, q:"バキュームブレーカは、逆サイホン作用により汚水が逆流することを防止するために、排水管に設けられる。", p:"バキュームブレーカは大便器の洗浄弁などに取り付け、汚水が<b>給水管</b>へ逆流するのを防ぐ装置。<b>排水管ではない</b>。"},
+  {n:9, src:"R03 計画 消火・防災", cat:"設備", a:false, q:"階段室に設ける自動火災報知設備の感知器は、熱感知器とする。", p:"感知器には煙・熱・炎感知器があり、消防法施行規則により<b>階段室には煙感知器</b>を設置しなければならない。"},
+  {n:10, src:"R03 計画 消火・防災", cat:"設備", a:true, q:"屋内消火栓設備における易操作性1号消火栓は、1人で操作が可能な消火栓である。", p:"易操作性1号消火栓は1号消火栓と同等のホース格納方式を採用しつつ、<b>1人で操作可能</b>。"},
+  {n:11, src:"R07 計画 省エネ", cat:"設備", a:false, q:"インテリアゾーンは、建築物の平面において外壁からの熱的影響を受ける領域であり、一般に、外壁から3〜6mまでの範囲を指す。", p:"これは<b>ペリメータゾーン</b>の説明。インテリアゾーンは屋外の熱的影響を受けにくい<b>中央部付近</b>を指す。"},
+  {n:12, src:"R07 計画 省エネ", cat:"設備", a:true, q:"全熱交換器は、空調された室内空気の排気に含まれる顕熱と潜熱を回収して、室内に供給する外気にその熱を与える装置である。", p:"全熱交換器は<b>顕熱＋潜熱（全熱）</b>を回収して取り入れる外気へ移し、冷暖房負荷（外気負荷）を低減する。"},
+  {n:13, src:"R07 計画 省エネ", cat:"設備", a:true, q:"デシカント空調方式は、従来の冷却除湿方式に比べて、潜熱のみを効率よく除去することができる。", p:"デシカント空調は除湿ローターで水蒸気（<b>潜熱</b>）を直接除去。冷却・加熱が少なく、潜熱を効率よく除去できる。"},
+  {n:14, src:"R07 計画 各部寸法", cat:"計画各論", a:true, q:"視覚障がい者に対し段差の存在を警告するため、点状ブロックを階段の手前300mm程度の位置に敷設するように計画した。", p:"階段の昇り口・降り口の<b>手前300mm程度</b>に点状ブロック（警告ブロック）を敷設する。"},
+  {n:15, src:"R07 計画 各部寸法", cat:"計画各論", a:false, q:"病院において、定員4人の小児用病室の床面積を10m²として計画した。", p:"小児用病室は一般病室（1人当たり<b>6.4m²</b>）の<b>2/3以上</b>。6.4×4×2/3≒<b>17.07m²以上</b>必要で、10m²では不足。"},
+  {n:16, src:"R07 計画 各部寸法", cat:"計画各論", a:true, q:"普通乗用車の最大収容台数が20台の機械式立体駐車場において、駐車場総床面積を300m²として計画した。", p:"機械式立体駐車場は<b>1台につき15m²</b>で算定。20台×15m²＝<b>300m²</b>で適合。"},
+  {n:17, src:"R07 計画 気候", cat:"採光・日照・日射", a:true, q:"日最高気温が30℃以上の日を真夏日、日最高気温が0℃未満の日を真冬日という。", p:"<b>真夏日</b>＝最高気温30℃以上、<b>真冬日</b>＝最高気温0℃未満。（最低気温0℃未満は冬日、最高気温25℃以上は夏日）"},
+
+  {n:18, src:"R06 計画 結露", cat:"伝熱・結露", a:true, q:"冬期において、外壁の室内側表面結露を防止するためには、断熱強化により、外壁の室内側壁面温度を上昇させることが有効である。", p:"表面結露は壁表面温度が露点以下になると生じる。<b>外壁の断熱性能を強化</b>して<b>室内側壁面温度を上昇</b>させると防止に有効。"},
+  {n:19, src:"H28 計画 結露", cat:"伝熱・結露", a:true, q:"外壁を内断熱とする場合、断熱材を厚くしても、内部結露の防止には効果がない。", p:"内断熱は躯体の室内側に断熱材を設ける工法。断熱材を厚くしても内部結露は生じうる。防止には<b>断熱材の室内側に防湿層</b>を設けるのが有効。"},
+  {n:20, src:"H28 計画 結露", cat:"伝熱・結露", a:false, q:"室内の表面温度を上昇させると、表面結露は生じやすくなる。", p:"表面結露は壁表面温度が露点以下のときに生じる。<b>表面温度を上昇</b>させると露点以下になりにくく、結露は<b>生じにくくなる</b>。"},
+
+  {n:21, src:"R02 計画 採光", cat:"採光・日照・日射", a:true, q:"照度の均斉度は、室全体の照度分布の均一さを評価する指標であり、その数値が1に近いほど均一であることを示している。", p:"均斉度＝最低照度／最高照度（JISは最小／平均）。<b>1に近いほど照度分布が均一</b>。"},
+  {n:22, src:"R02 計画 採光", cat:"採光・日照・日射", a:false, q:"人工光源の平均演色評価数の値が小さいほど、自然光の下での物体色の見え方に近い。", p:"平均演色評価数は自然光を最大の<b>100</b>とし、<b>値が大きいほど</b>自然光に近い見え方になる。小さいほど近い、は誤り。"},
+  {n:23, src:"R03 計画 採光", cat:"採光・日照・日射", a:true, q:"可照時間は、天候や障害物の影響を受けない。", p:"可照時間は日の出から日没までの<b>理論上の時間</b>で、天候や障害物の影響を受けず<b>緯度で決まる</b>。実際に日照のあった時間が日照時間。"},
+  {n:24, src:"R03 計画 採光", cat:"採光・日照・日射", a:true, q:"演色性は、物体表面の色の見え方に影響を及ぼす光源の性質である。", p:"演色性は光源が物体色の見え方に与える性質。自然光の下での色に近いほど演色性がよい。"},
+  {n:25, src:"R06 計画 日射", cat:"採光・日照・日射", a:false, q:"日射遮蔽係数が大きい窓ほど、日射遮蔽効果が大きい。", p:"日射遮蔽係数が大きい＝日射熱が室内に流入する割合が大きい。よって<b>遮蔽効果は小さい</b>。係数が小さいほど遮蔽効果大。"},
+  {n:26, src:"R06 計画 採光", cat:"採光・日照・日射", a:true, q:"設計用全天空照度は、薄曇りの日より快晴の青空のほうが小さな値となる。", p:"全天空照度は薄曇り日（約50,000lx）＞快晴の青空（約10,000lx）。直射光を除く天空光主体の<b>薄曇りのほうが大きい</b>。"},
+  {n:27, src:"計画 日射", cat:"採光・日照・日射", a:true, q:"天空日射量は、一般に、大気透過率が高くなるほど減少する。", p:"大気透過率が高い→<b>直達日射量が増加</b>、散乱による<b>天空日射量は減少</b>。"},
+  {n:28, src:"R01 計画 日射", cat:"採光・日照・日射", a:true, q:"日射遮蔽係数が小さい窓ほど、日射の遮蔽効果が大きい。", p:"日射遮蔽係数が小さい＝日射熱取得率が小さい→<b>遮蔽効果が大きい</b>。"},
+  {n:29, src:"R01 計画 日射", cat:"採光・日照・日射", a:false, q:"北緯35度の地点において、快晴時の夏至の日の1日間の直達日射量は、東向き鉛直面より南向き鉛直面のほうが大きい。", p:"夏至は太陽高度が高く南鉛直面は受光角が浅いため日射量は小さい。朝夕に低い太陽高度で受ける<b>東西面のほうが大きい</b>。"},
+  {n:30, src:"R01 計画 採光", cat:"採光・日照・日射", a:true, q:"日照率は、可照時間に対する日照時間の割合である。", p:"日照率＝日照時間／可照時間。可照時間に対する実際の日照時間の割合。"},
+  {n:31, src:"R01 計画 採光", cat:"採光・日照・日射", a:true, q:"昼光率は、全天空照度に対する、室内におけるある点の昼光による照度の割合である。", p:"昼光率＝室内のある点の照度／全天空照度。全天空照度が変化しても<b>昼光率は変わらない</b>。"},
+
+  {n:32, src:"R06 計画 音響", cat:"音響", a:true, q:"同じ厚さの一重壁の場合、壁の単位面積当たりの質量が2倍になると、音響透過損失は約6dB大きくなる。", p:"質量則。面密度が2倍になると透過損失は20log₁₀2≒<b>6dB</b>大きくなる。"},
+  {n:33, src:"R06 計画 音響", cat:"音響", a:false, q:"音源の音響出力を2倍にすると、同じ受音点での音圧レベルは約6dB高くなる。", p:"音響出力（エネルギー）が2倍→音圧レベルは10log₁₀2≒<b>約3dB</b>高くなる。6dBではない。"},
+  {n:34, src:"R02 計画 音響", cat:"音響", a:true, q:"直接音と反射音の行路差が約17m以上になると、エコー（反響）が生じる可能性がある。", p:"反射音の遅れが約0.05秒（1/20秒）以上でエコーが知覚される。行路差に換算すると約<b>17m</b>以上。"},
+  {n:35, src:"R02 計画 音響", cat:"音響", a:false, q:"空気中の音速は、気温にかかわらず、340m/sである。", p:"音速は気温に比例し〔331.5＋0.6×気温(℃)〕で表される。約340m/sは<b>常温15℃</b>での値で、気温で変化する。"},
+  {n:36, src:"R03 計画 音響", cat:"音響", a:true, q:"フラッターエコーは、一般に、向かい合う平行な壁面それぞれの吸音率が低いほど発生しやすい。", p:"反射性の高い（吸音率の低い）平行な壁面間で音が往復反射して生じる。吸音材を用いると抑えられる。"},
+  {n:37, src:"R04 計画 音響", cat:"音響", a:true, q:"中空二重壁の共鳴透過は、壁間の空気層を厚くすると、共鳴透過を起こす周波数（共鳴周波数）が低くなる。", p:"空気層を厚くすると共鳴周波数は<b>低音側</b>へ移る（低くなる）。"},
+  {n:38, src:"R04 計画 音響", cat:"音響", a:true, q:"グラスウールなどの多孔質材料は、一般に、低音域よりも高音域の吸音率が高い。", p:"多孔質吸音材は<b>高音域の吸音に優れる</b>。低音域の吸音には背後空気層を設けるなどが必要。"},
+  {n:39, src:"R04 計画 音響", cat:"音響", a:true, q:"吸音率は、壁に入射する音のエネルギーのうち、壁面で反射されない音のエネルギーの割合で表される。", p:"吸音率＝（吸収＋透過）／入射＝<b>反射されない音の割合</b>。吸音率が高くても遮音性能が高いとは限らない。"},
+  {n:40, src:"R02 計画 音響", cat:"音響", a:false, q:"同じ厚さの一重壁の場合、壁の単位面積当たりの質量が2倍になると、透過損失は約3dB大きくなる。", p:"質量則では面密度2倍で透過損失は約<b>6dB</b>大きくなる（20log₁₀2≒6）。3dBは誤り。"},
+  {n:41, src:"R02 計画 音響", cat:"音響", a:true, q:"室間音圧レベル差（D値）は、隣接する2室間の空気音の遮音性能を表すもので、その数値が大きいほど遮音性能が高い。", p:"D値（Dr等級）は隣接2室間の空気音遮音性能。数値が大きいほど遮音性能が高い。"},
+  {n:42, src:"R02 計画 音響", cat:"音響", a:true, q:"残響時間は、音源が停止してから、室内の平均音圧レベルが60dB低下するまでの時間をいう。", p:"残響時間＝音源停止後に音圧レベルが<b>60dB低下</b>するまでの時間。T＝0.161V／A（V:室容積、A:総吸音力）。"},
+  {n:43, src:"H30 計画 音響", cat:"音響", a:true, q:"同じ音圧レベルの場合、一般に、1,000Hzの純音より125Hzの純音のほうが小さく聞こえる。", p:"人の聴覚は1,000Hz付近の感度が高く低音は鈍い。同じ音圧レベルなら低音（125Hz）のほうが<b>小さく聞こえる</b>。"},
+  {n:44, src:"H30 計画 音響", cat:"音響", a:true, q:"室内騒音の許容値は、一般に、「音楽ホール」より「住宅の寝室」のほうが高い。", p:"許容値（NC値）は音楽ホール25〜30、住宅の寝室35〜40程度。静かさ要求が緩い<b>寝室のほうが許容値は高い</b>。"},
+  {n:45, src:"H28 計画 音響", cat:"音響", a:true, q:"透過損失は、入射した音と透過した音の音圧レベルの差であり、その値が大きいほど遮音性能が高い。", p:"透過損失（dB）が大きいほど壁を透過する音が小さく、<b>遮音性能が高い</b>。"},
+
+  {n:46, src:"計画 色彩", cat:"色彩", a:true, q:"マンセル色相環において、対角線上にある2色は、相互に補色の関係にある。", p:"基本10色相を等間隔に円環状に並べたマンセル色相環では、<b>対角に位置する2色が補色</b>。補色どうしを等量で混色すると無彩色になる。"},
+  {n:47, src:"計画 色彩", cat:"色彩", a:true, q:"文字の意味と文字の色のように、同時に目にする2つの異なる情報が相互に干渉し合う現象を、ストループ効果という。", p:"「あか」と青色で書かれた文字の色を答えるのに時間がかかるなど、文字の意味と色が<b>干渉</b>する現象。"},
+  {n:48, src:"計画 色彩", cat:"色彩", a:true, q:"光束は、ある面を単位時間に通過する光の放射エネルギー量を、視感度で補正した値であり、単位はlm（ルーメン）である。", p:"光束の単位は<b>lm（ルーメン）</b>。人の目の波長ごとの感度（比視感度）で補正した測光量。"},
+  {n:49, src:"R04 計画 色彩", cat:"色彩", a:true, q:"マンセル表色系では、有彩色を「5R4/14」のように表現し、5Rが色相、4が明度、14が彩度を示す。", p:"マンセル表記は<b>色相 明度／彩度</b>。無彩色は色相がないため「N（明度）」で表す。"},
+  {n:50, src:"R04 計画 色彩", cat:"色彩", a:true, q:"マンセル表色系において、各色相の中で最も彩度の高い色を、純色という。", p:"純色は各色相で最も鮮やかな（彩度が最大の）色。"},
+  {n:51, src:"R04 計画 色彩", cat:"色彩", a:true, q:"ある色が周囲の色に囲まれたとき、周囲の色に近づいて見える現象を、色の同化という。", p:"周囲に近づいて見えるのが<b>同化</b>、逆に違いが強調されるのが<b>対比</b>。"},
+  {n:52, src:"計画 色彩", cat:"色彩", a:true, q:"マンセル表色系の明度（バリュー）は、完全な黒を0、完全な白を10として、0〜10の11段階で表す。", p:"明度は黒0（反射率0%）〜白10（反射率100%）の<b>11段階</b>。"},
+  {n:53, src:"R01 計画 色彩", cat:"色彩", a:false, q:"マンセル表色系において、明度5の物体表面の反射率は、約50%である。", p:"明度5の反射率の近似値はY＝5×(5-1)＝<b>約20%</b>。50%ではない。"},
+  {n:54, src:"R01 計画 色彩", cat:"色彩", a:true, q:"色は、面積が大きいほど明度・彩度が高く見える。これを面積対比（面積効果）という。", p:"同じ色でも面積が大きいほど明るく鮮やかに見える<b>面積対比</b>。"},
+  {n:55, src:"計画 色彩", cat:"色彩", a:true, q:"色光の三原色を混色する加法混色は混ぜるほど明るくなり、色料の三原色を混色する減法混色は混ぜるほど暗くなる。", p:"<b>加法混色（色光）＝混ぜると明るく（白へ）</b>、<b>減法混色（色料）＝混ぜると暗く（黒へ）</b>。"},
+  {n:56, src:"計画 色彩", cat:"色彩", a:true, q:"光の三原色は赤（R）・緑（G）・青（B）であり、物体色（色料）の三原色はシアン（C）・マゼンタ（M）・イエロー（Y）である。", p:"光の三原色＝<b>RGB</b>、色料の三原色＝<b>CMY</b>（カラー印刷の重ね刷りに応用）。"},
+  {n:57, src:"計画 色彩", cat:"色彩", a:true, q:"補色の関係にある2色を同じ割合で混色すると、無彩色（白・灰・黒）になる。", p:"補色どうしを等量混色すると彩度が打ち消し合い<b>無彩色</b>になる。"},
+  {n:58, src:"H29 計画 照明", cat:"色彩", a:true, q:"住宅の寝室における読書時の照度は、一般に、200〜500lx程度がよいとされている。", p:"JIS照度基準で寝室の読書はおおむね<b>200〜500lx</b>程度。"},
+
+  {n:59, src:"H28 計画 環境融合", cat:"環境工学融合", a:true, q:"二酸化炭素は、無色・無臭で空気より重い気体であり、室内空気汚染の指標に用いられる。", p:"CO₂は無色無臭・空気より重い。濃度上昇が空気質悪化の目安となるため<b>室内空気汚染の指標</b>。"},
+  {n:60, src:"H28 計画 環境融合", cat:"環境工学融合", a:true, q:"熱放射は、真空中においても生じ、熱が電磁波の形で高温の物体から低温の物体へ移動する現象である。", p:"熱の伝わり方は伝導・対流・放射。<b>放射（熱放射）は真空中でも生じる</b>（日射が大気圏外を通過できる理由）。"},
+  {n:61, src:"H28 計画 環境融合", cat:"環境工学融合", a:false, q:"大気放射とは、日射のうち、大気により吸収・散乱される部分を除き、地表面に直接到達する日射のことである。", p:"これは<b>直達日射</b>の説明。大気放射は、大気が吸収して温まった熱を地表面へ<b>再放射</b>するもの。"},
+  {n:62, src:"H28 計画 環境融合", cat:"環境工学融合", a:true, q:"クロ（clo）値は、衣服の断熱性を表す指標であり、1クロは成人男子が標準的な背広を着ている状態に相当する。", p:"clo値は<b>着衣量</b>の単位。温冷感（温熱感覚）に影響する温熱6要素の一つ。"},
+  {n:63, src:"R04 計画 環境融合", cat:"環境工学融合", a:false, q:"熱伝導率の値が大きい材料ほど、断熱性が高い。", p:"熱伝導率が大きい＝<b>熱が伝わりやすい</b>＝断熱性は<b>低い</b>。単位はW/(m・K)。"},
+  {n:64, src:"R04 計画 環境融合", cat:"環境工学融合", a:true, q:"PMV（予測平均温冷感申告）は、温度・湿度・気流・放射・着衣量・作業量の6つの要素を考慮した温熱環境指標である。", p:"PMVは温熱6要素を変数とし、<b>−3（寒い）〜+3（暑い）</b>で快適性を示す。"},
+  {n:65, src:"R01 計画 環境融合", cat:"環境工学融合", a:true, q:"CASBEEは、建築物の環境品質・性能（Q）を環境負荷（L）で除して求めるBEE（建築物の環境効率）が高い建築物ほど、評価が高い。", p:"BEE＝Q／L。<b>分子Qが大きく分母Lが小さいほど高評価</b>。"},
+  {n:66, src:"R01 計画 環境融合", cat:"環境工学融合", a:true, q:"ZEHは、外皮の断熱性能等の向上と高効率設備の導入で大幅な省エネを実現し、再生可能エネルギー導入により年間の一次エネルギー消費量の収支をゼロ以下にすることを目指した住宅である。", p:"Net Zero Energy House。<b>省エネ＋創エネで一次エネルギー収支をゼロ（以下）</b>に。"},
+  {n:67, src:"R01 計画 環境融合", cat:"環境工学融合", a:true, q:"LCA（ライフサイクルアセスメント）は、製品や建築物の原材料採取から製造・使用・廃棄・リサイクルに至る全過程の環境影響を評価する手法である。", p:"LCAは<b>全ライフサイクル</b>の環境負荷を評価。ISO14040に規定。"},
+  {n:68, src:"R06 計画 環境融合", cat:"環境工学融合", a:true, q:"VOC（揮発性有機化合物）は、内装材などから放散され、シックハウス症候群の原因の一つとなる。", p:"VOCは内装材・接着剤などから放散される有機化合物。<b>シックハウス症候群</b>の原因。"},
+  {n:69, src:"R03 計画 環境融合", cat:"環境工学融合", a:true, q:"絶対湿度は、乾燥空気1kgに対して含まれる水蒸気の質量で表され、単位はkg/kg(DA)である。", p:"絶対湿度＝乾燥空気（DA）1kgあたりの水蒸気質量。相対湿度は飽和水蒸気量に対する割合〔%〕。"},
+  {n:70, src:"R02 計画 環境融合", cat:"環境工学融合", a:true, q:"熱伝導率の単位はW/(m・K)、熱貫流率の単位はW/(m²・K)である。", p:"<b>熱伝導率＝W/(m・K)</b>（材料内部の伝熱）、<b>熱貫流率＝W/(m²・K)</b>（壁全体の伝熱）。"},
+  {n:71, src:"R05 計画 環境融合", cat:"環境工学融合", a:true, q:"音に関する聴感上の3つの要素は、音の大きさ、音の高さ、音色である。", p:"音の3要素は<b>大きさ・高さ・音色</b>。"},
+
+  {n:72, src:"H28 計画 住宅", cat:"住宅", a:true, q:"4人家族が入居する住戸の都市居住型の誘導居住面積水準の目安は、95m²である。", p:"都市居住型（2人以上）＝20m²×世帯人数＋15m²。4人なら20×4＋15＝<b>95m²</b>。単身は40m²。"},
+  {n:73, src:"R03 計画 住宅", cat:"住宅", a:true, q:"2名が居住する住戸の都市居住型の誘導居住面積水準の目安は、55m²である。", p:"20m²×2＋15＝<b>55m²</b>。"},
+  {n:74, src:"R03 計画 住宅", cat:"住宅", a:false, q:"コモンアクセスは、共用庭と各住戸へのアクセス路とを分離した形式で、共用庭の利用が限られたものになりやすい。", p:"これは<b>路地アクセス</b>の説明。コモンアクセスは共用庭（コモンスペース）を主要道路側に設け、それに面して各住戸の玄関を構える形式。"},
+  {n:75, src:"R02 計画 住宅", cat:"住宅", a:false, q:"住宅の寝室の気積を、居住者1人当たり6m³として計画した。", p:"寝室の気積（居住部分の容積）は<b>1人当たり10m³以上</b>必要。6m³は不足。"},
+  {n:76, src:"R02 計画 住宅", cat:"住宅", a:true, q:"高齢者に配慮して、住宅の階段の勾配を7/11以下となるようにし、踏面の寸法を300mmとした。", p:"勾配7/11以下は推奨レベル（6/7以下）より緩やか、踏面300mmも望ましい値。"},
+  {n:77, src:"R02 計画 住宅", cat:"住宅", a:true, q:"家族や来客等が複数人で四方を取り囲んで調理できるように、台所をアイランド型とした。", p:"アイランド型はキッチンセットを壁から離して<b>台所の中央に配置</b>。対面でき家族とのコミュニケーションを高める。"},
+  {n:78, src:"R02 計画 住宅", cat:"住宅", a:true, q:"コア型住宅は、台所・便所・浴室・洗面所などの水回りを1か所にまとめて配置する平面形式である。", p:"水回りを集約し、設備配管の集約による工事費低減・動線の単純化・居室が外壁に多く面することによる居住性向上をめざす。"},
+  {n:79, src:"R03 計画 住宅", cat:"住宅", a:true, q:"ライトウェル（光井戸）は、間口が狭く奥行の深い住戸に隣接して設けると、採光を改善し居住性を向上させることができる。", p:"ライトウェル（光庭）は屋外の吹抜け空間。奥行の深い住戸の<b>採光</b>に有効。"},
+
+  {n:80, src:"R02 計画 各部寸法", cat:"計画各論", a:false, q:"車椅子使用者が利用する屋内傾斜路（スロープ）に、高さ900mmごとに踊場を設けた。", p:"車椅子用スロープは原則、有効幅員1,200mm以上、<b>高さ750mm以内ごと</b>に踏幅1,500mm以上の踊場を設ける。900mmは間隔が大きい。"},
+  {n:81, src:"R05 計画 各部寸法", cat:"計画各論", a:false, q:"自走式駐車場にある高低差4mの自動車専用傾斜路において、傾斜路の水平距離を20mとした。", p:"自走式駐車場の傾斜路は縦断勾配<b>1/6以下</b>。4m／20m＝1/5は1/6より急で不適当。"},
+  {n:82, src:"R05 計画 各部寸法", cat:"計画各論", a:true, q:"ユニット型指定介護老人福祉施設において、1人用個室の内法寸法による床面積を15m²とした。", p:"居室（個室）は内法寸法で入所者1人当たり<b>10.65m²以上</b>。15m²は基準に適合。"},
+  {n:83, src:"R05 計画 各部寸法", cat:"計画各論", a:true, q:"保育所において、5歳児を対象とした定員25人の保育室の内法床面積を60m²とした。", p:"保育室は内法で幼児1人当たり<b>1.98m²以上</b>。25人なら49.5m²以上で、60m²は適合。"},
+  {n:84, src:"R05 計画 各部寸法", cat:"計画各論", a:true, q:"一戸建て住宅において、厚形スレート葺の屋根の勾配を3/10とした。", p:"厚形スレートの最小屋根勾配は<b>3/10程度</b>。"},
+  {n:85, src:"R05 計画 各部寸法", cat:"計画各論", a:true, q:"ビジネスホテルにおいて、延べ面積に対する客室部門の床面積の合計の割合を70%とした。", p:"客室部門の床面積割合は、ビジネスホテルで<b>70%</b>程度、シティホテルで45〜50%程度。"},
+
+  {n:86, src:"H29 計画 設備融合", cat:"設備", a:false, q:"ストレーナは、換気設備に分類される機器である。", p:"ストレーナは配管に取り付けて不純物を取り除く<b>ろ過器具</b>で、給排水（衛生）設備の機器。換気設備ではない。"},
+  {n:87, src:"R05 計画 消火・防災", cat:"設備", a:false, q:"非常警報設備は、火災等の感知と音響装置による報知とを自動的に行う設備である。", p:"非常警報設備（非常ベル・自動式サイレン・放送設備）は<b>手動</b>で作動させ報知する設備。火災を自動感知するのは自動火災報知設備。"},
+  {n:88, src:"R06 計画 消火・防災", cat:"設備", a:false, q:"アトリウムのように天井の高さが20m以上の大空間では、火災を有効に検知するため、煙感知器を用いる。", p:"高天井では煙・熱が拡散して検知しにくいため、20m以上には<b>炎感知器</b>（紫外線・赤外線を感知）が用いられる。"},
+  {n:89, src:"R06 計画 消火・防災", cat:"設備", a:true, q:"避雷設備は、原則として、高さ20mを超える建築物に設置され、20mを超える部分を雷撃から保護するように設ける。", p:"建築基準法により<b>高さ20m超</b>の建築物に避雷設備を設置。"},
+  {n:90, src:"R06 計画 消火・防災", cat:"設備", a:true, q:"非常用エレベーターは、原則として、高さ31mを超える建築物に設置され、火災時の消防隊の消火活動などに使用する設備である。", p:"<b>高さ31m超</b>の建築物に設置。消防隊の消火活動を補助する設備で、避難経路としては計画しない。"},
+  {n:91, src:"R06 計画 消火・防災", cat:"設備", a:true, q:"不活性ガス消火設備は、常時人が在室しない電気室などの電気火災の消火に適している。", p:"二酸化炭素や窒素による窒息作用と冷却作用で消火。<b>電気火災</b>に適し、美術館の収蔵庫などにも用いる。"},
+  {n:92, src:"R05 計画 消火・防災", cat:"設備", a:true, q:"粉末消火設備は、燃焼を抑制する粉末状の消火剤を加圧ガスで放出する消火設備であり、液体燃料の表面火災に有効である。", p:"負触媒効果で消火。凍結せず寒冷地にも適し、液体燃料の<b>表面火災に速効性</b>。"},
+  {n:93, src:"R02 計画 空調設備", cat:"設備", a:false, q:"定風量単一ダクト方式は、変風量単一ダクト方式に比べて、空調機やダクトのサイズを小さくすることができる。", p:"逆。<b>変風量（VAV）方式</b>は各室の必要風量に応じて変えられるため空調機・ダクトを小さくできる。定風量は最大風量を常に送るため大きくなる。"},
+  {n:94, src:"R02 計画 空調設備", cat:"設備", a:true, q:"低温冷風空調方式は、給気温度を10〜12℃程度の低温にすることで送風量を少なくでき、空調機やダクトスペースを小さくできる。", p:"通常の冷房給気は15〜16℃が最低限度だが、低温冷風で送風量を抑え<b>ダクトを縮小</b>できる。"},
+  {n:95, src:"R05 計画 照明設備", cat:"設備", a:false, q:"照明率は、器具の配光や内装材の反射率が同じ場合、室指数が大きいほど低くなる。", p:"他の要素が同じなら<b>室指数が大きいほど照明率は高く</b>なる。"},
+  {n:96, src:"H30 計画 照明設備", cat:"設備", a:false, q:"室指数は、対象の室の光源の高さにかかわらず、その室の間口と奥行から求められる。", p:"室指数 k＝XY／H(X＋Y)。間口・奥行に加え<b>作業面から光源面までの垂直距離H</b>も用いる。光源の高さに関係する。"},
+  {n:97, src:"H30 計画 照明設備", cat:"設備", a:true, q:"照明率は、光源から出た全光束のうち、作業面に到達する光束の割合である。", p:"光束法に用いる照明率は、器具の形式・内装材の反射率・室指数で決まる。"},
+  {n:98, src:"H30 計画 照明設備", cat:"設備", a:true, q:"保守率は、時間の経過に伴う照度低下を見込んだ補正係数である。", p:"光源の経年劣化や汚れの付着による照度低下をあらかじめ見込む<b>補正係数</b>。"},
+  {n:99, src:"R05 計画 照明設備", cat:"設備", a:true, q:"点光源による直接照度は、光源からの距離の2乗に反比例する。", p:"距離が2倍になると光の拡散面が4倍になり、照度は<b>1/4</b>（距離の2乗に反比例）。"},
+
+  {n:100, src:"R02 計画 福祉", cat:"福祉・配慮", a:false, q:"車椅子使用者用の屋外傾斜路で、高低差50cmを処理するアプローチのスロープ勾配を1/8とした。", p:"屋外傾斜路の勾配は原則<b>1/12以下</b>（1/15以下が望ましい）。1/8は高低差16cm以下の場合のみ。50cmでは急すぎる。"},
+  {n:101, src:"R04 計画 福祉", cat:"福祉・配慮", a:false, q:"車椅子使用者が利用する浴室で、浴槽の縁（エプロン）の高さを、洗い場の床面から55cm程度とした。", p:"浴槽の縁は車椅子の座面に合わせ<b>40〜45cm程度</b>が望ましい。浴槽の深さは50cm程度。"},
+  {n:102, src:"H30 計画 福祉", cat:"福祉・配慮", a:false, q:"車椅子使用者が転回しやすいように、居室入口前の廊下に直径1,200mmの転回スペースを計画した。", p:"車椅子の転回スペースは<b>140cm角以上</b>が必要。直径1,200mmでは不足。主要経路の廊下は有効幅員120cm以上。"},
+  {n:103, src:"R02 計画 福祉", cat:"福祉・配慮", a:true, q:"ユニットケアは、ユニットごとに入居者の個室と、他の入居者や介護スタッフと交流するための共同生活室を備えていることが特徴である。", p:"少人数のグループ（ユニット）ごとにきめ細かな介護を行う手法。<b>個室＋共同生活室</b>。"},
+  {n:104, src:"R04 計画 福祉", cat:"福祉・配慮", a:true, q:"グループホームは、知的障がい者や精神障がい者、認知症高齢者などが専門スタッフやヘルパーの支援のもと、少人数で共同生活を行う住まいである。", p:"社会福祉施設の一種。<b>少人数での共同生活</b>を専門スタッフ・ヘルパーが援助。"},
+  {n:105, src:"R04 計画 福祉", cat:"福祉・配慮", a:true, q:"コレクティブハウスは、共用の食事室や調理室等を設け、各居住者が独立した生活を保ちながら複数の家族が交流する協同居住型の集合住宅である。", p:"北欧で発達した<b>協同居住型</b>の集合住宅。高齢者用住宅としても注目。"},
+  {n:106, src:"R04 計画 福祉", cat:"福祉・配慮", a:true, q:"高齢者が利用する洗面脱衣室に床暖房や温風機等の暖房設備を設置することは、急激な温度変化によるヒートショックを防ぐために有効である。", p:"冬期の急激な温度変化による<b>ヒートショック</b>防止に有効。断熱・換気にも配慮。"},
+  {n:107, src:"R02 計画 福祉", cat:"福祉・配慮", a:true, q:"車椅子使用者が利用する主要な経路上の屋内通路の有効幅員は120cm以上とし、50m以内ごとに140cm角以上の転回スペースを設ける。", p:"屋内通路は<b>有効幅員120cm以上</b>、<b>50m以内ごとに140cm角以上</b>の転回スペース。避難経路には段を設けない。"},
+  {n:108, src:"R03 計画 福祉", cat:"福祉・配慮", a:true, q:"視覚障害者誘導用ブロックは、移動方向を指示する線状ブロックと、注意喚起を行う点状ブロックとに分けられる。", p:"<b>線状ブロック＝移動方向</b>、<b>点状ブロック＝注意喚起・警告</b>（階段・スロープの前など）。"},
+
+  {n:109, src:"R03 計画 地域", cat:"各種建築", a:false, q:"スプロール現象とは、一端が行止まりの街路において、その端部で車の方向転換を可能とした形式のことである。", p:"記述は<b>クル・ド・サック（袋小路）</b>。スプロール現象は、都市の周辺部で市街地が無計画・無秩序に拡大していく現象。"},
+  {n:110, src:"R03 計画 地域", cat:"各種建築", a:true, q:"クル・ド・サックは、一端が行止まりの街路で、その端部で車の方向転換ができるようにした形式である。", p:"アンダーパス方式の住宅地などに設けられる<b>袋小路</b>。通過交通を防ぐ。"},
+  {n:111, src:"R03 計画 地域", cat:"各種建築", a:true, q:"アンダーパスは、道路などの立体交差方式の1つで、潜り抜ける形にしたものであり、雨水が集まりやすいため排水機能の確保が必要である。", p:"周囲の地盤面より低くなるため<b>冠水のおそれ</b>があり、排水機能が必要。"},
+  {n:112, src:"H30 計画 図書館", cat:"各種建築", a:true, q:"地域図書館において、書架を設置しない40人収容の閲覧室の床面積を100m²とした。", p:"閲覧室は1席当たり2〜3m²程度が目安。100÷40＝2.5m²/席で適当。"},
+  {n:113, src:"H30 計画 学校", cat:"各種建築", a:true, q:"小学校において、低学年は総合教室型とし、高学年は特別教室型とした。", p:"総合教室型は全ての学習をクラスルームで行う方式。<b>低学年＝総合教室型、高学年＝特別教室型</b>が多い。"},
+  {n:114, src:"H29 計画 事務所", cat:"各種建築", a:false, q:"地下階の駐車場で、各柱間に普通乗用車が並列に3台駐車できるように、柱スパンを7mとした。", p:"柱スパン7m（柱80cmを除く有効幅員約6m）で3台並列は1台約2mとなり不足。普通車は<b>1台2.5m程度</b>必要。"},
+  {n:115, src:"H29 計画 事務所", cat:"各種建築", a:true, q:"事務室の在席率が50〜60%と想定されたので、執務空間の効率的な活用のため、フリーアドレス方式を採用した。", p:"固定席を設けず空いた席を使う<b>フリーアドレス方式</b>。在席率が低い場合に有効。"}
+];
+
+const CAT_ORDER = ["環境・空気","採光・日照・日射","伝熱・結露","音響","色彩","環境工学融合","設備","住宅","福祉・配慮","各種建築","計画各論"];
+const STORE_KEY = "keikaku_marker_wrong";
+const CHUNK = 20;
+
+let memStore = {};
+async function storeGet(k){
+  try{ if(window.storage&&window.storage.get){const r=await window.storage.get(k);return r?r.value:null;} }catch(e){}
+  try{ return localStorage.getItem(k); }catch(e){}
+  return memStore[k]||null;
+}
+async function storeSet(k,v){
+  try{ if(window.storage&&window.storage.set){await window.storage.set(k,v);return;} }catch(e){}
+  try{ localStorage.setItem(k,v);return; }catch(e){}
+  memStore[k]=v;
+}
+async function getWrong(){
+  const raw=await storeGet(STORE_KEY);
+  if(!raw) return [];
+  try{ return JSON.parse(raw)||[]; }catch(e){ return []; }
+}
+async function setWrong(arr){ await storeSet(STORE_KEY, JSON.stringify([...new Set(arr)])); }
+async function addWrong(n){ const w=await getWrong(); if(!w.includes(n)){w.push(n); await setWrong(w);} }
+async function removeWrong(n){ let w=await getWrong(); w=w.filter(x=>x!==n); await setWrong(w); }
+
+let queue=[], idx=0, correct=0, wrongThisRun=[], mode="all";
+const el=id=>document.getElementById(id);
+function show(sec){ ["home","quiz","result"].forEach(s=>el(s).classList.toggle("hide",s!==sec)); window.scrollTo(0,0); }
+
+async function initHome(){
+  el("totalN").textContent=QUESTIONS.length;
+  const w=await getWrong();
+  el("wrongN").textContent=w.length;
+  el("wrongBtn").disabled=w.length===0;
+  const setCount=Math.ceil(QUESTIONS.length/CHUNK);
+  el("setList").innerHTML="";
+  for(let i=0;i<setCount;i++){
+    const s=i*CHUNK, e=Math.min(s+CHUNK, QUESTIONS.length);
+    const b=document.createElement("button");
+    b.className="btn cat-btn";
+    b.innerHTML=`セット${i+1}（問${s+1}〜${e}）<span class="n">${e-s}問</span>`;
+    b.onclick=()=>startSet(s,e);
+    el("setList").appendChild(b);
+  }
+  const present=CAT_ORDER.filter(c=>QUESTIONS.some(q=>q.cat===c));
+  el("catList").innerHTML="";
+  present.forEach(c=>{
+    const cnt=QUESTIONS.filter(q=>q.cat===c).length;
+    const b=document.createElement("button");
+    b.className="btn cat-btn";
+    b.innerHTML=`${c}<span class="n">${cnt}問</span>`;
+    b.onclick=()=>startCat(c);
+    el("catList").appendChild(b);
+  });
+  show("home");
+}
+
+async function start(kind){
+  mode=kind;
+  if(kind==="wrong"||kind==="redo"){
+    const src = kind==="wrong" ? await getWrong() : wrongThisRun.slice();
+    queue=QUESTIONS.filter(q=>src.includes(q.n));
+  }else{
+    queue=QUESTIONS.slice();
+  }
+  if(queue.length===0){ await initHome(); return; }
+  idx=0; correct=0; wrongThisRun=[];
+  render(); show("quiz");
+}
+function startCat(c){
+  mode="cat"; queue=QUESTIONS.filter(q=>q.cat===c);
+  idx=0; correct=0; wrongThisRun=[];
+  render(); show("quiz");
+}
+function startSet(s,e){
+  mode="set"; queue=QUESTIONS.slice(s,e);
+  idx=0; correct=0; wrongThisRun=[];
+  render(); show("quiz");
+}
+
+function render(){
+  const q=queue[idx];
+  el("cur").textContent=idx+1;
+  el("len").textContent=queue.length;
+  el("barFill").style.width=((idx)/queue.length*100)+"%";
+  el("src").textContent=q.src;
+  el("catTag").textContent=q.cat;
+  el("qtext").textContent=q.q;
+  el("judge").className="judge";
+  el("oxBtns").style.display="flex";
+  [...el("oxBtns").children].forEach(b=>b.disabled=false);
+}
+
+async function answer(val){
+  const q=queue[idx];
+  [...el("oxBtns").children].forEach(b=>b.disabled=true);
+  const ok=(val===q.a);
+  const j=el("judge");
+  j.classList.add("show", ok?"ok":"ng");
+  el("jhead").textContent= ok ? "正解 ◎" : "不正解 …";
+  el("jans").textContent= "答え：" + (q.a?"○（正しい）":"×（誤り）");
+  el("jp").innerHTML=q.p;
+  el("barFill").style.width=((idx+1)/queue.length*100)+"%";
+  if(ok){ correct++; await removeWrong(q.n); }
+  else{ wrongThisRun.push(q.n); await addWrong(q.n); }
+  el("nextBtn").textContent=(idx===queue.length-1)?"結果を見る":"次へ";
+}
+
+function next(){
+  idx++;
+  if(idx>=queue.length){ finish(); return; }
+  render();
+}
+
+function finish(){
+  const total=queue.length;
+  const pct=Math.round(correct/total*100);
+  const r=64, c=2*Math.PI*r;
+  const fg=el("ringFg");
+  fg.style.strokeDasharray=c;
+  fg.style.strokeDashoffset=c;
+  el("ringTxt").textContent=pct+"%";
+  el("scoreLine").textContent=`${total}問中 ${correct}問 正解`;
+  el("scoreSub").textContent= wrongThisRun.length ? `間違い ${wrongThisRun.length}問` : "全問正解！";
+  el("redoBtn").style.display= wrongThisRun.length ? "block" : "none";
+  show("result");
+  requestAnimationFrame(()=>{ setTimeout(()=>{ fg.style.strokeDashoffset=c*(1-pct/100); },60); });
+}
+
+function goHome(){ initHome(); }
+initHome();
+</script>
+</body>
+</html>
