@@ -1,106 +1,341 @@
-<!DOCTYPE html><html lang="ja"><head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>2級建築士 学習アプリ メニュー</title><style>
-:root{--accent:#5a51a0;--accent-bg:#f0eef9;--ink:#2a2733;--muted:#8a8696;--line:#e6e3f0;--card:#fff;--bg:#f6f5fb;
---keikaku:#2e9e6b;--houki:#c08a2e;--kouzou:#6b4ea0;--sekou:#0f8a86;--gensen:#3f51b5;}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}html,body{margin:0;padding:0;}
-body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;}
-.wrap{max-width:560px;margin:0 auto;padding:16px 16px 48px;}
-header.top{text-align:center;padding:28px 0 6px;}
-header.top .eyebrow{font-size:12px;letter-spacing:.18em;color:var(--accent);font-weight:700;}
-header.top h1{font-size:23px;margin:6px 0 2px;font-weight:800;}
-header.top .sub{font-size:13px;color:var(--muted);}
-.lead{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:15px 18px;margin:16px 0 18px;font-size:13.5px;color:#55525f;}
-.lead b{color:var(--accent);}
-.search-link{display:flex;align-items:center;gap:12px;text-decoration:none;background:var(--accent);color:#fff;border-radius:16px;padding:15px 18px;margin:0 0 22px;}
-.search-link:active{transform:scale(.985);}.search-link .si{font-size:20px;}.search-link .st{flex:1;}
-.search-link .st .n{font-size:15.5px;font-weight:800;}.search-link .st .d{font-size:12px;color:#d7d2f0;}.search-link .ar{font-size:18px;color:#d7d2f0;}
-.group{margin-bottom:26px;}.group-head{display:flex;align-items:baseline;gap:10px;margin:0 4px 12px;}
-.group-head .ttl{font-size:16px;font-weight:800;}
-.group-head .tag{font-size:11px;font-weight:700;color:var(--accent);background:var(--accent-bg);border-radius:999px;padding:3px 10px;}
-.cards{display:flex;flex-direction:column;gap:10px;}
-.card{display:flex;align-items:center;gap:14px;text-decoration:none;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:16px;border-left:5px solid var(--c,var(--accent));padding:15px 16px;transition:.15s;}
-.card:active{transform:scale(.985);}
-.card .ic{width:34px;height:34px;border-radius:10px;background:var(--c,var(--accent));color:#fff;font-size:15px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none;}
-.card .body{flex:1;min-width:0;}.card .name{font-size:15.5px;font-weight:700;}
-.card .desc{font-size:12px;color:var(--muted);}
-.card .cnt{font-size:12px;font-weight:700;color:var(--c,var(--accent));white-space:nowrap;}
-footer{text-align:center;font-size:11px;color:#b6bccb;margin-top:18px;}
-/* search */
-.searchbox{position:sticky;top:0;background:var(--bg);padding:10px 0 12px;z-index:5;}
-.searchbox input{width:100%;border:1px solid var(--line);border-radius:14px;padding:14px 16px;font-size:16px;font-family:inherit;background:var(--card);color:var(--ink);}
-.searchbox input:focus{outline:none;border-color:var(--accent);}
-.empty{text-align:center;color:var(--muted);font-size:13px;padding:30px 0;}
-.backlink{display:inline-block;color:var(--accent);font-weight:700;text-decoration:none;font-size:14px;margin-bottom:6px;}
-</style></head><body><div class="wrap"><header class="top"><div class="eyebrow">2級建築士 学科</div><h1>○× 学習アプリ メニュー</h1><div class="sub">全23アプリ・783問</div></header>
-<div class="lead">すべて <b>○×形式</b> に統一しました。各アプリは <b>分野別出題・間違い復習・正答率表示</b> 付き。下の検索から科目やキーワードで探せます。</div>
-<a class="search-link" href="search.html"><span class="si">🔍</span><span class="st"><span class="n">アプリを検索</span><span class="d">科目・キーワードで横断検索</span></span><span class="ar">→</span></a><section class="group"><div class="group-head"><span class="ttl">マラソンテスト</span><span class="tag">100問×3＋厳選</span></div><div class="cards"><a class="card" style="--c:var(--keikaku)" href="keikaku_marathon.html">
-    <span class="ic">計</span>
-    <span class="body"><span class="name">計画 マラソン</span><span class="desc">環境・設備・計画</span></span>
-    <span class="cnt">100問</span></a><a class="card" style="--c:var(--kouzou)" href="kozo_marathon.html">
-    <span class="ic">構</span>
-    <span class="body"><span class="name">構造 マラソン</span><span class="desc">力学・各構造</span></span>
-    <span class="cnt">100問</span></a><a class="card" style="--c:var(--sekou)" href="sekou_marathon.html">
-    <span class="ic">施</span>
-    <span class="body"><span class="name">施工 マラソン</span><span class="desc">施工管理・各工事</span></span>
-    <span class="cnt">100問</span></a><a class="card" style="--c:var(--kouzou)" href="kozo_gensen.html">
-    <span class="ic">構</span>
-    <span class="body"><span class="name">構造 厳選</span><span class="desc">5択を○×に分解</span></span>
-    <span class="cnt">50問</span></a></div></section><section class="group"><div class="group-head"><span class="ttl">公開模試②</span><span class="tag">全4科目</span></div><div class="cards"><a class="card" style="--c:var(--keikaku)" href="moshi2_keikaku.html">
-    <span class="ic">計</span>
-    <span class="body"><span class="name">計画</span><span class="desc">環境・設備</span></span>
-    <span class="cnt">20問</span></a><a class="card" style="--c:var(--houki)" href="moshi2_houki.html">
-    <span class="ic">法</span>
-    <span class="body"><span class="name">法規</span><span class="desc">建築法規</span></span>
-    <span class="cnt">19問</span></a><a class="card" style="--c:var(--kouzou)" href="moshi2_kozo.html">
-    <span class="ic">構</span>
-    <span class="body"><span class="name">構造</span><span class="desc">構造全般</span></span>
-    <span class="cnt">19問</span></a><a class="card" style="--c:var(--sekou)" href="moshi2_sekou.html">
-    <span class="ic">施</span>
-    <span class="body"><span class="name">施工</span><span class="desc">施工全般</span></span>
-    <span class="cnt">19問</span></a></div></section><section class="group"><div class="group-head"><span class="ttl">公開模試②（旧版）</span><span class="tag">別バージョン</span></div><div class="cards"><a class="card" style="--c:var(--keikaku)" href="moshi2b_keikaku.html">
-    <span class="ic">計</span>
-    <span class="body"><span class="name">計画</span><span class="desc">旧データ</span></span>
-    <span class="cnt">17問</span></a><a class="card" style="--c:var(--houki)" href="moshi2b_houki.html">
-    <span class="ic">法</span>
-    <span class="body"><span class="name">法規</span><span class="desc">旧データ</span></span>
-    <span class="cnt">8問</span></a><a class="card" style="--c:var(--kouzou)" href="moshi2b_kozo.html">
-    <span class="ic">構</span>
-    <span class="body"><span class="name">構造</span><span class="desc">旧データ</span></span>
-    <span class="cnt">15問</span></a><a class="card" style="--c:var(--sekou)" href="moshi2b_sekou.html">
-    <span class="ic">施</span>
-    <span class="body"><span class="name">施工</span><span class="desc">旧データ</span></span>
-    <span class="cnt">24問</span></a></div></section><section class="group"><div class="group-head"><span class="ttl">必勝テスト①</span><span class="tag">法規・構造</span></div><div class="cards"><a class="card" style="--c:var(--houki)" href="hisshou1_houki.html">
-    <span class="ic">法</span>
-    <span class="body"><span class="name">法規</span><span class="desc">総則・防火・関係法令</span></span>
-    <span class="cnt">19問</span></a><a class="card" style="--c:var(--kouzou)" href="hisshou1_kozo.html">
-    <span class="ic">構</span>
-    <span class="body"><span class="name">構造</span><span class="desc">構造強度ほか</span></span>
-    <span class="cnt">8問</span></a></div></section><section class="group"><div class="group-head"><span class="ttl">確認テスト①</span><span class="tag">法規・計画</span></div><div class="cards"><a class="card" style="--c:var(--houki)" href="kakunin1_houki.html">
-    <span class="ic">法</span>
-    <span class="body"><span class="name">法規</span><span class="desc">確認テスト</span></span>
-    <span class="cnt">9問</span></a><a class="card" style="--c:var(--keikaku)" href="kakunin1_keikaku.html">
-    <span class="ic">計</span>
-    <span class="body"><span class="name">計画</span><span class="desc">確認テスト</span></span>
-    <span class="cnt">17問</span></a></div></section><section class="group"><div class="group-head"><span class="ttl">法規確認 糸島</span><span class="tag">①・②</span></div><div class="cards"><a class="card" style="--c:var(--houki)" href="houki_itoshima1.html">
-    <span class="ic">法</span>
-    <span class="body"><span class="name">糸島①</span><span class="desc">法規確認</span></span>
-    <span class="cnt">19問</span></a><a class="card" style="--c:var(--houki)" href="houki_itoshima2.html">
-    <span class="ic">法</span>
-    <span class="body"><span class="name">糸島②</span><span class="desc">法規確認</span></span>
-    <span class="cnt">20問</span></a></div></section><section class="group"><div class="group-head"><span class="ttl">厳選問題</span><span class="tag">総合横断</span></div><div class="cards"><a class="card" style="--c:var(--gensen)" href="gensen_b.html">
-    <span class="ic">総</span>
-    <span class="body"><span class="name">厳選B</span><span class="desc">計画・法規・構造・環境</span></span>
-    <span class="cnt">27問</span></a><a class="card" style="--c:var(--gensen)" href="gensen_b2.html">
-    <span class="ic">総</span>
-    <span class="body"><span class="name">厳選B-2</span><span class="desc">法規・設備ほか</span></span>
-    <span class="cnt">27問</span></a><a class="card" style="--c:var(--gensen)" href="gensen_d.html">
-    <span class="ic">総</span>
-    <span class="body"><span class="name">厳選D</span><span class="desc">施工・法規ほか</span></span>
-    <span class="cnt">76問</span></a></div></section><section class="group"><div class="group-head"><span class="ttl">法規ピンポイント</span><span class="tag">暗記</span></div><div class="cards"><a class="card" style="--c:var(--houki)" href="houki_kozo.html">
-    <span class="ic">法</span>
-    <span class="body"><span class="name">法規（構造強度）</span><span class="desc">構造規定</span></span>
-    <span class="cnt">25問</span></a><a class="card" style="--c:var(--houki)" href="houki_note.html">
-    <span class="ic">法</span>
-    <span class="body"><span class="name">法規まとめノート</span><span class="desc">数値暗記</span></span>
-    <span class="cnt">45問</span></a></div></section><footer>2級建築士 学科 学習用 ○×トレーナー（個人学習用）</footer></div></body></html>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>2級建築士 学習アプリ メニュー</title>
+<style>
+  :root{
+    --accent:#5a51a0;
+    --accent-bg:#f0eef9;
+    --ink:#2a2733;
+    --muted:#8a8696;
+    --line:#e6e3f0;
+    --card:#ffffff;
+    --bg:#f6f5fb;
+    --keikaku:#2e9e6b;
+    --houki:#d99a2b;
+    --kouzou:#5a51a0;
+    --sekou:#d9534f;
+    --gensen:#4f73c4;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:560px;margin:0 auto;padding:16px 16px 48px;}
+
+  header.top{text-align:center;padding:28px 0 6px;}
+  header.top .eyebrow{font-size:12px;letter-spacing:.18em;color:var(--accent);font-weight:700;}
+  header.top h1{font-size:23px;margin:6px 0 2px;font-weight:800;}
+  header.top .sub{font-size:13px;color:var(--muted);}
+
+  .lead{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:15px 18px;margin:16px 0 12px;font-size:13.5px;color:#55525f;
+  }
+  .lead b{color:var(--accent);}
+
+  /* 横断検索ボタン */
+  .search-link{
+    display:flex;align-items:center;gap:12px;text-decoration:none;
+    background:var(--accent);color:#fff;border-radius:16px;
+    padding:15px 18px;margin:0 0 22px;transition:.15s;
+  }
+  .search-link:active{transform:scale(.985);}
+  .search-link .si{font-size:20px;flex:none;}
+  .search-link .st{flex:1;min-width:0;}
+  .search-link .st .n{font-size:15.5px;font-weight:800;}
+  .search-link .st .d{font-size:12px;color:#d7d2f0;margin-top:1px;}
+  .search-link .ar{font-size:18px;font-weight:700;color:#d7d2f0;flex:none;}
+
+  .group{margin-bottom:28px;}
+  .group-head{display:flex;align-items:baseline;gap:10px;margin:0 4px 12px;}
+  .group-head .ttl{font-size:16px;font-weight:800;}
+  .group-head .tag{
+    font-size:11px;font-weight:700;color:var(--accent);
+    background:var(--accent-bg);border-radius:999px;padding:3px 10px;
+  }
+  .group.fresh .group-head .ttl{color:var(--accent);}
+
+  /* 区切り線（本日追加） */
+  .divider{
+    display:flex;align-items:center;gap:12px;
+    margin:36px 4px 22px;color:var(--accent);
+    font-size:12px;font-weight:800;letter-spacing:.12em;white-space:nowrap;
+  }
+  .divider::before,.divider::after{content:"";flex:1;height:2px;border-radius:2px;background:var(--line);}
+
+  .cards{display:flex;flex-direction:column;gap:11px;}
+  a.card{
+    display:flex;align-items:center;gap:13px;text-decoration:none;color:inherit;
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:15px 17px;position:relative;overflow:hidden;transition:.15s;
+  }
+  a.card:active{transform:scale(.985);}
+  a.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--c,var(--accent));}
+  .ic{
+    width:44px;height:44px;border-radius:12px;flex:none;
+    display:flex;align-items:center;justify-content:center;
+    font-size:16px;font-weight:800;color:#fff;background:var(--c,var(--accent));letter-spacing:-.02em;
+  }
+  .body{flex:1;min-width:0;}
+  .body .name{font-size:15.5px;font-weight:700;}
+  .body .desc{font-size:12px;color:var(--muted);margin-top:1px;}
+  .meta{display:flex;align-items:center;gap:8px;flex:none;}
+  .meta .cnt{
+    font-size:12px;font-weight:700;color:var(--c,var(--accent));
+    background:color-mix(in srgb,var(--c,var(--accent)) 12%,#fff);
+    border-radius:999px;padding:4px 10px;white-space:nowrap;
+  }
+  .meta .arw{color:var(--muted);font-size:18px;font-weight:700;}
+
+  footer{text-align:center;font-size:11.5px;color:#9a96aa;margin-top:26px;line-height:1.8;}
+  footer b{color:var(--accent);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="eyebrow">2026 ／ 二級建築士</div>
+    <h1>学習アプリ メニュー</h1>
+    <div class="sub">タップして各トレーナーを開く</div>
+  </header>
+
+  <div class="lead">
+    間違えた問題は各アプリ内で<b>自動記録</b>されます。「<b>間違い復習</b>」で前回までの間違いを再テストできます。
+  </div>
+
+  <!-- 横断検索 -->
+  <a class="search-link" href="search.html">
+    <span class="si">🔍</span>
+    <span class="st">
+      <span class="n">問題を横断検索</span>
+      <span class="d">全アプリの問題・選択肢・解説をまとめて検索</span>
+    </span>
+    <span class="ar">›</span>
+  </a>
+
+  <!-- 公開模擬試験② -->
+  <section class="group fresh">
+    <div class="group-head">
+      <span class="ttl">公開模擬試験②（〇✕）</span>
+      <span class="tag">NEW・全4科目</span>
+    </div>
+    <div class="cards">
+      <a class="card" style="--c:var(--keikaku)" href="moshi2-keikaku.html">
+        <span class="ic">計</span>
+        <span class="body"><span class="name">計画</span><span class="desc">環境・設備・計画</span></span>
+        <span class="meta"><span class="cnt">17問</span><span class="arw">›</span></span>
+      </a>
+      <a class="card" style="--c:var(--houki)" href="moshi2-houki.html">
+        <span class="ic">法</span>
+        <span class="body"><span class="name">法規</span><span class="desc">建築法規</span></span>
+        <span class="meta"><span class="cnt">8問</span><span class="arw">›</span></span>
+      </a>
+      <a class="card" style="--c:var(--kouzou)" href="moshi2-kozo.html">
+        <span class="ic">構</span>
+        <span class="body"><span class="name">構造</span><span class="desc">建築構造</span></span>
+        <span class="meta"><span class="cnt">15問</span><span class="arw">›</span></span>
+      </a>
+      <a class="card" style="--c:var(--sekou)" href="moshi2-sekou.html">
+        <span class="ic">施</span>
+        <span class="body"><span class="name">施工</span><span class="desc">建築施工</span></span>
+        <span class="meta"><span class="cnt">24問</span><span class="arw">›</span></span>
+      </a>
+    </div>
+  </section>
+
+  <!-- 公開模擬試験③ -->
+  <section class="group fresh">
+    <div class="group-head">
+      <span class="ttl">公開模擬試験③（〇✕）</span>
+      <span class="tag">NEW・全4科目</span>
+    </div>
+    <div class="cards">
+      <a class="card" style="--c:var(--keikaku)" href="kokai%20moshi2%20quiz.html">
+        <span class="ic">計</span>
+        <span class="body"><span class="name">計画</span><span class="desc">環境・設備・計画</span></span>
+        <span class="meta"><span class="cnt">20問</span><span class="arw">›</span></span>
+      </a>
+      <a class="card" style="--c:var(--houki)" href="kokai%20moshi2%20houki%20quiz.html">
+        <span class="ic">法</span>
+        <span class="body"><span class="name">法規</span><span class="desc">建築法規</span></span>
+        <span class="meta"><span class="cnt">19問</span><span class="arw">›</span></span>
+      </a>
+      <a class="card" style="--c:var(--kouzou)" href="kokai%20moshi2%20kouzou%20quiz.html">
+        <span class="ic">構</span>
+        <span class="body"><span class="name">構造</span><span class="desc">建築構造</span></span>
+        <span class="meta"><span class="cnt">19問</span><span class="arw">›</span></span>
+      </a>
+      <a class="card" style="--c:var(--sekou)" href="kokai%20moshi2%20sekou%20quiz.html">
+        <span class="ic">施</span>
+        <span class="body"><span class="name">施工</span><span class="desc">建築施工</span></span>
+        <span class="meta"><span class="cnt">19問</span><span class="arw">›</span></span>
+      </a>
+    </div>
+  </section>
+
+  <!-- 100問トレーナー -->
+  <section class="group">
+    <div class="group-head">
+      <span class="ttl">100問トレーナー（科目別）</span>
+    </div>
+    <div class="cards">
+      <a class="card" style="--c:var(--kouzou)" href="kozo%20quiz.html">
+        <span class="ic">構</span>
+        <span class="body"><span class="name">構造 100問</span><span class="desc">構造計算・強度・荷重・接合ほか</span></span>
+        <span class="meta"><span class="cnt">100問</span><span class="arw">›</span></span>
+      </a>
+      <a class="card" style="--c:var(--sekou)" href="sekou%20quiz.html">
+        <span class="ic">施</span>
+        <span class="body"><span class="name">施工 100問</span><span class="desc">各種工事・施工管理・安全</span></span>
+        <span class="meta"><span class="cnt">100問</span><span class="arw">›</span></span>
+      </a>
+      <a class="card" style="--c:var(--keikaku)" href="keikaku%20quiz.html">
+        <span class="ic">計</span>
+        <span class="body"><span class="name">計画 100問</span><span class="desc">計画・環境・設備・各種建築物</span></span>
+        <span class="meta"><span class="cnt">100問</span><span class="arw">›</span></span>
+      </a>
+    </div>
+  </section>
+
+  <!-- 厳選問題 -->
+  <section class="group">
+    <div class="group-head">
+      <span class="ttl">厳選問題（〇✕）</span>
+    </div>
+    <div class="cards">
+      <a class="card" style="--c:var(--gensen)" href="gensen%20d%20quiz.html">
+        <span class="ic">D</span>
+        <span class="body"><span class="name">厳選問題D</span><span class="desc">法規＋構造＋施工 まとめ</span></span>
+        <span class="meta"><span class="cnt">76問</span><span class="arw">›</span></span>
+      </a>
+      <a class="card" style="--c:var(--gensen)" href="gensen%20b%20quiz.html">
+        <span class="ic">B</span>
+        <span class="body"><span class="name">厳選問題B</span><span class="desc">構造・法規ほか</span></span>
+        <span class="meta"><span class="arw">›</span></span>
+      </a>
+      <a class="card" style="--c:var(--gensen)" href="gensen%20b2%20quiz.html">
+        <span class="ic">B2</span>
+        <span class="body"><span class="name">厳選問題B 第2弾</span><span class="desc">壁式RC・建築士法・避難・集合住宅ほか</span></span>
+        <span class="meta"><span class="cnt">27問</span><span class="arw">›</span></span>
+      </a>
+      <a class="card" style="--c:var(--kouzou)" href="kozo%20gensen.html">
+        <span class="ic">5択</span>
+        <span class="body"><span class="name">構造 厳選（5択）</span><span class="desc">5肢択一タイプ</span></span>
+        <span class="meta"><span class="arw">›</span></span>
+      </a>
+    </div>
+  </section>
+
+  <!-- まとめノート暗記 -->
+  <section class="group">
+    <div class="group-head">
+      <span class="ttl">まとめノート暗記（〇✕）</span>
+    </div>
+    <div class="cards">
+      <a class="card" style="--c:var(--houki)" href="houki%20note%20quiz.html">
+        <span class="ic">法</span>
+        <span class="body"><span class="name">法規まとめノート</span><span class="desc">容積・建蔽・斜線・内装・避難の重要数値</span></span>
+        <span class="meta"><span class="cnt">45問</span><span class="arw">›</span></span>
+      </a>
+      <a class="card" style="--c:var(--gensen)" href="houki%20kouzou%20quiz.html">
+        <span class="ic">厳選</span>
+        <span class="body"><span class="name">法規・構造 厳選</span><span class="desc">頻出ポイント〇✕</span></span>
+        <span class="meta"><span class="cnt">25問</span><span class="arw">›</span></span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ====== 区切り線：本日追加 ====== -->
+  <div class="divider">本日追加</div>
+
+  <!-- 確認テスト① -->
+  <section class="group fresh">
+    <div class="group-head">
+      <span class="ttl">確認テスト①（〇✕）</span>
+      <span class="tag">NEW</span>
+    </div>
+    <div class="cards">
+      <a class="card" style="--c:var(--keikaku)" href="kakunin1%20keikaku%20quiz.html">
+        <span class="ic">計</span>
+        <span class="body"><span class="name">計画</span><span class="desc">建築計画（環境・設備）</span></span>
+        <span class="meta"><span class="cnt">17問</span><span class="arw">›</span></span>
+      </a>
+      <a class="card" style="--c:var(--houki)" href="kakunin1%20houki%20quiz.html">
+        <span class="ic">法</span>
+        <span class="body"><span class="name">法規</span><span class="desc">建築法規</span></span>
+        <span class="meta"><span class="cnt">9問</span><span class="arw">›</span></span>
+      </a>
+    </div>
+  </section>
+
+  <!-- 法規確認問題 糸島 -->
+  <section class="group fresh">
+    <div class="group-head">
+      <span class="ttl">法規確認問題 糸島（〇✕）</span>
+      <span class="tag">NEW</span>
+    </div>
+    <div class="cards">
+      <a class="card" style="--c:var(--houki)" href="houki%20kakunin%20itoshima%20quiz.html">
+        <span class="ic">法</span>
+        <span class="body"><span class="name">糸島①</span><span class="desc">建築法規</span></span>
+        <span class="meta"><span class="cnt">19問</span><span class="arw">›</span></span>
+      </a>
+      <a class="card" style="--c:var(--houki)" href="houki%20kakunin%20itoshima%202%20quiz.html">
+        <span class="ic">法</span>
+        <span class="body"><span class="name">糸島②</span><span class="desc">その他の関係法令</span></span>
+        <span class="meta"><span class="cnt">20問</span><span class="arw">›</span></span>
+      </a>
+    </div>
+  </section>
+
+  <!-- 計画確認 糸島 -->
+  <section class="group fresh">
+    <div class="group-head">
+      <span class="ttl">計画確認 糸島（〇✕）</span>
+      <span class="tag">NEW</span>
+    </div>
+    <div class="cards">
+      <a class="card" style="--c:var(--keikaku)" href="keikaku_marker.html">
+        <span class="ic">計</span>
+        <span class="body"><span class="name">計画確認 糸島</span><span class="desc">環境・色彩・設備・住宅・福祉・各種建築ほか</span></span>
+        <span class="meta"><span class="cnt">115問</span><span class="arw">›</span></span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ====== 区切り線：必勝テスト① ====== -->
+  <div class="divider">必勝テスト①</div>
+
+  <!-- 必勝テスト① -->
+  <section class="group fresh">
+    <div class="group-head">
+      <span class="ttl">必勝テスト①（〇✕）</span>
+      <span class="tag">NEW</span>
+    </div>
+    <div class="cards">
+      <a class="card" style="--c:var(--houki)" href="hisshou1%20houki%20quiz.html">
+        <span class="ic">法</span>
+        <span class="body"><span class="name">法規</span><span class="desc">総則・一般構造・防火・関係法令</span></span>
+        <span class="meta"><span class="cnt">19問</span><span class="arw">›</span></span>
+      </a>
+      <a class="card" style="--c:var(--kouzou)" href="hisshou1%20kozo%20quiz.html">
+        <span class="ic">構</span>
+        <span class="body"><span class="name">構造</span><span class="desc">木・RC・鉄骨・地盤基礎</span></span>
+        <span class="meta"><span class="cnt">8問</span><span class="arw">›</span></span>
+      </a>
+    </div>
+  </section>
+
+  <footer>
+    全アプリは各画面で間違いを<b>自動記録</b>します。<br>
+    「間違い復習 / 前回までの間違いを再テスト」で復習できます。
+  </footer>
+</div>
+</body>
+</html>
