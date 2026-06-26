@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>予想問題2026｜2級建築士 ○×クイズ</title>
+<style>
+:root{
+  --accent:#3f51b5; --light:#5c6bc0; --bg:#ebedf7;
+  --maru:#2e9e6b; --batsu:#d9534f;
+  --ink:#1d2a22; --sub:#5a6b61; --card:#fff; --line:#d6e6dc;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+  background:var(--bg); color:var(--ink); line-height:1.7;
+  -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:560px;margin:0 auto;padding:16px 14px 40px;min-height:100vh}
+header{text-align:center;padding:8px 0 14px}
+header h1{font-size:1.15rem;margin:0;color:var(--accent);letter-spacing:.02em}
+header p{margin:4px 0 0;font-size:.78rem;color:var(--sub)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 16px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.btn{display:block;width:100%;border:none;border-radius:12px;padding:15px;font-size:1.02rem;font-weight:700;cursor:pointer;margin-top:10px;font-family:inherit}
+.btn.primary{background:var(--accent);color:#fff}
+.btn.sub{background:#fff;color:var(--accent);border:1.5px solid var(--accent)}
+.btn.ghost{background:#eef4f0;color:var(--sub)}
+.btn:disabled{opacity:.5}
+.cat-btn{background:#fff;color:var(--ink);border:1.5px solid var(--line);text-align:left;font-size:.95rem}
+.cat-btn .n{float:right;color:var(--sub);font-weight:600;font-size:.85rem}
+
+.topbar{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.count{font-size:.82rem;color:var(--sub);white-space:nowrap;font-weight:600}
+.bar{flex:1;height:8px;background:#dfece4;border-radius:99px;overflow:hidden}
+.bar > i{display:block;height:100%;background:var(--accent);width:0;transition:width .25s}
+.srclabel{font-size:.72rem;color:var(--sub);margin-bottom:6px}
+.cat-tag{display:inline-block;background:var(--bg);color:var(--accent);font-size:.7rem;font-weight:700;padding:2px 9px;border-radius:99px;margin-bottom:10px}
+.q{font-size:1.12rem;line-height:1.85;margin:2px 0 4px;min-height:3em}
+
+.ox{display:flex;gap:12px;margin-top:18px}
+.ox button{flex:1;border:none;border-radius:14px;padding:20px 0;font-size:2rem;font-weight:800;cursor:pointer;font-family:inherit}
+.ox .maru{background:#e7f6ee;color:var(--maru);border:2px solid #bce4cd}
+.ox .batsu{background:#fdeceb;color:var(--batsu);border:2px solid #f5c9c6}
+
+.judge{margin-top:16px;border-radius:14px;padding:14px;display:none}
+.judge.show{display:block;animation:pop .2s}
+@keyframes pop{from{transform:scale(.97);opacity:.4}to{transform:scale(1);opacity:1}}
+.judge .head{font-size:1.1rem;font-weight:800;margin-bottom:6px}
+.judge.ok{background:#e7f6ee;border:1.5px solid #bce4cd}
+.judge.ok .head{color:var(--maru)}
+.judge.ng{background:#fdeceb;border:1.5px solid #f5c9c6}
+.judge.ng .head{color:var(--batsu)}
+.judge .ans{font-size:.85rem;color:var(--sub);margin-bottom:8px}
+.judge .p{font-size:.95rem;line-height:1.8}
+.judge .p b{color:var(--accent)}
+
+.ring-wrap{display:flex;justify-content:center;margin:6px 0 4px}
+svg.ring{transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:#e0ece5;stroke-width:14}
+.ring-fg{fill:none;stroke:var(--accent);stroke-width:14;stroke-linecap:round;transition:stroke-dashoffset 1s ease}
+.ring-txt{font-size:1.9rem;font-weight:800;fill:var(--ink)}
+.ring-sub{font-size:.7rem;fill:var(--sub)}
+.score-line{text-align:center;font-size:1.05rem;margin:4px 0 2px;font-weight:700}
+.score-sub{text-align:center;color:var(--sub);font-size:.85rem;margin-bottom:8px}
+.note{font-size:.78rem;color:var(--sub);text-align:center;margin-top:14px;line-height:1.6}
+.hide{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>予想問題 2026</h1>
+    <p>2級建築士 学科｜法改正ヤマ当て ○×</p>
+  </header>
+
+  <section id="home">
+    <div class="card">
+      <button class="btn primary" id="startAllBtn">全<span id="totalN"></span>問に挑戦</button>
+      <button class="btn sub" id="wrongBtn">間違い復習（<span id="wrongN">0</span>問）</button>
+    </div>
+    <div class="card" style="margin-top:14px" id="setBox">
+      <div style="font-weight:700;font-size:.9rem;margin-bottom:8px;color:var(--sub)">20問ずつ</div>
+      <div id="setList"></div>
+    </div>
+    <div class="card" style="margin-top:14px" id="catBox">
+      <div style="font-weight:700;font-size:.9rem;margin-bottom:8px;color:var(--sub)">分野別</div>
+      <div id="catList"></div>
+    </div>
+    <p class="note">○か×で答えてね。間違えた問題は自動で記録され、「間違い復習」でやり直せます。</p>
+  </section>
+
+  <section id="quiz" class="hide">
+    <div class="topbar">
+      <span class="count"><span id="cur">1</span>/<span id="len">1</span></span>
+      <div class="bar"><i id="barFill"></i></div>
+    </div>
+    <div class="card">
+      <div class="srclabel" id="src"></div>
+      <span class="cat-tag" id="catTag"></span>
+      <div class="q" id="qtext"></div>
+      <div class="ox" id="oxBtns">
+        <button class="maru" id="btnMaru">○</button>
+        <button class="batsu" id="btnBatsu">×</button>
+      </div>
+      <div class="judge" id="judge">
+        <div class="head" id="jhead"></div>
+        <div class="ans" id="jans"></div>
+        <div class="p" id="jp"></div>
+        <button class="btn primary" id="nextBtn">次へ</button>
+      </div>
+    </div>
+    <button class="btn ghost" style="margin-top:14px" id="abortBtn">中断してホームへ</button>
+  </section>
+
+  <section id="result" class="hide">
+    <div class="card">
+      <div class="ring-wrap">
+        <svg class="ring" width="150" height="150" viewBox="0 0 150 150">
+          <circle class="ring-bg" cx="75" cy="75" r="64"></circle>
+          <circle class="ring-fg" id="ringFg" cx="75" cy="75" r="64"></circle>
+          <text class="ring-txt" id="ringTxt" x="75" y="72" text-anchor="middle" transform="rotate(90 75 75)">0%</text>
+          <text class="ring-sub" x="75" y="92" text-anchor="middle" transform="rotate(90 75 75)">正答率</text>
+        </svg>
+      </div>
+      <div class="score-line" id="scoreLine"></div>
+      <div class="score-sub" id="scoreSub"></div>
+      <button class="btn primary" id="redoBtn">間違えた問題を解き直す</button>
+      <button class="btn sub" id="restartBtn">最初から全問</button>
+      <button class="btn ghost" id="homeBtn">ホーム</button>
+    </div>
+  </section>
+</div>
+
+<script>
+const QUESTIONS = [
+  {n:1, src:"予想 法規 R7改正", cat:"法規", a:true, q:"2025年（令和7年）4月施行の改正により、従来の4号建築物は「新2号建築物」と「新3号建築物」に再編された。", p:"省エネ基準適合義務化に伴い、いわゆる<b>4号特例が見直され</b>、旧4号は新2号・新3号に再編された。"},
+  {n:2, src:"予想 法規 R7改正", cat:"法規", a:true, q:"木造2階建ての一戸建て住宅は、原則として新2号建築物に該当し、建築確認における審査省略制度（旧4号特例）の対象外となった。", p:"<b>新2号</b>（木造2階建て、又は木造平屋で延べ面積200㎡超）は審査省略の対象外で、<b>構造関係規定・省エネ図書の提出が必要</b>。"},
+  {n:3, src:"予想 法規 R7改正", cat:"法規", a:true, q:"延べ面積200㎡以下の木造平屋建ては新3号建築物に該当し、従来どおり構造関係規定等の審査省略制度の対象となる。", p:"<b>新3号</b>（延べ面積200㎡以下の木造平屋）は旧4号と同様、審査省略制度の対象。"},
+  {n:4, src:"予想 法規 R7改正", cat:"法規", a:false, q:"改正後も、木造2階建て住宅では、建築確認における構造関係規定の審査が省略される。", p:"木造2階建ては<b>新2号</b>で審査省略の対象外。構造図書の添付省略はできない。"},
+  {n:5, src:"予想 法規 R7改正", cat:"法規", a:true, q:"改正により、都市計画区域等の区域外であっても、一定規模以下の建築物について建築確認が必要となった。", p:"従来は区域外で確認不要だったが、改正後は<b>すべての地域で確認申請が必要</b>に。"},
+  {n:6, src:"予想 法規 R7改正", cat:"法規", a:true, q:"改正により、木造建築物で構造計算が必要となる延べ面積の規模が、500㎡超から300㎡超に引き下げられた。", p:"構造計算が必要な木造の延べ面積は<b>500㎡超→300㎡超</b>に。"},
+  {n:7, src:"予想 法規 R7改正", cat:"法規", a:true, q:"改正により、二級建築士が設計・工事監理できる木造建築物の規模が、高さ13m以下・軒高9m以下から、階数3以下かつ高さ16m以下に拡大された。", p:"二級建築士の簡易な構造計算（許容応力度計算）の対象が<b>階数3以下かつ高さ16m以下</b>に拡大。"},
+  {n:8, src:"予想 法規 R7改正", cat:"法規", a:true, q:"建築物省エネ法の改正により、2025年4月以降、原則としてすべての新築の住宅・非住宅に省エネ基準への適合が義務付けられた。", p:"従来は2,000㎡以上が義務だったが、改正後は<b>原則すべての新築</b>に省エネ基準適合が義務化。"},
+  {n:9, src:"予想 法規 R7改正", cat:"法規", a:false, q:"省エネ基準への適合義務は、延べ面積2,000㎡以上の大規模建築物に限られる。", p:"それは改正前の制度。改正後は<b>原則すべての新築の住宅・非住宅</b>が適合義務の対象。"},
+  {n:10, src:"予想 法規 R7改正", cat:"法規", a:true, q:"新2号建築物では、工事完了後に完了検査に合格し検査済証の交付を受けるまで、原則として建築物を使用してはならない。", p:"新2号は<b>検査済証の交付を受けるまで使用不可</b>（仮使用認定を受けた場合を除く）。"},
+  {n:11, src:"予想 法規 R7改正", cat:"法規", a:true, q:"新2号建築物に該当する木造2階建て住宅では、大規模の修繕・大規模の模様替えを行う場合にも建築確認申請が必要となった。", p:"旧4号で不要だった<b>大規模の修繕・模様替えも、新2号では確認申請が必要</b>に。"},
+  {n:12, src:"予想 構造 R7改正", cat:"構造", a:true, q:"2025年4月施行の改正で、木造の必要壁量は、従来の「軽い屋根・重い屋根」の区分による算定から、建築物の荷重の実態に応じて算定式により算定する方法に見直された。", p:"必要壁量は<b>荷重の実態に応じた算定式</b>（早見表・表計算ツール・算定式の3方法）に。軽重区分の必要壁量表は廃止。"},
+  {n:13, src:"予想 構造 R7改正", cat:"構造", a:true, q:"改正後の壁量計算では、太陽光発電設備等を屋根に設置する場合、その荷重を考慮して必要壁量を算定する。", p:"ZEH化等で重量化するため、<b>太陽光等の荷重を考慮</b>して必要壁量を算定する。"},
+  {n:14, src:"予想 構造 R7改正", cat:"構造", a:true, q:"改正により、存在壁量として、従来の耐力壁に加えて準耐力壁等（準耐力壁・腰壁・垂れ壁）を算入できるようになった。", p:"存在壁量に<b>準耐力壁等を算入可能</b>に（設計者の判断で算入の有無を選択）。"},
+  {n:15, src:"予想 構造 R7改正", cat:"構造", a:true, q:"改正により、壁量計算で用いる壁倍率の上限が5倍から7倍に引き上げられた。", p:"壁倍率の上限が<b>5倍→7倍</b>に引き上げ。"},
+  {n:16, src:"予想 構造 R7改正", cat:"構造", a:false, q:"改正後も、木造の必要壁量は屋根の軽重（軽い屋根・重い屋根）の区分のみで算定する。", p:"軽重区分による必要壁量表は<b>廃止</b>。荷重の実態に応じた算定に見直された。"},
+  {n:17, src:"予想 構造 R7改正", cat:"構造", a:true, q:"改正により、無筋コンクリート基礎が廃止され、地盤の種別にかかわらず鉄筋コンクリート造の基礎を用いることとされた。", p:"<b>無筋コンクリート基礎を廃止</b>し、地盤種別に関わらず鉄筋コンクリート基礎とする。"},
+  {n:18, src:"予想 構造 R7改正", cat:"構造", a:true, q:"構造計算（許容応力度計算等）によって安全性を確認する場合は、壁量計算を省略することができる。", p:"構造計算で安全性を確認すれば<b>壁量計算は省略可能</b>。"},
+  {n:19, src:"予想 構造 R7改正", cat:"構造", a:true, q:"改正により、仕様規定（壁量計算等）で構造安全性を確認できる木造建築物の規模が、延べ面積300㎡以下・高さ16m以下・階数2以下に見直された。", p:"壁量計算の適用範囲が<b>延べ面積300㎡以下かつ高さ16m以下かつ階数2以下</b>に（旧：500㎡以下・高さ13m軒高9m以下・階数2以下）。"},
+  {n:20, src:"予想 施工 R7改正", cat:"施工", a:true, q:"新2号建築物では、工事監理者による施工状況の確認・報告が求められ、設計図書どおりに施工されているかの確認が厳格化された。", p:"新2号は審査省略の対象外となり、<b>施工段階の工事監理・確認が厳格化</b>。"},
+  {n:21, src:"予想 施工 R7改正", cat:"施工", a:true, q:"改正により無筋コンクリート基礎が認められなくなったため、地盤の良否にかかわらず基礎に鉄筋を配置する。", p:"<b>無筋コンクリート基礎の廃止</b>により、鉄筋コンクリート基礎とする。"},
+  {n:22, src:"予想 施工 R7改正", cat:"施工", a:true, q:"完了検査の検査済証の交付を受ける前に新2号建築物を使用するには、原則として特定行政庁の仮使用認定を受ける必要がある。", p:"検査済証交付前に使用するには<b>仮使用認定</b>が必要。引渡し予定から逆算して完了検査を受ける。"},
+  {n:23, src:"予想 施工 R7改正", cat:"施工", a:false, q:"検査済証の交付を受ける前であっても、木造2階建て住宅（新2号建築物）は自由に使用してよい。", p:"新2号は<b>検査済証の交付まで使用不可</b>。無許可使用は法違反となり得る。"},
+  {n:24, src:"予想 計画 省エネ", cat:"計画", a:true, q:"ZEH（ネット・ゼロ・エネルギー・ハウス）は、断熱・省エネ・創エネにより、年間の一次エネルギー消費量の収支を正味でゼロにすることを目指した住宅である。", p:"ZEHは<b>断熱・省エネ・創エネ</b>で年間一次エネルギー消費量の収支を実質ゼロにする住宅。"},
+  {n:25, src:"予想 計画 省エネ", cat:"計画", a:true, q:"省エネ性能の高い住宅では、断熱性向上のためのトリプルガラスや屋根上の太陽光発電設備により、建築物の自重が増加する傾向がある。", p:"ZEH化により自重が増えるため、壁量・柱の小径の基準も荷重の実態に応じた算定に見直された。"},
+  {n:26, src:"予想 計画 省エネ", cat:"計画", a:true, q:"BEI（建築物エネルギー消費性能指標）は、設計一次エネルギー消費量を基準一次エネルギー消費量で除した値で、値が小さいほど省エネ性能が高い。", p:"BEI＝<b>設計一次エネルギー消費量／基準一次エネルギー消費量</b>。基準適合はBEI≦1.0、値が小さいほど省エネ。"},
+  {n:27, src:"予想 計画 環境", cat:"計画", a:true, q:"UA値（外皮平均熱貫流率）は、値が小さいほど住宅の断熱性能が高い。", p:"UA値は外皮から逃げる熱量を外皮面積で平均した値で、<b>小さいほど断熱性能が高い</b>。"},
+  {n:28, src:"予想 計画 環境", cat:"計画", a:false, q:"ηAC値（冷房期の平均日射熱取得率）は、値が大きいほど日射遮蔽性能が高い。", p:"ηAC値は<b>小さいほど日射遮蔽性能が高い</b>。大きいほど日射が入りやすい。"},
+  {n:29, src:"予想 計画 環境", cat:"計画", a:true, q:"壁体内の結露防止のため、断熱層の室内側に防湿層を、室外側に通気層を設けることが有効である。", p:"<b>室内側に防湿層・室外側に通気層</b>で、壁体内の水蒸気の侵入を防ぎ排出する。"},
+  {n:30, src:"予想 計画 制度", cat:"計画", a:true, q:"長期優良住宅は、構造躯体の劣化対策・耐震性・維持管理更新の容易性・省エネルギー性などの認定基準を満たす住宅である。", p:"長期優良住宅は<b>劣化対策・耐震性・維持管理更新の容易性・省エネ性</b>等の基準を満たし、認定を受ける。"}
+];
+
+
+const CAT_ORDER = ["法規","構造","施工","計画"];
+const STORE_KEY = "yosou2026_wrong";
+const CHUNK = 20;
+
+let memStore = {};
+async function storeGet(k){
+  try{ if(window.storage&&window.storage.get){const r=await window.storage.get(k);return r?r.value:null;} }catch(e){}
+  try{ return localStorage.getItem(k); }catch(e){}
+  return memStore[k]||null;
+}
+async function storeSet(k,v){
+  try{ if(window.storage&&window.storage.set){await window.storage.set(k,v);return;} }catch(e){}
+  try{ localStorage.setItem(k,v);return; }catch(e){}
+  memStore[k]=v;
+}
+async function getWrong(){
+  const raw=await storeGet(STORE_KEY);
+  if(!raw) return [];
+  try{ return JSON.parse(raw)||[]; }catch(e){ return []; }
+}
+async function setWrong(arr){ await storeSet(STORE_KEY, JSON.stringify([...new Set(arr)])); }
+async function addWrong(n){ const w=await getWrong(); if(!w.includes(n)){w.push(n); await setWrong(w);} }
+async function removeWrong(n){ let w=await getWrong(); w=w.filter(x=>x!==n); await setWrong(w); }
+
+let queue=[], idx=0, correct=0, wrongThisRun=[], mode="all";
+const el=id=>document.getElementById(id);
+function topScroll(){ try{ window.scrollTo(0,0); }catch(e){} }
+function show(sec){ ["home","quiz","result"].forEach(s=>el(s).classList.toggle("hide",s!==sec)); topScroll(); }
+
+async function initHome(){
+  el("totalN").textContent=QUESTIONS.length;
+  const w=await getWrong();
+  el("wrongN").textContent=w.length;
+  el("wrongBtn").disabled=w.length===0;
+  const setCount=Math.ceil(QUESTIONS.length/CHUNK);
+  el("setList").innerHTML="";
+  for(let i=0;i<setCount;i++){
+    const s=i*CHUNK, e=Math.min(s+CHUNK, QUESTIONS.length);
+    const b=document.createElement("button");
+    b.className="btn cat-btn";
+    b.innerHTML=`セット${i+1}（問${s+1}〜${e}）<span class="n">${e-s}問</span>`;
+    b.addEventListener("click",()=>startSet(s,e));
+    el("setList").appendChild(b);
+  }
+  const present=CAT_ORDER.filter(c=>QUESTIONS.some(q=>q.cat===c));
+  el("catList").innerHTML="";
+  present.forEach(c=>{
+    const cnt=QUESTIONS.filter(q=>q.cat===c).length;
+    const b=document.createElement("button");
+    b.className="btn cat-btn";
+    b.innerHTML=`${c}<span class="n">${cnt}問</span>`;
+    b.addEventListener("click",()=>startCat(c));
+    el("catList").appendChild(b);
+  });
+  show("home");
+}
+
+async function start(kind){
+  mode=kind;
+  if(kind==="wrong"||kind==="redo"){
+    const src = kind==="wrong" ? await getWrong() : wrongThisRun.slice();
+    queue=QUESTIONS.filter(q=>src.includes(q.n));
+  }else{
+    queue=QUESTIONS.slice();
+  }
+  if(queue.length===0){ await initHome(); return; }
+  idx=0; correct=0; wrongThisRun=[];
+  show("quiz"); render();
+}
+function startCat(c){
+  mode="cat"; queue=QUESTIONS.filter(q=>q.cat===c);
+  idx=0; correct=0; wrongThisRun=[];
+  show("quiz"); render();
+}
+function startSet(s,e){
+  mode="set"; queue=QUESTIONS.slice(s,e);
+  idx=0; correct=0; wrongThisRun=[];
+  show("quiz"); render();
+}
+
+function render(){
+  const q=queue[idx];
+  el("cur").textContent=idx+1;
+  el("len").textContent=queue.length;
+  el("barFill").style.width=((idx)/queue.length*100)+"%";
+  el("src").textContent=q.src;
+  el("catTag").textContent=q.cat;
+  el("qtext").textContent=q.q;
+  el("judge").className="judge";
+  el("oxBtns").style.display="flex";
+  [...el("oxBtns").children].forEach(b=>b.disabled=false);
+  topScroll();
+}
+
+async function answer(val){
+  if(el("judge").classList.contains("show")) return; // 二重回答防止
+  const q=queue[idx];
+  [...el("oxBtns").children].forEach(b=>b.disabled=true);
+  const ok=(val===q.a);
+  const j=el("judge");
+  j.classList.add("show", ok?"ok":"ng");
+  el("jhead").textContent= ok ? "正解 ◎" : "不正解 …";
+  el("jans").textContent= "答え：" + (q.a?"○（正しい）":"×（誤り）");
+  el("jp").innerHTML=q.p;
+  el("barFill").style.width=((idx+1)/queue.length*100)+"%";
+  el("nextBtn").textContent=(idx===queue.length-1)?"結果を見る":"次へ";
+  if(ok){ correct++; await removeWrong(q.n); }
+  else{ wrongThisRun.push(q.n); await addWrong(q.n); }
+  // 「次へ」ボタンが画面内に来るようにスクロール
+  setTimeout(()=>{ try{ el("nextBtn").scrollIntoView({behavior:"smooth", block:"center"}); }catch(e){} }, 80);
+}
+
+function next(){
+  idx++;
+  if(idx>=queue.length){ finish(); return; }
+  render();
+}
+
+function finish(){
+  const total=queue.length;
+  const pct=Math.round(correct/total*100);
+  const r=64, c=2*Math.PI*r;
+  const fg=el("ringFg");
+  fg.style.strokeDasharray=c;
+  fg.style.strokeDashoffset=c;
+  el("ringTxt").textContent=pct+"%";
+  el("scoreLine").textContent=`${total}問中 ${correct}問 正解`;
+  el("scoreSub").textContent= wrongThisRun.length ? `間違い ${wrongThisRun.length}問` : "全問正解！";
+  el("redoBtn").style.display= wrongThisRun.length ? "block" : "none";
+  show("result");
+  requestAnimationFrame(()=>{ setTimeout(()=>{ fg.style.strokeDashoffset=c*(1-pct/100); },60); });
+}
+
+function goHome(){ initHome(); }
+
+// イベントはまとめて確実にバインド（インラインonclickを使わない）
+document.getElementById("startAllBtn").addEventListener("click",()=>start("all"));
+document.getElementById("wrongBtn").addEventListener("click",()=>start("wrong"));
+document.getElementById("btnMaru").addEventListener("click",()=>answer(true));
+document.getElementById("btnBatsu").addEventListener("click",()=>answer(false));
+document.getElementById("nextBtn").addEventListener("click",next);
+document.getElementById("abortBtn").addEventListener("click",goHome);
+document.getElementById("redoBtn").addEventListener("click",()=>start("redo"));
+document.getElementById("restartBtn").addEventListener("click",()=>start("all"));
+document.getElementById("homeBtn").addEventListener("click",goHome);
+
+initHome();
+</script>
+</body>
+</html>
