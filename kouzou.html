@@ -46,6 +46,9 @@
   .bar button{flex:1;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;}
   .btn-show{background:var(--sc);color:#fff;}
   .btn-hide{background:#eef1ee;color:var(--ink);}
+  .back{text-align:center;padding:18px 0 6px;}
+  .back a{color:var(--sc);font-size:14px;font-weight:700;text-decoration:none;}
+  .back a:active{opacity:.6;}
 </style>
 </head>
 <body>
@@ -65,6 +68,7 @@
 </header>
 <div class="wrap" id="app"></div>
 <div class="empty" id="empty">まだ登録がありません。<br>各問題の「気になる」を押すと、ここに集まります。</div>
+<footer class="back"><a href="index.html">← メニューに戻る</a></footer>
 <div class="bar">
   <button class="btn-hide" onclick="toggleAll(false)">全部かくす</button>
   <button class="btn-show" onclick="toggleAll(true)">全部ひらく</button>
