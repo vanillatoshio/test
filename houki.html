@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>2. 法規｜赤シート暗記</title>
+<style>
+  :root{ --sc:#b07d1f; --red:#FF5252; --paper:#f7f8f6; --ink:#1f2620; --line:#e1e6e0; }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  body{margin:0;font-family:-apple-system,"Hiragino Kaku Gothic ProN","ヒラギノ角ゴ ProN",sans-serif;
+    background:var(--paper);color:var(--ink);line-height:1.9;padding-bottom:88px;}
+  header{position:sticky;top:0;z-index:10;background:var(--sc);color:#fff;padding:13px 16px 11px;box-shadow:0 2px 8px rgba(0,0,0,.12);}
+  header h1{margin:0;font-size:17px;font-weight:700;}
+  header p{margin:3px 0 0;font-size:12px;opacity:.85;}
+  .tools{display:flex;align-items:center;gap:8px;margin-top:9px;}
+  .count{font-size:12px;font-weight:700;opacity:.95;}
+  .reset{font-size:11px;color:#fff;opacity:.8;text-decoration:underline;background:none;border:none;cursor:pointer;font-family:inherit;padding:0;}
+  .spacer{flex:1;}
+  .relbtn{display:none;font-size:11px;font-weight:700;color:#fff;background:rgba(255,255,255,.22);border:none;border-radius:999px;padding:5px 10px;cursor:pointer;font-family:inherit;white-space:nowrap;}
+  .relbtn.on{background:#fff;color:var(--sc);}
+  .seg{display:flex;background:rgba(255,255,255,.22);border-radius:999px;padding:2px;}
+  .seg button{border:none;background:none;color:#fff;font-weight:700;font-size:12px;padding:5px 12px;border-radius:999px;cursor:pointer;font-family:inherit;}
+  .seg button.on{background:#fff;color:var(--sc);}
+  .wrap{max-width:680px;margin:0 auto;padding:12px;}
+  .sec{font-size:14px;font-weight:700;color:var(--sc);margin:16px 4px 10px;padding-left:10px;border-left:5px solid var(--sc);}
+  .group:first-child .sec{margin-top:4px;}
+  .card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px;box-shadow:0 1px 2px rgba(0,0,0,.04);}
+  .card.weak{border-color:var(--red);box-shadow:0 0 0 1px var(--red) inset;}
+  .qrow{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:7px;}
+  .q{font-size:15px;font-weight:700;flex:1;}
+  .num{color:var(--sc);font-weight:700;margin-right:6px;}
+  .mark{flex:none;border:1px solid var(--line);background:#fff;color:#9aa09a;border-radius:999px;padding:4px 11px;font-size:12px;font-weight:700;white-space:nowrap;cursor:pointer;font-family:inherit;}
+  .card.weak .mark{background:var(--red);border-color:var(--red);color:#fff;}
+  .a{font-size:15px;}
+  .relrow{margin-top:9px;}
+  .rel-link{display:inline-block;font-size:12px;font-weight:700;color:var(--sc);text-decoration:none;border:1px solid var(--sc);border-radius:999px;padding:4px 11px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .rel-link:active{opacity:.6;}
+  .chip{position:relative;display:inline-block;border-radius:5px;cursor:pointer;user-select:none;vertical-align:baseline;}
+  .chip-t{color:var(--red);font-weight:700;padding:0 3px;white-space:nowrap;}
+  .chip-c{position:absolute;inset:0;background:var(--red);border-radius:5px;transition:opacity .12s ease;}
+  .chip.open .chip-c{opacity:0;pointer-events:none;}
+  .group.hidden{display:none;}
+  .empty{display:none;text-align:center;color:#9aa09a;font-size:14px;padding:48px 24px;line-height:1.8;}
+  .card.hide{display:none;}
+  .bar{position:fixed;left:0;right:0;bottom:0;z-index:20;background:#fff;border-top:1px solid var(--line);display:flex;gap:10px;padding:12px 14px;padding-bottom:calc(12px + env(safe-area-inset-bottom));box-shadow:0 -2px 10px rgba(0,0,0,.06);}
+  .bar button{flex:1;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;}
+  .btn-show{background:var(--sc);color:#fff;}
+  .btn-hide{background:#eef1ee;color:var(--ink);}
+</style>
+</head>
+<body>
+<header>
+  <h1>2. 法規｜赤シート暗記</h1>
+  <p>赤いところをタップで表示／「気になる」を押して登録</p>
+  <div class="tools">
+    <span class="count" id="count">気になる 0問</span>
+    <button class="reset" id="reset">リセット</button>
+    <span class="spacer"></span>
+    <button class="relbtn" id="rel" onclick="toggleRelated()">＋関連も</button>
+    <div class="seg">
+      <button id="m-all" class="on" onclick="setMode('all')">全部</button>
+      <button id="m-weak" onclick="setMode('weak')">気になるだけ</button>
+    </div>
+  </div>
+</header>
+<div class="wrap" id="app"></div>
+<div class="empty" id="empty">まだ登録がありません。<br>各問題の「気になる」を押すと、ここに集まります。</div>
+<div class="bar">
+  <button class="btn-hide" onclick="toggleAll(false)">全部かくす</button>
+  <button class="btn-show" onclick="toggleAll(true)">全部ひらく</button>
+</div>
+<script>
+const DATA = [{"sec": "防火・性能", "items": [{"q": "防火性能とは", "a": ["建築物の", {"r": "外壁又は軒裏"}, "に必要とされる性能"]}, {"q": "確認申請が必要なケース（用途変更）", "a": ["用途変更で", {"r": "200㎡超"}, "の特殊建築物（幼保・診療所など）かつ", {"r": "都市計画区域内"}, "の場合"], "kw": "用途変更"}, {"q": "調理室の有効開口面積", "a": ["床面積の", {"r": "1/10"}, "以上が必要"]}]}, {"sec": "面積・荷重", "items": [{"q": "コンクリート造の固定荷重", "a": ["厚さ", {"r": "1cm"}, "ごとに ", {"r": "200 N/㎡"}]}, {"q": "第一種低層住専・延べ300㎡・2階建て「地方公共団体の支所」", "a": [{"r": "新築できる"}]}, {"q": "自動車車庫の内装制限", "a": [{"r": "床面積に関係なく"}, "内装制限を受ける"]}]}, {"sec": "中間検査・換気", "items": [{"q": "中間検査の特定工程（RC造等）", "a": [{"r": "2階の床"}, "及びこれを支持するはりの配筋工程を終えたとき。検査者は", {"r": "建築主事又は指定確認検査機関"}]}, {"q": "ホルムアルデヒド（必要換気回数）", "a": ["住宅の居室は", {"r": "0.5"}, "、その他の居室は", {"r": "0.3"}, "を掛ける"]}]}, {"sec": "高さの最高限度・建ぺい率", "items": [{"q": "道路斜線制限の勾配", "a": ["×", {"r": "1.25"}, "（住居系）／×", {"r": "1.5"}, "（商業・工業系）"]}, {"q": "隣地斜線制限", "a": ["一般に", {"r": "20m"}, "（工業系", {"r": "31m"}, "）を超える部分に適用"]}, {"q": "北側斜線制限", "a": ["距離 ×", {"r": "1.25"}, "＋ 中高層", {"r": "10m"}, "・低層", {"r": "5m"}]}, {"q": "建ぺい率の計算単位", "a": [{"r": "敷地ごと"}, "に計算する"]}, {"q": "商業地域の建ぺい率", "a": [{"r": "10/10"}, "（80%＋防火地域内の耐火建築物等の緩和）"]}]}, {"sec": "複数地域・用途・建築制限", "items": [{"q": "複数地域にわたる敷地", "a": ["角地も含め、", {"r": "厳しい方"}, "の規定が適用される"]}, {"q": "ペントハウス（塔屋）", "a": ["水平投影面積が建築面積の", {"r": "1/8"}, "以内なら階数・高さに不算入"]}, {"q": "第一種中高層住専・3階建ての物品販売店舗", "a": [{"r": "建築できない"}, "（事務所は2階以下ならOK）"]}, {"q": "都市計画で定める敷地面積の最低限度", "a": [{"r": "200㎡"}, "を超えない範囲で定める"]}]}, {"sec": "確認申請・確認済証", "items": [{"q": "確認申請が必要な3類型", "a": ["①用途変更で", {"r": "200㎡超"}, "の特殊建築物　②", {"r": "木造2階建て"}, "等の新築　③", {"r": "10㎡超"}, "の増築"], "kw": "確認申請"}, {"q": "確認済証が必要な範囲", "a": ["延べ", {"r": "200㎡超"}, "の特殊建築物等は全国どこでも必要"], "kw": "確認済証"}]}, {"sec": "容積率・建蔽率（補足）", "items": [{"q": "前面道路幅員による容積率", "a": ["住居系＝幅員×", {"r": "4/10"}, "、その他＝幅員×", {"r": "6/10"}, "。指定容積率と比べ", {"r": "小さい方"}, "を採用"], "kw": "容積率"}, {"q": "敷地が2以上の用途地域にまたがる", "a": ["各部分の（面積×容積率）を合算した", {"r": "加重平均"}], "kw": "用途地域"}]}, {"sec": "斜線・面積・荷重（補足）", "items": [{"q": "日影規制（前面道路幅10m超）", "a": ["反対側境界から", {"r": "5m"}, "後退した線を敷地境界とみなす"]}, {"q": "バルコニー・ひさしの建築面積", "a": ["先端から", {"r": "1m"}, "後退した部分を算入（1m以下は不算入）"]}, {"q": "屋上・地階部分の階数算入", "a": ["建築面積の", {"r": "1/8"}, "を超えると算入"], "kw": "階数"}, {"q": "2項道路のセットバック", "a": ["中心線から", {"r": "2m"}, "（反対側が川等は反対側から", {"r": "4m"}, "）"]}, {"q": "標準せん断力係数 Co", "a": ["一次", {"r": "0.2"}, "以上（軟弱地盤の木造", {"r": "0.3"}, "以上）、二次", {"r": "1.0"}, "以上"]}, {"q": "多雪区域の地震・暴風時の短期荷重", "a": ["G ＋ P ＋ ", {"r": "0.35S"}], "kw": "多雪区域"}]}, {"sec": "剛性率・防火・避難", "items": [{"q": "許容応力度等計算（地上部分）の基準", "a": ["剛性率", {"r": "6/10"}, "以上、偏心率", {"r": "15/100"}, "以下"], "kw": "剛性率"}, {"q": "竪穴区画が必要", "a": ["地階又は", {"r": "3階以上"}, "に居室がある場合（階数3以下かつ延べ", {"r": "200㎡以内"}, "は緩和）"]}, {"q": "排煙設備が必要", "a": [{"r": "3階以上"}, "かつ延べ", {"r": "500㎡超"}]}, {"q": "病院等の廊下幅（両側に居室）", "a": [{"r": "1.6m"}, "以上　※片側に居室は1.2m以上"], "kw": "廊下幅"}, {"q": "2以上の直通階段が必要", "a": ["床面積の合計が", {"r": "1,500㎡超"}, "（物販店舗等）"], "kw": "直通階段"}, {"q": "内装制限（劇場等の客席）", "a": ["客席の床面積の合計", {"r": "400㎡以上"}]}]}, {"sec": "容積率・建蔽率（追補）", "items": [{"q": "住宅等の地階の容積率不算入", "a": ["天井が地盤面+1m以下なら、住宅部分の床面積合計の", {"r": "1/3"}, "まで不算入"], "kw": "地階 容積率"}, {"q": "建蔽率＋1/10の緩和（防火地域の耐火建築物・指定角地など）", "a": [{"r": "＋1/10"}]}, {"q": "近隣商業8/10＋準防火地域の準耐火建築物の最高限度", "a": [{"r": "9/10"}], "kw": "建蔽率"}, {"q": "防火地域＋耐火建築物で建蔽率8/10の地域", "a": [{"r": "制限なし（10/10）"}], "kw": "建蔽率"}]}, {"sec": "高さ制限（追補）", "items": [{"q": "北側斜線で北側が川等の場合", "a": ["水面等の幅の", {"r": "1/2"}, "だけ外側に境界線をとる"]}, {"q": "道路斜線の幅員・複数制限の取り方", "a": ["幅員は", {"r": "大きい方"}, "、複数制限は", {"r": "小さい方"}, "が答え"], "kw": "道路斜線"}, {"q": "高度地区（敷地が内外にわたる）", "a": ["その", {"r": "部分ごと"}, "に適用"]}]}, {"sec": "面積・階数の算定（追補）", "items": [{"q": "地階の建築面積", "a": [{"r": "地盤面上1m以下"}, "は不算入"]}, {"q": "延べ面積の算入", "a": ["バルコニー・ひさしは", {"r": "不算入"}, "、階段室は", {"r": "算入"}]}, {"q": "高さの算定に使う地盤面", "a": [{"r": "高低差の平均"}], "kw": "地盤面"}]}, {"sec": "構造規定（法規・追補）", "items": [{"q": "保有水平耐力計算の荷重", "a": [{"r": "固定荷重＋積載荷重"}], "kw": "保有水平耐力"}, {"q": "ステンレス鋼の接合", "a": [{"r": "高力ボルト接合"}], "kw": "ステンレス鋼"}]}, {"sec": "確認が不要な例", "items": [{"q": "鉄骨造平家180㎡の事務所→飲食店への用途変更", "a": [{"r": "200㎡超でない"}, "ので不要"], "kw": "用途変更"}, {"q": "防火・準防火地域以外での増築", "a": [{"r": "10㎡以内"}, "なら不要"], "kw": "増築 確認"}, {"q": "共同住宅→事務所への用途変更", "a": [{"r": "事務所は特殊建築物でない"}, "ので不要"], "kw": "用途変更"}]}];
+const STORE_KEY = "akasheet_houki_weak";
+
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+const SEARCH="https://vanillatoshio.github.io/test/search.html";
+function kwOf(q){var s=q.split(/[（(：:、　 /／・＞>＋+]/)[0].trim();return s||q;}
+function copyKw(el){try{if(navigator.clipboard)navigator.clipboard.writeText(el.getAttribute('data-kw'));}catch(_){}}
+function loadWeak(){ try{const v=localStorage.getItem(STORE_KEY);return v?new Set(JSON.parse(v)):new Set();}catch(e){return window.__w||(window.__w=new Set());} }
+function saveWeak(s){ try{localStorage.setItem(STORE_KEY,JSON.stringify([...s]));}catch(e){window.__w=s;} }
+let weak = loadWeak();
+let mode = 'all';
+
+const app = document.getElementById('app');
+function renderA(a){
+  return a.map(function(seg){
+    if(typeof seg==='string') return esc(seg);
+    return '<span class="chip" onclick="toggle(this)"><span class="chip-t">'+esc(seg.r)+'</span><span class="chip-c"></span></span>';
+  }).join('');
+}
+let id=0;
+DATA.forEach(function(group){
+  const g=document.createElement('div'); g.className='group';
+  let h='<div class="sec">■ '+esc(group.sec)+'</div>';
+  group.items.forEach(function(it){
+    id++; const cid=id; const w=weak.has(cid);
+    const kw = it.kw || kwOf(it.q);
+    const href = SEARCH + '?q=' + encodeURIComponent(kw);
+    h+='<div class="card'+(w?' weak':'')+'" data-id="'+cid+'">'
+      +'<div class="qrow"><div class="q"><span class="num">'+cid+'.</span>'+esc(it.q)+'</div>'
+      +'<button class="mark" onclick="toggleMark('+cid+')">'+(w?'気になる ★':'気になる')+'</button></div>'
+      +'<div class="a">'+renderA(it.a)+'</div>'
+      +'<div class="relrow"><a class="rel-link" data-kw="'+esc(kw)+'" href="'+esc(href)+'" target="_blank" rel="noopener" onclick="copyKw(this)">🔍 関連問題（'+esc(kw)+'）</a></div>'
+      +'</div>';
+  });
+  g.innerHTML=h; app.appendChild(g);
+});
+
+const countEl=document.getElementById('count');
+const emptyEl=document.getElementById('empty');
+let related=false;
+function applyVisibility(){
+  if(mode==='all'){
+    document.querySelectorAll('.group').forEach(function(g){
+      g.classList.remove('hidden');
+      g.querySelectorAll('.card').forEach(function(c){c.classList.remove('hide');});
+    });
+    emptyEl.style.display='none';
+  }else{
+    document.querySelectorAll('.group').forEach(function(g){
+      const hasWeak=!!g.querySelector('.card.weak');
+      g.classList.toggle('hidden', !hasWeak);
+      g.querySelectorAll('.card').forEach(function(c){
+        const show=c.classList.contains('weak')||related;
+        c.classList.toggle('hide', !show);
+      });
+    });
+    emptyEl.style.display = weak.size? 'none':'block';
+  }
+}
+function refresh(){
+  countEl.textContent='気になる '+weak.size+'問';
+  applyVisibility();
+}
+function toggleMark(cid){
+  const card=document.querySelector('.card[data-id="'+cid+'"]');
+  const btn=card.querySelector('.mark');
+  if(weak.has(cid)){ weak.delete(cid); card.classList.remove('weak'); btn.textContent='気になる'; }
+  else{ weak.add(cid); card.classList.add('weak'); btn.textContent='気になる ★'; }
+  saveWeak(weak); refresh();
+}
+function setMode(m){
+  mode=m;
+  document.getElementById('m-all').classList.toggle('on', m==='all');
+  document.getElementById('m-weak').classList.toggle('on', m==='weak');
+  document.getElementById('rel').style.display = (m==='weak')?'inline-block':'none';
+  refresh();
+}
+function toggleRelated(){
+  related=!related;
+  const b=document.getElementById('rel');
+  b.classList.toggle('on', related);
+  b.textContent = related? '気になるのみ':'＋関連も';
+  refresh();
+}
+document.getElementById('reset').onclick=function(){
+  if(!weak.size) return;
+  if(confirm('「気になる」を全部消しますか？')){
+    weak.clear(); saveWeak(weak);
+    document.querySelectorAll('.card.weak').forEach(function(c){c.classList.remove('weak');c.querySelector('.mark').textContent='気になる';});
+    refresh();
+  }
+};
+function toggle(el){ el.classList.toggle('open'); }
+function toggleAll(show){
+  document.querySelectorAll('.card:not(.hide) .chip').forEach(function(c){c.classList.toggle('open', show);});
+}
+refresh();
+</script>
+</body>
+</html>

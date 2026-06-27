@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>3. 構造｜赤シート暗記</title>
+<style>
+  :root{ --sc:#6b4ea0; --red:#FF5252; --paper:#f7f8f6; --ink:#1f2620; --line:#e1e6e0; }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  body{margin:0;font-family:-apple-system,"Hiragino Kaku Gothic ProN","ヒラギノ角ゴ ProN",sans-serif;
+    background:var(--paper);color:var(--ink);line-height:1.9;padding-bottom:88px;}
+  header{position:sticky;top:0;z-index:10;background:var(--sc);color:#fff;padding:13px 16px 11px;box-shadow:0 2px 8px rgba(0,0,0,.12);}
+  header h1{margin:0;font-size:17px;font-weight:700;}
+  header p{margin:3px 0 0;font-size:12px;opacity:.85;}
+  .tools{display:flex;align-items:center;gap:8px;margin-top:9px;}
+  .count{font-size:12px;font-weight:700;opacity:.95;}
+  .reset{font-size:11px;color:#fff;opacity:.8;text-decoration:underline;background:none;border:none;cursor:pointer;font-family:inherit;padding:0;}
+  .spacer{flex:1;}
+  .relbtn{display:none;font-size:11px;font-weight:700;color:#fff;background:rgba(255,255,255,.22);border:none;border-radius:999px;padding:5px 10px;cursor:pointer;font-family:inherit;white-space:nowrap;}
+  .relbtn.on{background:#fff;color:var(--sc);}
+  .seg{display:flex;background:rgba(255,255,255,.22);border-radius:999px;padding:2px;}
+  .seg button{border:none;background:none;color:#fff;font-weight:700;font-size:12px;padding:5px 12px;border-radius:999px;cursor:pointer;font-family:inherit;}
+  .seg button.on{background:#fff;color:var(--sc);}
+  .wrap{max-width:680px;margin:0 auto;padding:12px;}
+  .sec{font-size:14px;font-weight:700;color:var(--sc);margin:16px 4px 10px;padding-left:10px;border-left:5px solid var(--sc);}
+  .group:first-child .sec{margin-top:4px;}
+  .card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px;box-shadow:0 1px 2px rgba(0,0,0,.04);}
+  .card.weak{border-color:var(--red);box-shadow:0 0 0 1px var(--red) inset;}
+  .qrow{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:7px;}
+  .q{font-size:15px;font-weight:700;flex:1;}
+  .num{color:var(--sc);font-weight:700;margin-right:6px;}
+  .mark{flex:none;border:1px solid var(--line);background:#fff;color:#9aa09a;border-radius:999px;padding:4px 11px;font-size:12px;font-weight:700;white-space:nowrap;cursor:pointer;font-family:inherit;}
+  .card.weak .mark{background:var(--red);border-color:var(--red);color:#fff;}
+  .a{font-size:15px;}
+  .relrow{margin-top:9px;}
+  .rel-link{display:inline-block;font-size:12px;font-weight:700;color:var(--sc);text-decoration:none;border:1px solid var(--sc);border-radius:999px;padding:4px 11px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .rel-link:active{opacity:.6;}
+  .chip{position:relative;display:inline-block;border-radius:5px;cursor:pointer;user-select:none;vertical-align:baseline;}
+  .chip-t{color:var(--red);font-weight:700;padding:0 3px;white-space:nowrap;}
+  .chip-c{position:absolute;inset:0;background:var(--red);border-radius:5px;transition:opacity .12s ease;}
+  .chip.open .chip-c{opacity:0;pointer-events:none;}
+  .group.hidden{display:none;}
+  .empty{display:none;text-align:center;color:#9aa09a;font-size:14px;padding:48px 24px;line-height:1.8;}
+  .card.hide{display:none;}
+  .bar{position:fixed;left:0;right:0;bottom:0;z-index:20;background:#fff;border-top:1px solid var(--line);display:flex;gap:10px;padding:12px 14px;padding-bottom:calc(12px + env(safe-area-inset-bottom));box-shadow:0 -2px 10px rgba(0,0,0,.06);}
+  .bar button{flex:1;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;}
+  .btn-show{background:var(--sc);color:#fff;}
+  .btn-hide{background:#eef1ee;color:var(--ink);}
+</style>
+</head>
+<body>
+<header>
+  <h1>3. 構造｜赤シート暗記</h1>
+  <p>赤いところをタップで表示／「気になる」を押して登録</p>
+  <div class="tools">
+    <span class="count" id="count">気になる 0問</span>
+    <button class="reset" id="reset">リセット</button>
+    <span class="spacer"></span>
+    <button class="relbtn" id="rel" onclick="toggleRelated()">＋関連も</button>
+    <div class="seg">
+      <button id="m-all" class="on" onclick="setMode('all')">全部</button>
+      <button id="m-weak" onclick="setMode('weak')">気になるだけ</button>
+    </div>
+  </div>
+</header>
+<div class="wrap" id="app"></div>
+<div class="empty" id="empty">まだ登録がありません。<br>各問題の「気になる」を押すと、ここに集まります。</div>
+<div class="bar">
+  <button class="btn-hide" onclick="toggleAll(false)">全部かくす</button>
+  <button class="btn-show" onclick="toggleAll(true)">全部ひらく</button>
+</div>
+<script>
+const DATA = [{"sec": "地盤・地震力", "items": [{"q": "堅い粘土質地盤の許容応力度", "a": ["密実な砂質地盤に比べ", {"r": "小さい"}, "（粘土≒100 ＜ 砂質≒200）"]}, {"q": "地震地域係数 Z", "a": [{"r": "0.7〜1.0"}, "（沖縄は0.7）"]}, {"q": "振動特性係数 Rt", "a": ["固有周期が長いほど", {"r": "小さくなる"}]}]}, {"sec": "座屈長さ係数（lk＝k・l）", "items": [{"q": "両端ピン", "a": ["k ＝ ", {"r": "1.0"}]}, {"q": "一端固定・他端ピン", "a": ["k ＝ ", {"r": "0.7"}]}, {"q": "一端固定・他端自由", "a": ["k ＝ ", {"r": "2.0"}]}]}, {"sec": "各種基準値・計算", "items": [{"q": "鉄筋の直線定着長さ", "a": [{"r": "300mm"}, "以上"]}, {"q": "たわみ制限", "a": ["通常の梁スパンは", {"r": "1/300"}, "以下、片持ちは", {"r": "1/250"}, "以下"]}, {"q": "柱脚アンカーボルトの定着長さ", "a": ["ボルト径の", {"r": "20倍"}, "以上"]}, {"q": "木造のせん断力係数（軟弱地盤）", "a": ["著しく軟弱な区域では", {"r": "0.3"}, "以上"]}, {"q": "コンクリートの許容圧縮応力度", "a": ["長期", {"r": "1/3 Fc"}, "、短期", {"r": "2/3 Fc"}]}, {"q": "柱の主筋全断面積", "a": ["コンクリート全断面積の", {"r": "0.8%"}, "以上"]}, {"q": "帯筋・スパイラル筋の90°フック余長", "a": ["径の", {"r": "12倍"}, "以上"]}, {"q": "層間変形角", "a": [{"r": "1/200"}, "以内（", {"r": "1/120"}, "まで緩和可）"]}, {"q": "地震力の算出", "a": ["「", {"r": "固定荷重＋積載荷重"}, "」の和に地震層せん断力係数を乗じる"]}, {"q": "固有周期が長い順（軟→硬）", "a": [{"r": "第三種＞第二種＞第一種"}, "（第一種が固い）"]}, {"q": "曲げ材の横座屈", "a": ["材せい（梁の高さ）に対し", {"r": "材幅が小さい"}, "ほど生じやすい"]}, {"q": "梁せいの決定", "a": ["通常", {"r": "45cm"}, "、構造計算で", {"r": "40cm"}, "まで小さくできる"]}, {"q": "釣り合い鉄筋比以下", "a": ["モーメントは", {"r": "鉄筋量に比例"}, "する"]}, {"q": "積載荷重の大小関係", "a": [{"r": "床＞柱（大梁）＞地震"}, " 用"]}, {"q": "梁のせん断補強筋比", "a": ["最小", {"r": "0.2%"}, "以上"]}, {"q": "保有耐力接合", "a": ["継手部が", {"r": "破断しない"}, "よう、ボルト孔径の", {"r": "2.5倍"}, "の縁端距離を確保"]}]}, {"sec": "鉄筋コンクリート造の詳細（令77条等）", "items": [{"q": "柱の帯筋間隔", "a": ["原則", {"r": "15cm"}, "以下（端部は", {"r": "10cm"}, "以下）、かつ最小径の", {"r": "15倍"}, "以下"]}, {"q": "あばら筋（スターラップ）の間隔", "a": ["梁せいの", {"r": "3/4"}, "以下"]}, {"q": "鉄骨造の有効細長比", "a": ["柱は", {"r": "200"}, "以下、柱以外は", {"r": "250"}, "以下"]}, {"q": "モルタル塗り床の固定荷重", "a": ["仕上げ厚1cmごとに", {"r": "200 N/㎡"}]}, {"q": "ローム層（かたい）の長期許容応力度", "a": [{"r": "100 kN/㎡"}]}]}, {"sec": "補強コンクリートブロック造", "items": [{"q": "壁の端部・隅角部の縦筋", "a": [{"r": "D13（径12mm）"}, "以上の異形鉄筋"]}, {"q": "有効な耐力壁の長さ", "a": [{"r": "55cm"}, "以上、かつ両側開口部の高さの平均の", {"r": "30%"}, "以上"]}, {"q": "開口のある壁のせん断力", "a": [{"r": "低減率"}, "を掛けて算定する"]}, {"q": "コンクリートブロックの圧縮強さ", "a": [{"r": "C種"}, "が最大（A＜B＜C）"]}]}, {"sec": "木造（部材・接合）", "items": [{"q": "構造用合板等の接合に使う釘", "a": [{"r": "CN釘（N釘）"}]}, {"q": "せっこうボード等の接合に使う釘", "a": [{"r": "GNF・SFN釘"}]}, {"q": "雇いざね", "a": ["接合のための", {"r": "細長い材"}]}, {"q": "方杖（ほうづえ）", "a": ["柱と横架材を斜めに結び", {"r": "隅を固める"}, "部材"]}, {"q": "登り淀（のぼりよど）", "a": ["切妻屋根の", {"r": "けらば"}, "に用いる部材"]}, {"q": "落し掛け", "a": [{"r": "床の間"}, "の上部（小壁の下）の化粧材"]}, {"q": "壁量（壁量計算）", "a": ["各階・各方向で ", {"r": "耐力壁の長さの合計 ÷ 床面積"}]}]}, {"sec": "地盤・部材（追補）", "items": [{"q": "地盤の許容応力度の大小順", "a": [{"r": "岩盤＞礫＞砂＞粘土"}], "kw": "地盤 許容応力度"}, {"q": "柱の帯筋を密にする位置", "a": [{"r": "上下（端部）"}, "を密にする"], "kw": "帯筋"}]}];
+const STORE_KEY = "akasheet_kouzou_weak";
+
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+const SEARCH="https://vanillatoshio.github.io/test/search.html";
+function kwOf(q){var s=q.split(/[（(：:、　 /／・＞>＋+]/)[0].trim();return s||q;}
+function copyKw(el){try{if(navigator.clipboard)navigator.clipboard.writeText(el.getAttribute('data-kw'));}catch(_){}}
+function loadWeak(){ try{const v=localStorage.getItem(STORE_KEY);return v?new Set(JSON.parse(v)):new Set();}catch(e){return window.__w||(window.__w=new Set());} }
+function saveWeak(s){ try{localStorage.setItem(STORE_KEY,JSON.stringify([...s]));}catch(e){window.__w=s;} }
+let weak = loadWeak();
+let mode = 'all';
+
+const app = document.getElementById('app');
+function renderA(a){
+  return a.map(function(seg){
+    if(typeof seg==='string') return esc(seg);
+    return '<span class="chip" onclick="toggle(this)"><span class="chip-t">'+esc(seg.r)+'</span><span class="chip-c"></span></span>';
+  }).join('');
+}
+let id=0;
+DATA.forEach(function(group){
+  const g=document.createElement('div'); g.className='group';
+  let h='<div class="sec">■ '+esc(group.sec)+'</div>';
+  group.items.forEach(function(it){
+    id++; const cid=id; const w=weak.has(cid);
+    const kw = it.kw || kwOf(it.q);
+    const href = SEARCH + '?q=' + encodeURIComponent(kw);
+    h+='<div class="card'+(w?' weak':'')+'" data-id="'+cid+'">'
+      +'<div class="qrow"><div class="q"><span class="num">'+cid+'.</span>'+esc(it.q)+'</div>'
+      +'<button class="mark" onclick="toggleMark('+cid+')">'+(w?'気になる ★':'気になる')+'</button></div>'
+      +'<div class="a">'+renderA(it.a)+'</div>'
+      +'<div class="relrow"><a class="rel-link" data-kw="'+esc(kw)+'" href="'+esc(href)+'" target="_blank" rel="noopener" onclick="copyKw(this)">🔍 関連問題（'+esc(kw)+'）</a></div>'
+      +'</div>';
+  });
+  g.innerHTML=h; app.appendChild(g);
+});
+
+const countEl=document.getElementById('count');
+const emptyEl=document.getElementById('empty');
+let related=false;
+function applyVisibility(){
+  if(mode==='all'){
+    document.querySelectorAll('.group').forEach(function(g){
+      g.classList.remove('hidden');
+      g.querySelectorAll('.card').forEach(function(c){c.classList.remove('hide');});
+    });
+    emptyEl.style.display='none';
+  }else{
+    document.querySelectorAll('.group').forEach(function(g){
+      const hasWeak=!!g.querySelector('.card.weak');
+      g.classList.toggle('hidden', !hasWeak);
+      g.querySelectorAll('.card').forEach(function(c){
+        const show=c.classList.contains('weak')||related;
+        c.classList.toggle('hide', !show);
+      });
+    });
+    emptyEl.style.display = weak.size? 'none':'block';
+  }
+}
+function refresh(){
+  countEl.textContent='気になる '+weak.size+'問';
+  applyVisibility();
+}
+function toggleMark(cid){
+  const card=document.querySelector('.card[data-id="'+cid+'"]');
+  const btn=card.querySelector('.mark');
+  if(weak.has(cid)){ weak.delete(cid); card.classList.remove('weak'); btn.textContent='気になる'; }
+  else{ weak.add(cid); card.classList.add('weak'); btn.textContent='気になる ★'; }
+  saveWeak(weak); refresh();
+}
+function setMode(m){
+  mode=m;
+  document.getElementById('m-all').classList.toggle('on', m==='all');
+  document.getElementById('m-weak').classList.toggle('on', m==='weak');
+  document.getElementById('rel').style.display = (m==='weak')?'inline-block':'none';
+  refresh();
+}
+function toggleRelated(){
+  related=!related;
+  const b=document.getElementById('rel');
+  b.classList.toggle('on', related);
+  b.textContent = related? '気になるのみ':'＋関連も';
+  refresh();
+}
+document.getElementById('reset').onclick=function(){
+  if(!weak.size) return;
+  if(confirm('「気になる」を全部消しますか？')){
+    weak.clear(); saveWeak(weak);
+    document.querySelectorAll('.card.weak').forEach(function(c){c.classList.remove('weak');c.querySelector('.mark').textContent='気になる';});
+    refresh();
+  }
+};
+function toggle(el){ el.classList.toggle('open'); }
+function toggleAll(show){
+  document.querySelectorAll('.card:not(.hide) .chip').forEach(function(c){c.classList.toggle('open', show);});
+}
+refresh();
+</script>
+</body>
+</html>
