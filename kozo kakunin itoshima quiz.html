@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>構造確認問題 糸島｜2級建築士 ○×クイズ</title>
+<style>
+:root{
+  --accent:#6b4ea0; --light:#836bb3; --bg:#efeaf6;
+  --maru:#2e9e6b; --batsu:#d9534f;
+  --ink:#241d33; --sub:#5f5670; --card:#fff; --line:#ddd3ec;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+  background:var(--bg); color:var(--ink); line-height:1.7;
+  -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:560px;margin:0 auto;padding:16px 14px 40px;min-height:100vh}
+header{text-align:center;padding:8px 0 14px}
+header h1{font-size:1.15rem;margin:0;color:var(--accent);letter-spacing:.02em}
+header p{margin:4px 0 0;font-size:.78rem;color:var(--sub)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 16px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.btn{display:block;width:100%;border:none;border-radius:12px;padding:15px;font-size:1.02rem;font-weight:700;cursor:pointer;margin-top:10px;font-family:inherit}
+.btn.primary{background:var(--accent);color:#fff}
+.btn.sub{background:#fff;color:var(--accent);border:1.5px solid var(--accent)}
+.btn.ghost{background:#ece6f4;color:var(--sub)}
+.btn:disabled{opacity:.5}
+.cat-btn{background:#fff;color:var(--ink);border:1.5px solid var(--line);text-align:left;font-size:.95rem}
+.cat-btn .n{float:right;color:var(--sub);font-weight:600;font-size:.85rem}
+
+.topbar{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.count{font-size:.82rem;color:var(--sub);white-space:nowrap;font-weight:600}
+.bar{flex:1;height:8px;background:#e3d9f0;border-radius:99px;overflow:hidden}
+.bar > i{display:block;height:100%;background:var(--accent);width:0;transition:width .25s}
+.srclabel{font-size:.72rem;color:var(--sub);margin-bottom:6px}
+.cat-tag{display:inline-block;background:var(--bg);color:var(--accent);font-size:.7rem;font-weight:700;padding:2px 9px;border-radius:99px;margin-bottom:10px}
+.q{font-size:1.12rem;line-height:1.85;margin:2px 0 4px;min-height:3em}
+
+.ox{display:flex;gap:12px;margin-top:18px}
+.ox button{flex:1;border:none;border-radius:14px;padding:20px 0;font-size:2rem;font-weight:800;cursor:pointer;font-family:inherit}
+.ox .maru{background:#e7f6ee;color:var(--maru);border:2px solid #bce4cd}
+.ox .batsu{background:#fdeceb;color:var(--batsu);border:2px solid #f5c9c6}
+
+.judge{margin-top:16px;border-radius:14px;padding:14px;display:none}
+.judge.show{display:block;animation:pop .2s}
+@keyframes pop{from{transform:scale(.97);opacity:.4}to{transform:scale(1);opacity:1}}
+.judge .head{font-size:1.1rem;font-weight:800;margin-bottom:6px}
+.judge.ok{background:#e7f6ee;border:1.5px solid #bce4cd}
+.judge.ok .head{color:var(--maru)}
+.judge.ng{background:#fdeceb;border:1.5px solid #f5c9c6}
+.judge.ng .head{color:var(--batsu)}
+.judge .ans{font-size:.85rem;color:var(--sub);margin-bottom:8px}
+.judge .p{font-size:.95rem;line-height:1.8}
+.judge .p b{color:var(--accent)}
+
+.ring-wrap{display:flex;justify-content:center;margin:6px 0 4px}
+svg.ring{transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:#e4daf1;stroke-width:14}
+.ring-fg{fill:none;stroke:var(--accent);stroke-width:14;stroke-linecap:round;transition:stroke-dashoffset 1s ease}
+.ring-txt{font-size:1.9rem;font-weight:800;fill:var(--ink)}
+.ring-sub{font-size:.7rem;fill:var(--sub)}
+.score-line{text-align:center;font-size:1.05rem;margin:4px 0 2px;font-weight:700}
+.score-sub{text-align:center;color:var(--sub);font-size:.85rem;margin-bottom:8px}
+.note{font-size:.78rem;color:var(--sub);text-align:center;margin-top:14px;line-height:1.6}
+.hide{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>構造確認問題 糸島</h1>
+    <p>2級建築士 学科（構造）｜○×クイズ</p>
+  </header>
+
+  <section id="home">
+    <div class="card">
+      <button class="btn primary" onclick="start('all')">全<span id="totalN"></span>問に挑戦</button>
+      <button class="btn sub" id="wrongBtn" onclick="start('wrong')">間違い復習（<span id="wrongN">0</span>問）</button>
+    </div>
+    <div class="card" style="margin-top:14px" id="setBox">
+      <div style="font-weight:700;font-size:.9rem;margin-bottom:8px;color:var(--sub)">20問ずつ</div>
+      <div id="setList"></div>
+    </div>
+    <div class="card" style="margin-top:14px" id="catBox">
+      <div style="font-weight:700;font-size:.9rem;margin-bottom:8px;color:var(--sub)">分野別</div>
+      <div id="catList"></div>
+    </div>
+    <p class="note">○か×で答えてね。間違えた問題は自動で記録され、「間違い復習」でやり直せます。</p>
+  </section>
+
+  <section id="quiz" class="hide">
+    <div class="topbar">
+      <span class="count"><span id="cur">1</span>/<span id="len">1</span></span>
+      <div class="bar"><i id="barFill"></i></div>
+    </div>
+    <div class="card">
+      <div class="srclabel" id="src"></div>
+      <span class="cat-tag" id="catTag"></span>
+      <div class="q" id="qtext"></div>
+      <div class="ox" id="oxBtns">
+        <button class="maru" onclick="answer(true)">○</button>
+        <button class="batsu" onclick="answer(false)">×</button>
+      </div>
+      <div class="judge" id="judge">
+        <div class="head" id="jhead"></div>
+        <div class="ans" id="jans"></div>
+        <div class="p" id="jp"></div>
+        <button class="btn primary" id="nextBtn" onclick="next()">次へ</button>
+      </div>
+    </div>
+    <button class="btn ghost" style="margin-top:14px" onclick="goHome()">中断してホームへ</button>
+  </section>
+
+  <section id="result" class="hide">
+    <div class="card">
+      <div class="ring-wrap">
+        <svg class="ring" width="150" height="150" viewBox="0 0 150 150">
+          <circle class="ring-bg" cx="75" cy="75" r="64"></circle>
+          <circle class="ring-fg" id="ringFg" cx="75" cy="75" r="64"></circle>
+          <text class="ring-txt" id="ringTxt" x="75" y="72" text-anchor="middle" transform="rotate(90 75 75)">0%</text>
+          <text class="ring-sub" x="75" y="92" text-anchor="middle" transform="rotate(90 75 75)">正答率</text>
+        </svg>
+      </div>
+      <div class="score-line" id="scoreLine"></div>
+      <div class="score-sub" id="scoreSub"></div>
+      <button class="btn primary" id="redoBtn" onclick="start('redo')">間違えた問題を解き直す</button>
+      <button class="btn sub" onclick="start('all')">最初から全問</button>
+      <button class="btn ghost" onclick="goHome()">ホーム</button>
+    </div>
+  </section>
+</div>
+
+<script>
+const QUESTIONS = [
+  {n:1, src:"R06-21 問118", cat:"コンクリート・RC", a:true, q:"コンクリートの中性化とは、セメントの水和反応で生じた強アルカリ性の水酸化カルシウムが、空気中の二酸化炭素と化合して炭酸カルシウムに変化し、アルカリ性が失われる現象をいう。", p:"中性化は<b>Ca(OH)₂＋CO₂→CaCO₃</b>でアルカリ性が失われる現象。鉄筋の不動態被膜が破れ腐食しやすくなる。"},
+  {n:2, src:"R06-21 問118", cat:"コンクリート・RC", a:false, q:"コンクリートの中性化とは、骨材がセメントペースト中のアルカリ成分と化学反応を起こし、水分を吸収して膨張することによってひび割れを生じさせる現象をいう。", p:"これは中性化ではなく<b>アルカリ骨材反応（アルカリシリカ反応）</b>の説明。中性化はアルカリ性が失われる現象。"},
+  {n:3, src:"R06-22 問119", cat:"コンクリート・RC", a:true, q:"コンクリートは通常pH12〜13程度の強アルカリ性を示し、その中に埋め込まれた鉄筋の表面を酸化皮膜で覆い、鉄筋の腐食を抑制する効果がある。", p:"コンクリートのpHは<b>12〜13の強アルカリ性</b>。鉄筋表面に不動態（酸化）皮膜を作り腐食を抑える。中性化でpHが下がると腐食しやすくなる。"},
+  {n:4, src:"No.20／H30-20 問88", cat:"木材・木質", a:true, q:"木材の繊維方向の基準強度の大小関係は、一般に、曲げ＞圧縮＞引張り＞せん断である。", p:"木材の基準強度は<b>曲げ＞圧縮＞引張り＞せん断</b>の順に小さくなる。曲げが最も大きい。"},
+  {n:5, src:"問題16", cat:"木材・木質", a:false, q:"木材の基準強度の大小関係は、一般に、圧縮＞曲げ＞せん断である。", p:"正しくは<b>曲げ＞圧縮＞せん断</b>。曲げが圧縮より大きく、圧縮を先頭に置くのは誤り。"},
+  {n:6, src:"H30-20 問88", cat:"木材・木質", a:false, q:"木材の繊維方向の基準強度の大小関係は、一般に、圧縮＞引張り＞曲げである。", p:"正しくは<b>曲げ＞圧縮＞引張り</b>。曲げが最も大きく、圧縮や引張りを曲げより上に置くのは誤り。"},
+  {n:7, src:"R01-11 問113", cat:"木構造・接合", a:true, q:"ボルト接合部において、せん断を受けるボルトの間隔は、木材の繊維に対する加力方向に応じて、構造設計規準で定められている。", p:"ボルト間隔は加力方向（繊維方向・繊維直角方向・中間角度）に応じて<b>端距離・縁距離・間隔</b>が定められる。"},
+  {n:8, src:"R05-12 問91", cat:"木構造・接合", a:true, q:"曲げ材の端部の支持点付近で、引張側に設ける切欠きの深さ（高さ）は、材せいの1/3以下とする。", p:"曲げ材端部の引張側の切欠き深さは<b>材せいの1/3以下</b>とする。"},
+  {n:9, src:"R05-12 問91", cat:"木構造・接合", a:true, q:"四分割法では、各方向の壁量充足率および壁率比が0.5以上であることを確認する。", p:"四分割法は耐力壁配置のバランスを<b>壁量充足率・壁率比0.5以上</b>で確認する手法。"},
+  {n:10, src:"R05-12 問91", cat:"木構造・接合", a:true, q:"ストレスト・スキン効果を考慮したパネル壁は、合板等の面材と枠組材を接着して一体化させ、鉛直荷重に対して抵抗させることができる。", p:"面材を接着し一体化して<b>ストレストスキン効果</b>を得る。厚さ15mm以上・幅90mm以上の木材を用い、鉛直荷重に抵抗する。"},
+  {n:11, src:"R05-16 問164", cat:"鉄骨", a:true, q:"根巻き形式の柱脚において、根巻き鉄筋コンクリートの高さは、一般に、柱せいと柱幅の大きいほうの2.5倍以上とする。", p:"根巻き部分（RCで覆われた部分）の高さは、柱せいと柱幅の大きいほうの<b>2.5倍以上</b>（平成12年告示1456号）。"},
+  {n:12, src:"R05-16 問164", cat:"鉄骨", a:false, q:"根巻き形式の柱脚において、根巻き鉄筋コンクリートの高さは、一般に、柱せいと柱幅の大きいほうの2.0倍以上とする。", p:"正しくは<b>2.5倍以上</b>（平成12年告示1456号）。2.0倍では不足で誤り。"},
+  {n:13, src:"R03-06 問48", cat:"力学・座屈", a:true, q:"弾性座屈荷重Pkは、π²EI/Lk²で表され、材料のヤング係数Eおよび断面二次モーメントIに比例する。", p:"<b>Pk＝π²EI/Lk²</b>。ヤング係数E・断面二次モーメントIに比例する。"},
+  {n:14, src:"R03-06 問48", cat:"力学・座屈", a:true, q:"弾性座屈荷重Pkは、座屈長さLkの2乗に反比例する。", p:"<b>Pk＝π²EI/Lk²</b>なので、座屈長さLkの<b>2乗に反比例</b>する。"},
+  {n:15, src:"H29-08 問59", cat:"荷重・地震力", a:true, q:"振動特性係数Rtは、建築物の固有周期が長くなるほど小さくなる。", p:"Rtは建築物の固有周期と地盤種別で決まり、<b>固有周期が長くなるほど小さく</b>なる。"},
+  {n:16, src:"H29-08 問59", cat:"荷重・地震力", a:true, q:"標準せん断力係数C0は一般に0.2以上とするが、地盤が著しく軟弱な区域における木造建築物では0.3以上とする。", p:"C0は一般に<b>0.2以上</b>。<b>軟弱地盤の木造は0.3以上</b>とする。"},
+  {n:17, src:"H29-08 問59", cat:"荷重・地震力", a:true, q:"必要保有水平耐力を計算する場合、標準せん断力係数C0は1.0以上とする。", p:"保有水平耐力計算（大地震時）では、<b>C0は1.0以上</b>とする。"},
+  {n:18, src:"令82条", cat:"荷重・地震力", a:true, q:"長期（常時）に対する荷重の組合せは、G＋P（固定荷重＋積載荷重）である。", p:"長期の常時は<b>G＋P</b>。多雪区域では長期に準じてG＋P＋0.7Sを考慮する。"},
+  {n:19, src:"令82条", cat:"荷重・地震力", a:true, q:"暴風時（短期）の荷重の組合せは、G＋P＋W（風圧力を加える）である。", p:"短期の暴風時は<b>G＋P＋W</b>、地震時はG＋P＋K。"},
+  {n:20, src:"令82条", cat:"荷重・地震力", a:true, q:"多雪区域では、暴風時（短期）の荷重の組合せに、G＋P＋0.35S＋Wのように積雪荷重の一部を加える。", p:"多雪区域の短期は暴風時<b>G＋P＋0.35S＋W</b>、地震時G＋P＋0.35S＋Kのように積雪を加味する。"},
+  {n:21, src:"耐震 令82条の6", cat:"耐震計算", a:false, q:"建築物の各階の剛性率は、その値が大きいほど、その階に損傷が集中する危険性が高い。", p:"剛性率は<b>値が小さい階ほど</b>変形・損傷が集中する危険性が高い。大きいほど危険は誤り。"},
+  {n:22, src:"耐震 令82条の6", cat:"耐震計算", a:true, q:"剛性率Rsは、各階の層間変形角の逆数を全ての階の層間変形角の逆数の平均値（相加平均）で除した値であり、その値が小さい階ほど損傷が集中する危険性が高い。", p:"<b>Rs＝rs/r̄s</b>。値が小さい階ほど地震時に変形・損傷が集中しやすい（令82条の6第二号イ）。"},
+  {n:23, src:"耐震 令82条の6", cat:"耐震計算", a:true, q:"剛性率は、各階について0.6以上であることを確かめなければならない。", p:"剛性率は各階<b>0.6以上</b>であることを確かめる（令82条の6第二号イ）。"},
+  {n:24, src:"R05-13 問188", cat:"補強CB・壁式", a:true, q:"補強コンクリートブロック造の耐力壁の長さ（実長）は、55cm以上、かつ、その有効高さの30%以上とする。", p:"耐力壁の実長は<b>55cm以上</b>、かつ有効高さの<b>30%以上</b>（補強CB造設計規準）。"},
+  {n:25, src:"R06-13 問187", cat:"補強CB・壁式", a:false, q:"両側に開口部のある耐力壁の長さ（実長）は、450mm以上、かつ、その有効高さの25%以上とすればよい。", p:"耐力壁の実長は<b>55cm（550mm）以上</b>、かつ有効高さの<b>30%以上</b>。450mm・25%は誤り。"},
+  {n:26, src:"R05-13 問188", cat:"補強CB・壁式", a:true, q:"床及び屋根が鉄筋コンクリート造の補強コンクリートブロック造において、耐力壁の中心線で囲まれた部分の水平投影面積は、60m²以下とする。", p:"床・屋根スラブを設けた場合、耐力壁中心線で囲まれた水平投影面積は<b>60m²以下</b>とする。"},
+  {n:27, src:"R01-13 問183", cat:"補強CB・壁式", a:true, q:"壁式鉄筋コンクリート造において、構造耐力上主要な部分に使用するコンクリートの設計基準強度は、18N/mm²以上とする。", p:"壁式RC造の構造耐力上主要な部分のコンクリート設計基準強度は<b>18N/mm²以上</b>（平成13年告示1026号）。"}
+];
+
+const CAT_ORDER = ["コンクリート・RC","木材・木質","木構造・接合","鉄骨","力学・座屈","荷重・地震力","耐震計算","補強CB・壁式"];
+const STORE_KEY = "kozo_marker_wrong";
+const CHUNK = 20;
+
+let memStore = {};
+async function storeGet(k){
+  try{ if(window.storage&&window.storage.get){const r=await window.storage.get(k);return r?r.value:null;} }catch(e){}
+  try{ return localStorage.getItem(k); }catch(e){}
+  return memStore[k]||null;
+}
+async function storeSet(k,v){
+  try{ if(window.storage&&window.storage.set){await window.storage.set(k,v);return;} }catch(e){}
+  try{ localStorage.setItem(k,v);return; }catch(e){}
+  memStore[k]=v;
+}
+async function getWrong(){
+  const raw=await storeGet(STORE_KEY);
+  if(!raw) return [];
+  try{ return JSON.parse(raw)||[]; }catch(e){ return []; }
+}
+async function setWrong(arr){ await storeSet(STORE_KEY, JSON.stringify([...new Set(arr)])); }
+async function addWrong(n){ const w=await getWrong(); if(!w.includes(n)){w.push(n); await setWrong(w);} }
+async function removeWrong(n){ let w=await getWrong(); w=w.filter(x=>x!==n); await setWrong(w); }
+
+let queue=[], idx=0, correct=0, wrongThisRun=[], mode="all";
+const el=id=>document.getElementById(id);
+function show(sec){ ["home","quiz","result"].forEach(s=>el(s).classList.toggle("hide",s!==sec)); window.scrollTo(0,0); }
+
+async function initHome(){
+  el("totalN").textContent=QUESTIONS.length;
+  const w=await getWrong();
+  el("wrongN").textContent=w.length;
+  el("wrongBtn").disabled=w.length===0;
+  const setCount=Math.ceil(QUESTIONS.length/CHUNK);
+  el("setList").innerHTML="";
+  for(let i=0;i<setCount;i++){
+    const s=i*CHUNK, e=Math.min(s+CHUNK, QUESTIONS.length);
+    const b=document.createElement("button");
+    b.className="btn cat-btn";
+    b.innerHTML=`セット${i+1}（問${s+1}〜${e}）<span class="n">${e-s}問</span>`;
+    b.onclick=()=>startSet(s,e);
+    el("setList").appendChild(b);
+  }
+  const present=CAT_ORDER.filter(c=>QUESTIONS.some(q=>q.cat===c));
+  el("catList").innerHTML="";
+  present.forEach(c=>{
+    const cnt=QUESTIONS.filter(q=>q.cat===c).length;
+    const b=document.createElement("button");
+    b.className="btn cat-btn";
+    b.innerHTML=`${c}<span class="n">${cnt}問</span>`;
+    b.onclick=()=>startCat(c);
+    el("catList").appendChild(b);
+  });
+  show("home");
+}
+
+async function start(kind){
+  mode=kind;
+  if(kind==="wrong"||kind==="redo"){
+    const src = kind==="wrong" ? await getWrong() : wrongThisRun.slice();
+    queue=QUESTIONS.filter(q=>src.includes(q.n));
+  }else{
+    queue=QUESTIONS.slice();
+  }
+  if(queue.length===0){ await initHome(); return; }
+  idx=0; correct=0; wrongThisRun=[];
+  render(); show("quiz");
+}
+function startCat(c){
+  mode="cat"; queue=QUESTIONS.filter(q=>q.cat===c);
+  idx=0; correct=0; wrongThisRun=[];
+  render(); show("quiz");
+}
+function startSet(s,e){
+  mode="set"; queue=QUESTIONS.slice(s,e);
+  idx=0; correct=0; wrongThisRun=[];
+  render(); show("quiz");
+}
+
+function render(){
+  const q=queue[idx];
+  el("cur").textContent=idx+1;
+  el("len").textContent=queue.length;
+  el("barFill").style.width=((idx)/queue.length*100)+"%";
+  el("src").textContent=q.src;
+  el("catTag").textContent=q.cat;
+  el("qtext").textContent=q.q;
+  el("judge").className="judge";
+  el("oxBtns").style.display="flex";
+  [...el("oxBtns").children].forEach(b=>b.disabled=false);
+}
+
+async function answer(val){
+  const q=queue[idx];
+  [...el("oxBtns").children].forEach(b=>b.disabled=true);
+  const ok=(val===q.a);
+  const j=el("judge");
+  j.classList.add("show", ok?"ok":"ng");
+  el("jhead").textContent= ok ? "正解 ◎" : "不正解 …";
+  el("jans").textContent= "答え：" + (q.a?"○（正しい）":"×（誤り）");
+  el("jp").innerHTML=q.p;
+  el("barFill").style.width=((idx+1)/queue.length*100)+"%";
+  if(ok){ correct++; await removeWrong(q.n); }
+  else{ wrongThisRun.push(q.n); await addWrong(q.n); }
+  el("nextBtn").textContent=(idx===queue.length-1)?"結果を見る":"次へ";
+}
+
+function next(){
+  idx++;
+  if(idx>=queue.length){ finish(); return; }
+  render();
+}
+
+function finish(){
+  const total=queue.length;
+  const pct=Math.round(correct/total*100);
+  const r=64, c=2*Math.PI*r;
+  const fg=el("ringFg");
+  fg.style.strokeDasharray=c;
+  fg.style.strokeDashoffset=c;
+  el("ringTxt").textContent=pct+"%";
+  el("scoreLine").textContent=`${total}問中 ${correct}問 正解`;
+  el("scoreSub").textContent= wrongThisRun.length ? `間違い ${wrongThisRun.length}問` : "全問正解！";
+  el("redoBtn").style.display= wrongThisRun.length ? "block" : "none";
+  show("result");
+  requestAnimationFrame(()=>{ setTimeout(()=>{ fg.style.strokeDashoffset=c*(1-pct/100); },60); });
+}
+
+function goHome(){ initHome(); }
+initHome();
+</script>
+</body>
+</html>
