@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>二級建築士の設計範囲（士法3条・3条の2）○×トレーナー</title>
+<style>
+  :root{
+    --accent:#b07d1f;
+    --accent-light:#c89a45;
+    --accent-bg:#f6eedb;
+    --maru:#2e9e6b;
+    --batsu:#d9534f;
+    --ink:#2c2620;
+    --muted:#8a8270;
+    --line:#e7ddc8;
+    --card:#ffffff;
+    --bg:#faf6ee;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+    background:var(--bg);color:var(--ink);
+    line-height:1.7;-webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:560px;margin:0 auto;padding:16px 16px 48px;}
+
+  header.top{text-align:center;padding:24px 0 8px;}
+  header.top .eyebrow{font-size:12px;letter-spacing:.18em;color:var(--accent);font-weight:700;}
+  header.top h1{font-size:21px;margin:6px 0 2px;font-weight:800;}
+  header.top .sub{font-size:13px;color:var(--muted);}
+
+  .home-intro{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:16px 18px;margin:16px 0;font-size:13.5px;color:#5b5443;
+  }
+  .home-intro b{color:var(--accent);}
+
+  .matome{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:16px 16px 18px;margin:16px 0;
+  }
+  .matome h2{font-size:15px;margin:0 0 4px;color:var(--accent);font-weight:800;}
+  .matome .lead{font-size:12px;color:var(--muted);margin:0 0 12px;}
+  table.axis{width:100%;border-collapse:collapse;font-size:12.5px;}
+  table.axis th,table.axis td{
+    border:1px solid var(--line);padding:8px 8px;text-align:left;vertical-align:top;
+  }
+  table.axis thead th{
+    background:var(--accent-bg);color:var(--accent);font-weight:800;font-size:12px;text-align:center;
+  }
+  table.axis td.zone{font-weight:800;white-space:nowrap;text-align:center;background:#fcf8ef;}
+  table.axis td.need{font-weight:700;}
+  table.axis td.need .hl{color:var(--accent);}
+  .matome .foot{font-size:11.5px;color:var(--muted);margin-top:10px;line-height:1.7;}
+  .matome .foot b{color:var(--ink);}
+
+  .sec-grid{display:flex;flex-direction:column;gap:12px;margin-top:8px;}
+  .sec-btn{
+    display:flex;align-items:center;justify-content:space-between;
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:18px 20px;cursor:pointer;transition:.15s;text-align:left;width:100%;
+    font-family:inherit;color:inherit;
+  }
+  .sec-btn:active{transform:scale(.98);}
+  .sec-btn .name{font-size:17px;font-weight:700;}
+  .sec-btn .meta{font-size:12px;color:var(--muted);margin-top:2px;}
+  .sec-btn .count{
+    background:var(--accent-bg);color:var(--accent);font-weight:700;
+    border-radius:999px;padding:4px 12px;font-size:13px;white-space:nowrap;
+  }
+  .sec-btn.all{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .sec-btn.all .meta{color:#f0e2c4;}
+  .sec-btn.all .count{background:rgba(255,255,255,.22);color:#fff;}
+  .sec-btn.review{background:#fff7f6;border-color:#f3d6d4;}
+  .sec-btn.review .name{color:var(--batsu);}
+  .sec-btn.review .count{background:#fae3e2;color:var(--batsu);}
+  .sec-btn:disabled{opacity:.45;cursor:default;}
+
+  .bar{display:flex;align-items:center;gap:12px;margin:8px 0 14px;}
+  .back{
+    background:none;border:none;color:var(--accent);font-size:15px;font-weight:700;
+    cursor:pointer;font-family:inherit;padding:6px 0;
+  }
+  .progress{flex:1;height:8px;background:var(--line);border-radius:999px;overflow:hidden;}
+  .progress > i{display:block;height:100%;background:var(--accent);width:0;transition:.3s;}
+  .counter{font-size:13px;color:var(--muted);font-weight:700;white-space:nowrap;}
+
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:20px;
+    padding:22px 20px;box-shadow:0 6px 20px rgba(120,90,30,.06);
+  }
+  .src-tag{
+    display:inline-block;background:var(--accent-bg);color:var(--accent);
+    font-size:12px;font-weight:700;border-radius:8px;padding:3px 10px;margin-bottom:14px;
+  }
+  .q-text{font-size:17px;line-height:1.85;font-weight:500;}
+
+  .choices{display:flex;gap:14px;margin-top:22px;}
+  .choice{
+    flex:1;border:2px solid var(--line);background:var(--card);border-radius:16px;
+    padding:18px 0;font-size:30px;font-weight:800;cursor:pointer;font-family:inherit;
+    transition:.12s;color:var(--ink);
+  }
+  .choice:active{transform:scale(.96);}
+  .choice.maru{color:var(--maru);}
+  .choice.batsu{color:var(--batsu);}
+  .choice:disabled{cursor:default;}
+  .choice.sel-correct{border-color:var(--maru);background:#eef9f3;}
+  .choice.sel-wrong{border-color:var(--batsu);background:#fdeeed;}
+  .choice.dim{opacity:.35;}
+
+  .result{margin-top:18px;border-radius:16px;padding:16px 18px;display:none;}
+  .result.show{display:block;animation:fade .25s;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  .result.ok{background:#eef9f3;border:1px solid #bfe6d2;}
+  .result.ng{background:#fdeeed;border:1px solid #f3cecb;}
+  .result .verdict{font-weight:800;font-size:15px;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+  .result.ok .verdict{color:var(--maru);}
+  .result.ng .verdict{color:var(--batsu);}
+  .result .ans{font-size:13px;color:var(--muted);font-weight:700;}
+  .result .point{font-size:14.5px;line-height:1.8;margin-top:8px;color:#39342b;}
+  .result .point b{color:var(--accent);}
+
+  .next{
+    width:100%;margin-top:16px;background:var(--accent);color:#fff;border:none;
+    border-radius:14px;padding:16px;font-size:16px;font-weight:800;cursor:pointer;
+    font-family:inherit;display:none;
+  }
+  .next.show{display:block;}
+  .next:active{transform:scale(.98);}
+
+  .summary{text-align:center;padding-top:10px;}
+  .summary .ring{
+    width:150px;height:150px;border-radius:50%;margin:18px auto;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:conic-gradient(var(--accent) var(--deg,0deg),var(--line) 0);
+  }
+  .summary .ring .inner{
+    width:122px;height:122px;border-radius:50%;background:var(--card);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+  }
+  .summary .ring .pct{font-size:34px;font-weight:800;color:var(--accent);}
+  .summary .ring .lbl{font-size:12px;color:var(--muted);}
+  .summary h2{font-size:20px;margin:6px 0;}
+  .summary .score{font-size:15px;color:var(--muted);margin-bottom:18px;}
+  .summary .acts{display:flex;flex-direction:column;gap:10px;}
+  .summary .acts button{
+    border-radius:14px;padding:15px;font-size:15px;font-weight:800;cursor:pointer;
+    font-family:inherit;border:none;
+  }
+  .btn-primary{background:var(--accent);color:#fff;}
+  .btn-ghost{background:var(--card);color:var(--accent);border:1px solid var(--line)!important;}
+  .btn-review{background:#fff7f6;color:var(--batsu);border:1px solid #f3d6d4!important;}
+
+  .hidden{display:none!important;}
+  footer{text-align:center;font-size:11px;color:#c3b89c;margin-top:28px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HOME -->
+  <section id="home">
+    <header class="top">
+      <div class="eyebrow">2級建築士 法規 ／ 暗記トレーナー</div>
+      <h1>二級建築士が設計できる建物</h1>
+      <div class="sub">一級でなければできない建物（士法3条）に当たらなければ二級OK ／ 全18問</div>
+    </header>
+
+    <div class="matome">
+      <h2>まとめ軸 ─ 一級でなければできない（＝二級NG）ライン</h2>
+      <p class="lead">下のどれかに当たれば一級限定。どれにも当たらなければ二級建築士が設計できる（士法3条・3条の2）。</p>
+      <table class="axis">
+        <thead>
+          <tr><th>区分</th><th>一級のみ（二級NG）になるライン</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="zone">特殊用途</td>
+            <td>学校・病院・劇場・映画館・観覧場・公会堂・集会場・百貨店 で<br>延べ面積 <span class="hl">500m²超</span></td>
+          </tr>
+          <tr>
+            <td class="zone">木造</td>
+            <td>高さ <span class="hl">13m超</span> 又は 軒高 <span class="hl">9m超</span><br>（面積の制限なし）</td>
+          </tr>
+          <tr>
+            <td class="zone">木造以外<br>RC・S・石・れんが・CB・無筋コン</td>
+            <td>延べ <span class="hl">300m²超</span> 又は 高さ13m超 又は 軒高9m超</td>
+          </tr>
+          <tr>
+            <td class="zone">全構造共通</td>
+            <td>延べ <span class="hl">1,000m²超</span> かつ <span class="hl">階数2以上</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="foot">
+        ※判定の軸は「<b>超える</b>」。<b>ちょうど（＝以下）はセーフ</b>（例：300m²・13m・9m はいずれも二級可）。<br>
+        ※<b>木造は面積無制限</b>（高さ・軒高だけ）。ただし<b>1,000m²超かつ2階以上</b>は一級。<b>平家なら面積が大きくても二級可</b>。<br>
+        ※<b>特殊用途</b>（劇場等）は構造に関係なく<b>500m²超で一級</b>。ただし構造基準（木造以外300m²等）に当たればそちらでアウト。<br>
+        ※数字の軸：<b>500／300／13／9／1,000・2階</b>。<br>
+        ※<b>R7改正</b>：二級の許容応力度計算の対象が<b>階数3以下かつ高さ16m以下</b>に拡大。
+      </p>
+    </div>
+
+    <div class="home-intro">
+      上のまとめ軸をもとに <b>○×形式</b> で出題します（全18問）。<br>
+      <b>○＝正しい ／ ×＝誤り</b>。解答すると<b>条文ポイント</b>が表示されます。間違えた問題はその場で<b>解き直し</b>でき、正解するまで繰り返せます。
+    </div>
+    <div class="sec-grid" id="secGrid"></div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" class="hidden">
+    <div class="bar">
+      <button class="back" id="backBtn">← 戻る</button>
+      <div class="progress"><i id="prog"></i></div>
+      <div class="counter" id="counter">1/10</div>
+    </div>
+    <div class="card">
+      <span class="src-tag" id="srcTag">No.</span>
+      <div class="q-text" id="qText"></div>
+      <div class="choices">
+        <button class="choice maru" id="cMaru">○</button>
+        <button class="choice batsu" id="cBatsu">×</button>
+      </div>
+      <div class="result" id="result">
+        <div class="verdict" id="verdict"></div>
+        <div class="ans" id="ansLine"></div>
+        <div class="point" id="pointText"></div>
+      </div>
+    </div>
+    <button class="next" id="nextBtn">次の問題 →</button>
+  </section>
+
+  <!-- SUMMARY -->
+  <section id="summary" class="hidden">
+    <div class="summary">
+      <div class="ring" id="ring"><div class="inner">
+        <div class="pct" id="pct">0%</div><div class="lbl">正答率</div>
+      </div></div>
+      <h2 id="sumTitle">おつかれさまでした</h2>
+      <div class="score" id="sumScore"></div>
+      <div class="acts">
+        <button class="btn-review hidden" id="sumReview"></button>
+        <button class="btn-primary" id="sumRetry">最初から全18問</button>
+        <button class="btn-ghost" id="sumHome">ホームに戻る</button>
+      </div>
+    </div>
+  </section>
+
+  <footer>※ 日建学院 2級建築士 法規 過去問・R7改正予想より作成（個人学習用）</footer>
+</div>
+
+<script>
+/* n:問題番号(ID) / src:出典 / a:正解(true=○正しい,false=×誤り) / q:問題文 / p:ポイント */
+const QUESTIONS = [
+  {n:1, src:"R03-21 問184", a:true,
+   q:"延べ面積200m²、高さ13m、軒の高さ9m、鉄骨造3階建ての事務所は、二級建築士が設計することができる。",
+   p:"木造以外で一級が必要なのは<b>延べ300m²超・高さ13m超・軒高9m超</b>のいずれか（士法3条1項三号）。本問は200m²・13m・9mで<b>いずれも「超えない」</b>ため二級可。"},
+  {n:2, src:"H30-21 問188", a:false,
+   q:"延べ面積400m²、高さ9m、鉄骨造平家建ての建築物（機械製作工場）は、二級建築士が設計することができる。",
+   p:"鉄骨造（木造以外）で<b>延べ300m²超</b>は一級建築士でなければ設計できない（士法3条1項三号）。400m²は該当。"},
+  {n:3, src:"R04-21 問183", a:false,
+   q:"延べ面積800m²、高さ12m、軒の高さ9m、鉄骨造2階建ての建築物は、二級建築士が設計することができる。",
+   p:"鉄骨造で<b>延べ300m²超</b>は一級のみ（士法3条1項三号）。800m²は該当。"},
+  {n:4, src:"R01-22", a:true,
+   q:"鉄筋コンクリート造3階建て、延べ面積100m²、高さ9mの建築物は、二級建築士が設計することができる。",
+   p:"RC造（木造以外）でも<b>延べ300m²以下・高さ13m以下・軒高9m以下</b>なら二級可。100m²・9mは該当。階数3でも規模が小さければOK。"},
+  {n:5, src:"応用", a:false,
+   q:"鉄筋コンクリート造平家建て、延べ面積350m²の建築物は、二級建築士が設計することができる。",
+   p:"木造以外で<b>延べ300m²超</b>は一級のみ。350m²は該当（高さ・軒高がセーフでも面積でアウト）。"},
+  {n:6, src:"境界値", a:true,
+   q:"鉄骨造平家建て、延べ面積300m²、高さ12m、軒の高さ8mの建築物は、二級建築士が設計することができる。",
+   p:"基準は「超える」。<b>300m²ちょうどは「超えない」</b>＝セーフ。高さ・軒高も以下なので二級可。"},
+  {n:7, src:"応用", a:false,
+   q:"鉄骨造平家建て、延べ面積250m²、高さ14mの建築物は、二級建築士が設計することができる。",
+   p:"木造以外で<b>高さ13m超</b>は一級のみ（士法3条1項三号）。面積250m²はセーフでも、14mが高さでアウト。"},
+  {n:8, src:"R02-21 問185", a:false,
+   q:"延べ面積600m²、高さ12m、軒の高さ9m、鉄骨造平家建ての劇場は、二級建築士が設計することができる。",
+   p:"劇場・映画館・公会堂・集会場・学校・病院・百貨店等で<b>延べ500m²超</b>は一級のみ（士法3条1項一号）。600m²は該当。"},
+  {n:9, src:"応用", a:true,
+   q:"木造平家建て、延べ面積480m²の病院は、二級建築士が設計することができる。",
+   p:"特殊用途は<b>500m²超</b>で一級。480m²は超えない。木造で高さ13m・軒高9mも超えなければ二級可。"},
+  {n:10, src:"応用", a:false,
+   q:"鉄筋コンクリート造2階建て、延べ面積400m²の学校は、二級建築士が設計することができる。",
+   p:"用途（学校）は500m²以下でセーフでも、<b>木造以外で延べ300m²超</b>は一級のみ（三号）。構造基準で先にアウト。"},
+  {n:11, src:"応用", a:true,
+   q:"木造2階建て、延べ面積900m²、高さ12m、軒の高さ8mの建築物は、二級建築士が設計することができる。",
+   p:"木造は<b>面積の制限なし</b>。高さ13m・軒高9mを超えず、かつ1,000m²超でないため二級可。"},
+  {n:12, src:"応用", a:false,
+   q:"木造3階建て、高さ14mの建築物は、二級建築士が設計することができる。",
+   p:"木造で<b>高さ13m超</b>は一級のみ（士法3条1項二号）。14mは該当。"},
+  {n:13, src:"応用", a:false,
+   q:"木造平家建て、軒の高さ9.5mの建築物は、二級建築士が設計することができる。",
+   p:"木造で<b>軒高9m超</b>は一級のみ（二号）。9.5mは該当（高さでなく軒高で判定される点に注意）。"},
+  {n:14, src:"応用", a:true,
+   q:"木造2階建て、延べ面積300m²、高さ9mの建築物は、二級建築士が設計することができる。",
+   p:"木造は面積無制限。高さ13m・軒高9mを超えなければ二級可。"},
+  {n:15, src:"応用", a:false,
+   q:"木造2階建て、延べ面積1,200m²、高さ12mの建築物は、二級建築士が設計することができる。",
+   p:"<b>延べ1,000m²超 かつ 階数2以上</b>は構造を問わず一級のみ（士法3条1項四号）。木造でも面積でアウト。"},
+  {n:16, src:"応用", a:true,
+   q:"木造平家建て、延べ面積1,500m²、高さ10mの建築物は、二級建築士が設計することができる。",
+   p:"四号は「1,000m²超 <b>かつ 階数2以上</b>」。<b>平家（階数1）</b>なので非該当。木造で高さ・軒高も以下なら二級可。"},
+  {n:17, src:"予想 R7改正", a:true,
+   q:"令和7年（2025年）の改正により、二級建築士が許容応力度計算により設計できる木造建築物の規模が、階数3以下かつ高さ16m以下に拡大された。",
+   p:"R7改正で二級の<b>簡易な構造計算（許容応力度計算）</b>の対象が「高さ13m以下・軒高9m以下」から<b>「階数3以下かつ高さ16m以下」</b>へ拡大。"},
+  {n:18, src:"境界値", a:false,
+   q:"鉄骨造平家建て、延べ面積301m²の建築物は、二級建築士が設計することができる。",
+   p:"木造以外で<b>300m²を「超える」</b>と一級のみ。<b>301m²はアウト</b>（300m²ちょうどならセーフ）。"}
+];
+
+const STORE_KEY = "nikyu_sekkei_wrong";
+
+/* ── 保存：window.storage → localStorage → memory の三段フォールバック ── */
+let memStore = {};
+async function storeGet(key){
+  try{
+    if(window.storage && window.storage.get){
+      const r = await window.storage.get(key);
+      if(r && r.value!=null) return r.value;
+    }
+  }catch(e){}
+  try{
+    const v = localStorage.getItem(key);
+    if(v!=null) return v;
+  }catch(e){}
+  return memStore[key] ?? null;
+}
+async function storeSet(key,val){
+  try{ if(window.storage && window.storage.set){ await window.storage.set(key,val); } }catch(e){}
+  try{ localStorage.setItem(key,val); }catch(e){}
+  memStore[key]=val;
+}
+
+let pool = [];
+let idx = 0;
+let correctCount = 0;
+let sessionWrong = [];
+
+const el = id => document.getElementById(id);
+const homeSec = el("home"), quizSec = el("quiz"), sumSec = el("summary");
+
+async function getWrongSet(){
+  try{
+    const v = await storeGet(STORE_KEY);
+    if(v) return new Set(JSON.parse(v));
+  }catch(e){}
+  return new Set();
+}
+async function saveWrongSet(set){
+  try{ await storeSet(STORE_KEY, JSON.stringify([...set])); }catch(e){}
+}
+
+async function renderHome(){
+  const grid = el("secGrid");
+  grid.innerHTML = "";
+  const wrongSet = await getWrongSet();
+
+  grid.appendChild(makeSecBtn({
+    name:"全18問に挑戦", meta:"建築確認の要否 ○×トレーニング",
+    count:QUESTIONS.length, cls:"all",
+    onClick:()=>startQuiz(QUESTIONS)
+  }));
+
+  const wrongQs = QUESTIONS.filter(q=>wrongSet.has(q.n));
+  const rev = makeSecBtn({
+    name:"間違い復習", meta:wrongQs.length? "間違えた問題だけ解き直す":"間違いはまだありません",
+    count:wrongQs.length, cls:"review",
+    onClick:()=>startQuiz(wrongQs)
+  });
+  if(!wrongQs.length) rev.disabled = true;
+  grid.appendChild(rev);
+}
+
+function makeSecBtn({name,meta,count,cls,onClick}){
+  const b = document.createElement("button");
+  b.className = "sec-btn "+cls;
+  b.innerHTML = `<span><span class="name">${name}</span><span class="meta">${meta}</span></span>
+                 <span class="count">${count}問</span>`;
+  b.addEventListener("click", onClick);
+  return b;
+}
+
+function startQuiz(set){
+  if(!set.length) return;
+  pool = [...set];
+  idx = 0; correctCount = 0; sessionWrong = [];
+  homeSec.classList.add("hidden");
+  sumSec.classList.add("hidden");
+  quizSec.classList.remove("hidden");
+  showQuestion();
+}
+
+function showQuestion(){
+  const q = pool[idx];
+  el("srcTag").textContent = `${q.src}　【法規】`;
+  el("qText").textContent = q.q;
+  el("counter").textContent = `${idx+1}/${pool.length}`;
+  el("prog").style.width = `${(idx/pool.length)*100}%`;
+
+  const cM = el("cMaru"), cB = el("cBatsu");
+  [cM,cB].forEach(c=>{
+    c.disabled = false;
+    c.classList.remove("sel-correct","sel-wrong","dim");
+  });
+  el("result").className = "result";
+  el("nextBtn").className = "next";
+
+  cM.onclick = ()=>answer(true);
+  cB.onclick = ()=>answer(false);
+}
+
+async function answer(choice){
+  const q = pool[idx];
+  const cM = el("cMaru"), cB = el("cBatsu");
+  cM.disabled = true; cB.disabled = true;
+
+  const isCorrect = (choice === q.a);
+  const chosenEl = choice ? cM : cB;
+  const otherEl  = choice ? cB : cM;
+
+  if(isCorrect){
+    chosenEl.classList.add("sel-correct");
+    otherEl.classList.add("dim");
+    correctCount++;
+  }else{
+    chosenEl.classList.add("sel-wrong");
+    (q.a ? cM : cB).classList.add("sel-correct");
+    sessionWrong.push(q.n);
+  }
+
+  const res = el("result");
+  res.classList.add("show", isCorrect ? "ok":"ng");
+  el("verdict").textContent = isCorrect ? "正解！" : "不正解";
+  el("ansLine").textContent = `正解は「${q.a ? "○（正しい）":"×（誤り）"}」`;
+  el("pointText").innerHTML = `<b>ポイント：</b>${q.p}`;
+
+  el("prog").style.width = `${((idx+1)/pool.length)*100}%`;
+
+  const wrongSet = await getWrongSet();
+  if(isCorrect) wrongSet.delete(q.n);
+  else wrongSet.add(q.n);
+  await saveWrongSet(wrongSet);
+
+  const nb = el("nextBtn");
+  nb.classList.add("show");
+  nb.textContent = (idx+1 < pool.length) ? "次の問題 →" : "結果を見る →";
+  nb.onclick = nextQuestion;
+}
+
+function nextQuestion(){
+  idx++;
+  if(idx < pool.length) showQuestion();
+  else showSummary();
+}
+
+async function showSummary(){
+  quizSec.classList.add("hidden");
+  sumSec.classList.remove("hidden");
+
+  const total = pool.length;
+  const pct = Math.round((correctCount/total)*100);
+  el("pct").textContent = pct+"%";
+  el("ring").style.setProperty("--deg", (pct*3.6)+"deg");
+  el("sumScore").textContent = `${total}問中 ${correctCount}問 正解`;
+
+  const isReviewRound = pool.length < QUESTIONS.length;
+  let title = "おつかれさまでした";
+  if(pct===100) title = isReviewRound ? "間違いをすべてクリア！🎯" : "全問正解！ 完璧です🎯";
+  else if(pct>=80) title = "good! あと少し";
+  else if(pct>=50) title = "復習で固めましょう";
+  else title = "間違いを見直そう";
+  el("sumTitle").textContent = title;
+
+  const wrongQs = pool.filter(q => sessionWrong.includes(q.n));
+  const rb = el("sumReview");
+  if(wrongQs.length){
+    rb.classList.remove("hidden");
+    rb.textContent = `間違えた${wrongQs.length}問を解き直す`;
+    rb.onclick = ()=>startQuiz(wrongQs);
+  }else{
+    rb.classList.add("hidden");
+  }
+
+  el("sumRetry").textContent = "最初から全18問";
+  el("sumRetry").onclick = ()=>startQuiz(QUESTIONS);
+  el("sumHome").onclick = goHome;
+}
+
+function goHome(){
+  quizSec.classList.add("hidden");
+  sumSec.classList.add("hidden");
+  homeSec.classList.remove("hidden");
+  renderHome();
+}
+el("backBtn").addEventListener("click", goHome);
+
+renderHome();
+</script>
+</body>
+</html>
