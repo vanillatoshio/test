@@ -419,6 +419,15 @@ el("chips").innerHTML=CHIPS.map(c=>`<button class="chip" data-q="${esc(c.q)}">${
 el("chips").addEventListener("click",e=>{ const b=e.target.closest(".chip"); if(b){ el("q").value=b.dataset.q; search(); el("q").focus(); } });
 el("q").addEventListener("input", search);
 el("clr").addEventListener("click", ()=>{ el("q").value=""; search(); el("q").focus(); });
+
+// URLの ?q= / #q= で初期検索（赤シート暗記アプリ等からの遷移用）
+(function(){
+  try{
+    var p = new URLSearchParams(location.search).get("q");
+    if(!p && location.hash){ p = decodeURIComponent(location.hash.replace(/^#q?=?/,"")); }
+    if(p){ el("q").value = p; }
+  }catch(e){}
+})();
 loadAll();
 </script>
 </body>
