@@ -95,6 +95,9 @@
   .pick .sub{font-size:12px;color:var(--ink-soft);margin-top:2px;}
   .pick .txt{flex:1;} .pick .arw{font-size:20px;color:var(--ink-soft);}
   .hsec{font-family:var(--mono);font-size:11px;letter-spacing:.15em;color:var(--ink-soft);margin:6px 0 12px;}
+  .star-btn{background:#fff;border:1px solid #d9d6e0;border-radius:999px;padding:5px 12px;font-size:13px;font-weight:700;color:#85889a;cursor:pointer;font-family:inherit;white-space:nowrap;margin-left:8px;}
+  .star-btn:active{transform:scale(.94);}
+  .star-btn.on{background:#fffaf0;border-color:#f0c850;color:#b8860b;}
 </style>
 </head>
 <body>
@@ -111,6 +114,7 @@
 
   <div class="home" id="home">
     <p class="lead">各問の5つの記述から<b>最も不適当なもの</b>を1つ選ぶ5択形式。マル付き7問＋ひっかけ定番3問の<b>10問</b>。間違えた問題はあとで再テストできます。</p>
+    <button class="pick star" id="starHome" style="display:none;" onclick="startStarred()"><span class="rng">★</span><span class="txt"><span class="ttl">気になる問題</span><div class="sub" id="starHomeSub"></div></span><span class="arw">→</span></button>
     <button class="pick retry" id="retryStore" style="display:none;" onclick="startStoredWrong()">
       <span class="rng">復習</span>
       <span class="txt"><span class="ttl">前回までの間違いを再テスト</span><div class="sub" id="retryStoreSub"></div></span>
@@ -128,6 +132,7 @@
     <div class="topbar">
       <span class="topic" id="topic"></span>
       <span class="src" id="src"></span>
+      <button class="star-btn" id="starBtn" type="button">☆ 気になる</button>
     </div>
     <p class="stem" id="stem"></p>
     <p class="prompt">最も不適当なものを1つ選ぶ</p>
@@ -262,6 +267,22 @@ async function loadStored(){
   refreshRetryButton();
 }
 async function saveStored(){ try{ await window.storage.set(STORE_KEY, JSON.stringify(storedWrong)); }catch(e){} }
+
+/* ===== 気になる(★) ===== */
+let starred=[];
+const STAR_KEY="gensen_kozo_star";
+async function loadStarred(){
+  let v=null;
+  try{ if(window.storage&&window.storage.get){const r=await window.storage.get(STAR_KEY); if(r&&r.value!=null)v=r.value;} }catch(e){}
+  if(v==null){ try{ v=localStorage.getItem(STAR_KEY);}catch(e){} }
+  try{ starred=v?JSON.parse(v):[]; }catch(e){ starred=[]; }
+  refreshStarButton();
+}
+async function saveStarred(){ const v=JSON.stringify(starred); try{ if(window.storage&&window.storage.set){await window.storage.set(STAR_KEY,v);} }catch(e){} try{ localStorage.setItem(STAR_KEY,v);}catch(e){} }
+function refreshStarButton(){ const b=document.getElementById("starHome"); if(!b)return; const s=document.getElementById("starHomeSub"); if(starred.length>0){ if(s)s.textContent="★を付けた "+starred.length+" 問だけ集中"; b.style.display="flex"; } else b.style.display="none"; }
+function startStarred(){ startSet(QUESTIONS.filter(q=>starred.includes(q.id))); }
+function setStarIcon(btn,on){ btn.classList.toggle("on",on); btn.textContent=on?"★ 気になる":"☆ 気になる"; }
+async function toggleStar(btn,q){ const i=starred.indexOf(q.id); if(i<0)starred.push(q.id); else starred.splice(i,1); setStarIcon(btn,i<0); await saveStarred(); refreshStarButton(); }
 function refreshRetryButton(){
   const btn=$("retryStore");
   if(storedWrong.length>0){ $("retryStoreSub").textContent="まだ間違いとして残っている "+storedWrong.length+" 問"; btn.style.display="flex"; }
@@ -280,7 +301,7 @@ function startStoredWrong(){ startSet(QUESTIONS.filter(q=>storedWrong.includes(q
 function render(){
   const q=ACTIVE[idx]; locked=false;
   $("topic").textContent=q.topic;
-  $("src").textContent=q.src;
+  $("src").textContent=q.src; const _sb=$("starBtn"); if(_sb){ setStarIcon(_sb, starred.includes(q.id)); _sb.onclick=()=>toggleStar(_sb,q); }
   $("stem").textContent=q.stem;
   $("cur").textContent=idx+1; $("total").textContent=ACTIVE.length; $("hit").textContent=hits;
   $("bar").style.width=((idx)/ACTIVE.length*100)+"%";
@@ -361,13 +382,14 @@ function showResult(){
 }
 
 function retryMisses(){ startSet(misses); }
-function goHome(){
+function goHome(){ refreshStarButton();
   $("result").className="result"; $("main").style.display="none";
   $("hdr").className="compact"; $("home").className="home";
   refreshRetryButton(); window.scrollTo({top:0,behavior:"smooth"});
 }
 
 loadStored();
+loadStarred();
 </script>
 </body>
 </html>

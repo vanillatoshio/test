@@ -140,6 +140,15 @@
 
   .hidden{display:none!important;}
   footer{text-align:center;font-size:11px;color:#b6bccb;margin-top:28px;}
+  .sec-btn.star{background:#fffaf0;border-color:#f0d79a;}
+  .sec-btn.star .name{color:#b8860b;}
+  .sec-btn.star .count{background:#fdeec4;color:#b8860b;}
+  .card-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;}
+  .card-top .src-tag{margin-bottom:0;}
+  .star-btn{background:none;border:1px solid var(--line);border-radius:999px;padding:5px 13px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;font-family:inherit;white-space:nowrap;}
+  .star-btn:active{transform:scale(.94);}
+  .star-btn.on{background:#fffaf0;border-color:#f0c850;color:#b8860b;}
+  .btn-star{background:#fffaf0;color:#b8860b;border:1px solid #f0d79a!important;}
 </style>
 </head>
 <body>
@@ -165,7 +174,10 @@
       <div class="counter" id="counter"></div>
     </div>
     <div class="card">
-      <span class="src-tag" id="srcTag">No.</span>
+      <div class="card-top">
+        <span class="src-tag" id="srcTag">No.</span>
+        <button class="star-btn" id="starBtn">☆ 気になる</button>
+      </div>
       <div class="q-text" id="qText"></div>
       <div class="choices">
         <button class="choice maru" id="cMaru">○</button>
@@ -190,6 +202,7 @@
       <div class="score" id="sumScore"></div>
       <div class="acts">
         <button class="btn-review hidden" id="sumReview"></button>
+        <button class="btn-star hidden" id="sumStar"></button>
         <button class="btn-primary" id="sumRetry"></button>
         <button class="btn-ghost" id="sumHome">ホームに戻る</button>
       </div>
@@ -248,6 +261,24 @@ const QUESTIONS = [
   {n:45, src:"9-2", cat:"その他", a:true, q:"都市計画法上、延べ面積150m²の木造の改築には、県知事の許可は不要である。", p:"都市計画法上、延べ面積150m²の木造の改築 → 県知事の許可は <span class='hl'>不要</span>。"}
 ];
 const STORE_KEY = "houki_note_wrong";
+/* ===== 気になる(★)：自己完結ストレージ ===== */
+const STAR_KEY = "houki_note_star";
+let starState = new Set();
+async function _starGet(){
+  try{ if(window.storage&&window.storage.get){const r=await window.storage.get(STAR_KEY); if(r&&r.value!=null) return r.value;} }catch(e){}
+  try{ const v=localStorage.getItem(STAR_KEY); if(v!=null) return v; }catch(e){}
+  return (window.__starmem&&window.__starmem[STAR_KEY])||null;
+}
+async function _starSet(v){
+  try{ if(window.storage&&window.storage.set){await window.storage.set(STAR_KEY,v);} }catch(e){}
+  try{ localStorage.setItem(STAR_KEY,v); }catch(e){}
+  window.__starmem=window.__starmem||{}; window.__starmem[STAR_KEY]=v;
+}
+async function getStarSet(){ const v=await _starGet(); if(v){try{return new Set(JSON.parse(v));}catch(e){}} return new Set(); }
+async function saveStarSet(set){ await _starSet(JSON.stringify([...set])); }
+function setStarIcon(btn,on){ btn.classList.toggle("on",on); btn.textContent = on?"★ 気になる":"☆ 気になる"; }
+async function toggleStar(btn,q){ const on=!starState.has(q.n); if(on)starState.add(q.n); else starState.delete(q.n); setStarIcon(btn,on); await saveStarSet(starState); }
+
 
 /* ===== 誤答ストレージ：window.storage → localStorage → メモリ の3段フォールバック ===== */
 let memStore = {};
@@ -286,11 +317,17 @@ function makeSecBtn({name,meta,count,cls,onClick}){
 async function renderHome(){
   const grid=el("secGrid"); grid.innerHTML="";
   const wrongSet=await getWrongSet();
+  starState = await getStarSet();
 
   grid.appendChild(makeSecBtn({
     name:`全${QUESTIONS.length}問に挑戦`, meta:"すべての問題をランダム表示",
     count:QUESTIONS.length, cls:"all", onClick:()=>startQuiz(QUESTIONS,true)
   }));
+
+    const _starQs = QUESTIONS.filter(q=>starState.has(q.n));
+  const _st = makeSecBtn({ name:"気になる問題", meta:_starQs.length?"★を付けた問題だけ集中して解く":"問題カードの「☆ 気になる」で登録", count:_starQs.length, cls:"star", onClick:()=>startQuiz(_starQs,true) });
+  if(!_starQs.length) _st.disabled = true;
+  grid.appendChild(_st);
 
   const wrongQs=QUESTIONS.filter(q=>wrongSet.has(q.n));
   const rev=makeSecBtn({
@@ -332,6 +369,7 @@ function showQuestion(){
   const cM=el("cMaru"), cB=el("cBatsu");
   [cM,cB].forEach(x=>{x.disabled=false;x.classList.remove("sel-correct","sel-wrong","dim");});
   el("result").className="result"; el("nextBtn").className="next";
+  const _sb=el("starBtn"); setStarIcon(_sb, starState.has(q.n)); _sb.onclick=()=>toggleStar(_sb,q);
   cM.onclick=()=>answer(true); cB.onclick=()=>answer(false);
 }
 
@@ -375,6 +413,8 @@ function showSummary(){
   const rb=el("sumReview");
   if(wrongQs.length){ rb.classList.remove("hidden"); rb.textContent=`間違えた${wrongQs.length}問を解き直す`; rb.onclick=()=>startQuiz(wrongQs,true); }
   else rb.classList.add("hidden");
+  const _stb=el("sumStar"); const _starS=QUESTIONS.filter(q=>starState.has(q.n));
+  if(_starS.length){ _stb.classList.remove("hidden"); _stb.textContent=`★ 気になる${_starS.length}問を解く`; _stb.onclick=()=>startQuiz(_starS,true); } else { _stb.classList.add("hidden"); }
   el("sumRetry").textContent=`最初から全${QUESTIONS.length}問`;
   el("sumRetry").onclick=()=>startQuiz(QUESTIONS,true);
   el("sumHome").onclick=goHome;

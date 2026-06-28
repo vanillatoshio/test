@@ -100,6 +100,10 @@
   .pick .txt{flex:1;} .pick .arw{font-size:20px;color:var(--ink-soft);}
   .hsec{font-family:var(--mono);font-size:11px;letter-spacing:.15em;color:var(--ink-soft);margin:6px 0 12px;}
   .pending{font-size:12px;color:var(--ink-soft);border:1px dashed var(--line);border-radius:12px;padding:12px 14px;margin-top:4px;line-height:1.7;}
+  .star-btn{background:#fff;border:1px solid #d9d6e0;border-radius:999px;padding:5px 12px;font-size:13px;font-weight:700;color:#85889a;cursor:pointer;font-family:inherit;white-space:nowrap;margin-left:auto;}
+  .star-btn:active{transform:scale(.94);}
+  .star-btn.on{background:#fffaf0;border-color:#f0c850;color:#b8860b;}
+  .pick.star .rng{color:#b8860b;}
 </style>
 </head>
 <body>
@@ -116,6 +120,7 @@
 
   <div class="home" id="home">
     <p class="lead">厳選問題〔D〕の各肢をバラした〇✕形式。記述が<b>正しければ ①適当</b>、<b>誤っていれば ②不適当</b>を選びます。間違えた問題は記録され、<b>あとから間違いだけ再テスト</b>できます。</p>
+    <button class="pick star" id="starHome" style="display:none;" onclick="startStarred()"><span class="rng">★</span><span class="txt"><span class="ttl">気になる問題</span><div class="sub" id="starHomeSub"></div></span><span class="arw">→</span></button>
     <button class="pick retry" id="retryStore" style="display:none;" onclick="startStoredWrong()">
       <span class="rng">復習</span>
       <span class="txt"><span class="ttl">前回までの間違いを再テスト</span><div class="sub" id="retryStoreSub"></div></span>
@@ -131,6 +136,7 @@
     <div class="qhead">
       <span class="qno" id="qno"></span>
       <span class="qsrc" id="qsrc"></span>
+      <button class="star-btn" id="starBtn" type="button">☆ 気になる</button>
     </div>
     <p class="stmt" id="stmt"></p>
     <p class="prompt">記述が正しければ ① 、誤っていれば ② を選ぶ</p>
@@ -449,6 +455,31 @@ const QUESTIONS = [
 let idx=0, hits=0, locked=false;
 let ACTIVE=[]; let misses=[]; let storedWrong=[];
 const STORE_KEY="gensen_d_wrong";
+/* ===== 気になる(★) ===== */
+let starred=[];
+const STAR_KEY="gensen_d_star";
+async function loadStarred(){
+  let v=null;
+  try{ if(window.storage&&window.storage.get){const r=await window.storage.get(STAR_KEY); if(r&&r.value!=null)v=r.value;} }catch(e){}
+  if(v==null){ try{ v=localStorage.getItem(STAR_KEY);}catch(e){} }
+  try{ starred=v?JSON.parse(v):[]; }catch(e){ starred=[]; }
+  refreshStarButton();
+}
+async function saveStarred(){
+  const v=JSON.stringify(starred);
+  try{ if(window.storage&&window.storage.set){await window.storage.set(STAR_KEY,v);} }catch(e){}
+  try{ localStorage.setItem(STAR_KEY,v);}catch(e){}
+}
+function refreshStarButton(){
+  const b=document.getElementById("starHome"); if(!b) return;
+  const sub=document.getElementById("starHomeSub");
+  if(starred.length>0){ if(sub) sub.textContent="★を付けた "+starred.length+" 問だけ集中"; b.style.display="flex"; }
+  else b.style.display="none";
+}
+function startStarred(){ startSet(QUESTIONS.filter(q=>starred.includes(q.n))); }
+function setStarIcon(btn,on){ btn.classList.toggle("on",on); btn.textContent=on?"★ 気になる":"☆ 気になる"; }
+async function toggleStar(btn,q){ const i=starred.indexOf(q.n); if(i<0)starred.push(q.n); else starred.splice(i,1); setStarIcon(btn,i<0); await saveStarred(); refreshStarButton(); }
+
 const $=id=>document.getElementById(id);
 
 async function loadStored(){
@@ -503,7 +534,7 @@ function startStoredWrong(){ startSet(QUESTIONS.filter(q=>storedWrong.includes(q
 
 function render(){
   const q=ACTIVE[idx]; locked=false;
-  $("sec").textContent=q.sec; $("qno").textContent="問"+q.n; $("qsrc").textContent=q.src; $("stmt").textContent=q.q;
+  $("sec").textContent=q.sec; const _sb=$("starBtn"); if(_sb){ setStarIcon(_sb, starred.includes(q.n)); _sb.onclick=()=>toggleStar(_sb,q); } $("qno").textContent="問"+q.n; $("qsrc").textContent=q.src; $("stmt").textContent=q.q;
   $("cur").textContent=idx+1; $("total").textContent=ACTIVE.length; $("hit").textContent=hits;
   $("bar").style.width=((idx)/ACTIVE.length*100)+"%";
   ["b1","b2"].forEach(id=>{const b=$(id);b.disabled=false;b.className="bubble";});
@@ -565,7 +596,7 @@ function showResult(){
 }
 
 function retryMisses(){ startSet(misses); }
-function goHome(){
+function goHome(){ refreshStarButton();
   $("result").className="result"; $("main").style.display="none";
   $("hdr").className="compact"; $("home").className="home";
   refreshRetryButton(); window.scrollTo({top:0,behavior:"smooth"});
@@ -573,6 +604,7 @@ function goHome(){
 
 buildHome();
 loadStored();
+loadStarred();
 </script>
 </body>
 </html>

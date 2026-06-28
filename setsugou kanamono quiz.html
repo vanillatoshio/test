@@ -67,6 +67,10 @@
   .rev-item .t em.d{display:block;margin-top:3px;color:#555;font-size:11px;line-height:1.45;}
   .hint{font-size:11.5px;color:var(--muted);text-align:center;margin-top:18px;line-height:1.5;}
   .hide{display:none}
+  .star-btn{display:inline-block;background:#fff;border:1px solid #d9d6e0;border-radius:999px;padding:5px 13px;font-size:13px;font-weight:700;color:#85889a;cursor:pointer;font-family:inherit;white-space:nowrap;margin:8px 0;}
+  .star-btn:active{transform:scale(.94);}
+  .star-btn.on{background:#fffaf0;border-color:#f0c850;color:#b8860b;}
+  #starOnly{color:#b8860b;}
 </style>
 </head>
 <body>
@@ -77,6 +81,7 @@
   <div id="quiz">
     <div class="card">
       <div class="imgbox" id="imgbox"></div>
+      <button class="star-btn" id="starToggle" type="button">☆ 気になる</button>
       <div id="s1">
         <div class="stagelabel">&#9312; この金物の名前は？（正解するまで何度でも）</div>
         <div class="namegrid" id="nameChoices"></div>
@@ -95,6 +100,7 @@
       <div class="score"><div><b id="ns">0</b><span>名前 / <span id="nd">15</span></span></div><div><b id="us">0</b><span>用途 / <span id="ud">15</span></span></div></div>
       <button class="btn" id="again">もう一度（出題シャッフル）</button>
       <button class="btn ghost" id="wrongOnly">間違えた金物だけ復習</button>
+      <button class="btn ghost" id="starOnly">★ 気になる金物だけ</button>
     </div>
     <div class="review" id="review"></div>
   </div>
@@ -167,6 +173,12 @@ const USEIMG = {
 };
 const $ = id => document.getElementById(id);
 let order=[], idx=0, nameScore=0, useScore=0, results=[];
+/* ===== 気になる(★) ===== */
+let starred=[]; const STAR_KEY="setsugou_kanamono_star";
+async function _sgGet(){let v=null;try{if(window.storage&&window.storage.get){const r=await window.storage.get(STAR_KEY);if(r&&r.value!=null)v=r.value;}}catch(e){} if(v==null){try{v=localStorage.getItem(STAR_KEY);}catch(e){}} try{starred=v?JSON.parse(v):[];}catch(e){starred=[];}}
+async function _sgSet(){const v=JSON.stringify(starred);try{if(window.storage&&window.storage.set){await window.storage.set(STAR_KEY,v);}}catch(e){} try{localStorage.setItem(STAR_KEY,v);}catch(e){}}
+function setStarIcon(btn,on){btn.classList.toggle('on',on);btn.textContent=on?'\u2605 気になる':'\u2606 気になる';}
+async function toggleStar(btn,it){const i=starred.indexOf(it.id);if(i<0)starred.push(it.id);else starred.splice(i,1);setStarIcon(btn,i<0);await _sgSet();}
 let nameSolved=false, useSolved=false, nameMiss=false, useMiss=false;
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=(Math.random()*(i+1))|0;[a[i],a[j]]=[a[j],a[i]];}return a;}
 function start(pool){order=shuffle(pool&&pool.length?pool:ITEMS.map((_,i)=>i));idx=0;nameScore=0;useScore=0;results=[];$('result').classList.add('hide');$('quiz').classList.remove('hide');render();}
@@ -175,7 +187,7 @@ function render(){
   nameSolved=false;useSolved=false;nameMiss=false;useMiss=false;
   $('count').textContent=(idx+1)+' / '+order.length;
   $('prog').style.width=(idx/order.length*100)+'%';$('live').textContent='';
-  $('imgbox').innerHTML='<img src="'+it.img+'" alt="金物の図">';
+  $('imgbox').innerHTML='<img src="'+it.img+'" alt="金物の図">';const _st=$('starToggle'); if(_st){ setStarIcon(_st, starred.includes(it.id)); _st.onclick=()=>toggleStar(_st,it); }
   $('fb').innerHTML='';$('fb').className='';
   $('actBtn').classList.add('hide');
   $('s2').classList.add('hide');
@@ -228,7 +240,8 @@ function finish(){
 }
 $('again').onclick=()=>start();
 $('wrongOnly').onclick=()=>{const ids=results.filter(r=>!(r.nameOK&&r.useOK)).map(r=>r.id);const pool=ITEMS.map((it,i)=>ids.includes(it.id)?i:-1).filter(i=>i>=0);start(pool.length?pool:null);};
-start();
+$('starOnly').onclick=()=>{const pool=ITEMS.map((it,i)=>starred.includes(it.id)?i:-1).filter(i=>i>=0); if(pool.length) start(pool);};
+_sgGet().then(()=>start());
 </script>
 </body>
 </html>

@@ -67,6 +67,10 @@ svg.ring{transform:rotate(-90deg)}
 .score-sub{text-align:center;color:var(--sub);font-size:.85rem;margin-bottom:8px}
 .note{font-size:.78rem;color:var(--sub);text-align:center;margin-top:14px;line-height:1.6}
 .hide{display:none}
+  .star-btn{display:inline-block;background:#fff;border:1px solid #d9d6e0;border-radius:999px;padding:5px 12px;font-size:.8rem;font-weight:700;color:#85889a;cursor:pointer;font-family:inherit;white-space:nowrap;margin-top:6px;}
+  .star-btn:active{transform:scale(.94);}
+  .star-btn.on{background:#fffaf0;border-color:#f0c850;color:#b8860b;}
+  #starHomeBtn{color:#b8860b;}
 </style>
 </head>
 <body>
@@ -89,6 +93,7 @@ svg.ring{transform:rotate(-90deg)}
     <div class="card" style="margin-top:14px">
       <button class="btn primary" id="startAllBtn">全<span id="totalN"></span>問に挑戦</button>
       <button class="btn sub" id="wrongBtn">間違い復習（<span id="wrongN">0</span>問）</button>
+      <button class="btn sub" id="starHomeBtn">★ 気になる（<span id="starHomeN">0</span>問）</button>
     </div>
     <div class="card" style="margin-top:14px" id="catBox">
       <div style="font-weight:700;font-size:.9rem;margin-bottom:8px;color:var(--sub)">分野別</div>
@@ -105,6 +110,7 @@ svg.ring{transform:rotate(-90deg)}
     <div class="card">
       <div class="srclabel" id="src"></div>
       <span class="cat-tag" id="catTag"></span>
+      <button class="star-btn" id="starToggle" type="button">☆ 気になる</button>
       <div class="q" id="qtext"></div>
       <div class="ox" id="oxBtns">
         <button class="maru" id="btnMaru">○</button>
@@ -166,6 +172,15 @@ const QUESTIONS = [
 
 const CAT_ORDER = ["3つの式・数値","用語・ルール","計算例"];
 const STORE_KEY = "saikou_hosei_wrong";
+/* ===== 気になる(★) ===== */
+let starState=[];
+const STAR_KEY="saikou_hosei_star";
+async function getStar(){ const raw=await storeGet(STAR_KEY); try{ return raw?JSON.parse(raw):[]; }catch(e){ return []; } }
+async function setStar(arr){ await storeSet(STAR_KEY, JSON.stringify([...new Set(arr)])); }
+function setStarIcon(btn,on){ btn.classList.toggle("on",on); btn.textContent=on?"★ 気になる":"☆ 気になる"; }
+async function toggleStar(btn,q){ const i=starState.indexOf(q.n); if(i<0)starState.push(q.n); else starState.splice(i,1); setStarIcon(btn,i<0); await setStar(starState); }
+function startStarred(){ if(!starState.length) return; mode="star"; queue=QUESTIONS.filter(q=>starState.includes(q.n)); idx=0; correct=0; wrongThisRun=[]; show("quiz"); render(); }
+
 const CHUNK = 20;
 
 let memStore = {};
@@ -197,7 +212,7 @@ async function initHome(){
   el("totalN").textContent=QUESTIONS.length;
   const w=await getWrong();
   el("wrongN").textContent=w.length;
-  el("wrongBtn").disabled=w.length===0;
+  el("wrongBtn").disabled=w.length===0; starState=await getStar(); el("starHomeN").textContent=starState.length; el("starHomeBtn").disabled=starState.length===0;
   const present=CAT_ORDER.filter(c=>QUESTIONS.some(q=>q.cat===c));
   el("catList").innerHTML="";
   present.forEach(c=>{
@@ -236,7 +251,7 @@ function render(){
   el("barFill").style.width=((idx)/queue.length*100)+"%";
   el("src").textContent=q.src;
   el("catTag").textContent=q.cat;
-  el("qtext").textContent=q.q;
+  el("qtext").textContent=q.q; const _st=el("starToggle"); if(_st){ setStarIcon(_st, starState.includes(q.n)); _st.onclick=()=>toggleStar(_st,q); }
   el("judge").className="judge";
   el("oxBtns").style.display="flex";
   [...el("oxBtns").children].forEach(b=>b.disabled=false);
@@ -285,6 +300,7 @@ function goHome(){ initHome(); }
 
 document.getElementById("startAllBtn").addEventListener("click",()=>start("all"));
 document.getElementById("wrongBtn").addEventListener("click",()=>start("wrong"));
+document.getElementById("starHomeBtn").addEventListener("click",startStarred);
 document.getElementById("btnMaru").addEventListener("click",()=>answer(true));
 document.getElementById("btnBatsu").addEventListener("click",()=>answer(false));
 document.getElementById("nextBtn").addEventListener("click",next);
