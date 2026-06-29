@@ -365,9 +365,10 @@ async function renderHome(){
   const wrongSet=await getWrongSet();
   starState=await getStarSet();
 
+  const RUN=Math.min(MAX_PER_RUN,QUESTIONS.length);
   grid.appendChild(makeSecBtn({
-    name:`全${QUESTIONS.length}問に挑戦`, meta:"すべての問題をランダム表示",
-    count:QUESTIONS.length, cls:"all", onClick:()=>startQuiz(QUESTIONS,true)
+    name:`ランダム${RUN}問に挑戦`, meta:`全${QUESTIONS.length}問からランダムで${RUN}問`,
+    count:RUN, cls:"all", onClick:()=>startQuiz(QUESTIONS,true,MAX_PER_RUN)
   }));
 
   const starQs=QUESTIONS.filter(q=>starState.has(q.n));
@@ -386,6 +387,22 @@ async function renderHome(){
   if(!wrongQs.length) rev.disabled=true;
   grid.appendChild(rev);
 
+  /* セットで解く（20問ずつ） */
+  if(QUESTIONS.length>MAX_PER_RUN){
+    const sh=document.createElement("div"); sh.className="cat-head"; sh.textContent=`セットで解く（${MAX_PER_RUN}問ずつ）`;
+    grid.appendChild(sh);
+    let k=1;
+    for(let i=0;i<QUESTIONS.length;i+=MAX_PER_RUN){
+      const setQs=QUESTIONS.slice(i,i+MAX_PER_RUN);
+      const s=i+1, e=i+setQs.length;
+      grid.appendChild(makeSecBtn({
+        name:`第${k}セット（No.${s}–${e}）`, meta:"出題順に解く",
+        count:setQs.length, cls:"", onClick:()=>startQuiz(setQs,false)
+      }));
+      k++;
+    }
+  }
+
   /* 分野別（カテゴリがある場合のみ） */
   const cats=[...new Set(QUESTIONS.map(catOf).filter(Boolean))];
   if(cats.length>1){
@@ -400,9 +417,11 @@ async function renderHome(){
 
 function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 
-function startQuiz(set,doShuffle){
+const MAX_PER_RUN=20;
+function startQuiz(set,doShuffle,limit){
   if(!set.length) return;
   pool=doShuffle?shuffle(set):[...set];
+  if(limit&&pool.length>limit) pool=pool.slice(0,limit);
   idx=0; correctCount=0; sessionWrong=[];
   homeSec.classList.add("hidden"); sumSec.classList.add("hidden");
   quizSec.classList.remove("hidden"); showQuestion();
@@ -465,8 +484,8 @@ function showSummary(){
   const stb=el("sumStar"); const starQs=QUESTIONS.filter(q=>starState.has(q.n));
   if(starQs.length){ stb.classList.remove("hidden"); stb.textContent=`★ 気になる${starQs.length}問を解く`; stb.onclick=()=>startQuiz(starQs,true); }
   else stb.classList.add("hidden");
-  el("sumRetry").textContent=`最初から全${QUESTIONS.length}問`;
-  el("sumRetry").onclick=()=>startQuiz(QUESTIONS,true);
+  el("sumRetry").textContent=`ランダム${Math.min(MAX_PER_RUN,QUESTIONS.length)}問をもう一度`;
+  el("sumRetry").onclick=()=>startQuiz(QUESTIONS,true,MAX_PER_RUN);
   el("sumHome").onclick=goHome;
 }
 
