@@ -3,9 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark">
 <title>2級建築士 学習アプリ メニュー</title>
 <style>
   :root{
+    color-scheme:light dark;
     --accent:#5a51a0;
     --accent-bg:#f0eef9;
     --ink:#2a2733;
@@ -107,7 +110,32 @@
   .meta .arw{color:var(--muted);font-size:18px;font-weight:700;}
 
   footer{text-align:center;font-size:11.5px;color:#9a96aa;margin-top:26px;line-height:1.8;}
+  /* シリーズ番号：丸囲み数字を読みやすい太字数字に（タイトル系のみ） */
+  .cnum{
+    font-weight:900;font-size:1.02em;margin:0 .05em;
+    font-feature-settings:"tnum";letter-spacing:0;
+  }
   footer b{color:var(--accent);}
+
+  /* ダークモード対応（iOS等でダーク時に文字が沈まないように） */
+  @media (prefers-color-scheme: dark){
+    :root{
+      --accent:#b3a7f7;      /* テキスト用に明るい紫 */
+      --accent-bg:#2c2647;
+      --ink:#ecebf4;         /* 見出し・本文＝明るく */
+      --muted:#a8a3ba;
+      --line:#332f42;
+      --card:#1f1d28;
+      --bg:#131218;
+      --houki:#e6a93a;       /* 暗背景で映えるよう少し明るく */
+      --keikaku:#38b57e;
+      --sekou:#e26a66;
+      --gensen:#6f8fe0;
+    }
+    .lead{color:#cbc7d9;}                 /* 白箱→暗箱の本文を明るく */
+    .search-link{background:#4a4390;}      /* ボタンは中間紫（白文字が読める） */
+    header.top h1{color:var(--ink);}       /* タイトルをはっきり */
+  }
 </style>
 </head>
 <body>
@@ -584,5 +612,33 @@
     「間違い復習 / 前回までの間違いを再テスト」で復習できます。
   </footer>
 </div>
+<script>
+(function(){
+  var MAP={'①':1,'②':2,'③':3,'④':4,'⑤':5,'⑥':6,'⑦':7,'⑧':8,'⑨':9,'⑩':10,
+           '⑪':11,'⑫':12,'⑬':13,'⑭':14,'⑮':15,'⑯':16,'⑰':17,'⑱':18,'⑲':19,'⑳':20};
+  var RE=/[①-⑳]/;
+  function conv(el){
+    // 直下のテキストノードだけ処理
+    var nodes=Array.prototype.slice.call(el.childNodes);
+    nodes.forEach(function(n){
+      if(n.nodeType===3){ // text
+        if(!RE.test(n.nodeValue)) return;
+        var frag=document.createDocumentFragment();
+        n.nodeValue.split('').forEach(function(ch){
+          if(MAP[ch]){
+            var s=document.createElement('span');
+            s.className='cnum'; s.textContent=MAP[ch];
+            frag.appendChild(s);
+          }else{
+            frag.appendChild(document.createTextNode(ch));
+          }
+        });
+        n.parentNode.replaceChild(frag,n);
+      }
+    });
+  }
+  document.querySelectorAll('.ttl, .name, .divider').forEach(conv);
+})();
+</script>
 </body>
 </html>
