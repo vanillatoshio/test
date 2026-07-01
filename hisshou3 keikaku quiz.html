@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>必勝テスト③ 計画 ○×トレーナー</title>
+<style>
+  :root{
+    --accent:#2f8f5b;
+    --accent-light:#5bbf85;
+    --accent-bg:#e3f3ea;
+    --maru:#2e9e6b;
+    --batsu:#d9534f;
+    --ink:#22302a;
+    --muted:#7e8c84;
+    --line:#d8ebdf;
+    --card:#ffffff;
+    --bg:#f5faf6;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+    background:var(--bg);color:var(--ink);
+    line-height:1.7;-webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:560px;margin:0 auto;padding:16px 16px 48px;}
+
+  header.top{text-align:center;padding:24px 0 8px;}
+  header.top .eyebrow{font-size:12px;letter-spacing:.18em;color:var(--accent);font-weight:700;}
+  header.top h1{font-size:21px;margin:6px 0 2px;font-weight:800;}
+  header.top .sub{font-size:13px;color:var(--muted);}
+
+  .home-intro{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:16px 18px;margin:16px 0;font-size:13.5px;color:#5b5443;
+  }
+  .home-intro b{color:var(--accent);}
+
+  /* まとめ軸テーブル */
+  .matome{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:16px 16px 18px;margin:16px 0;
+  }
+  .matome h2{font-size:15px;margin:0 0 4px;color:var(--accent);font-weight:800;}
+  .matome .lead{font-size:12px;color:var(--muted);margin:0 0 12px;}
+  table.axis{width:100%;border-collapse:collapse;font-size:12.5px;}
+  table.axis th,table.axis td{
+    border:1px solid var(--line);padding:8px 8px;text-align:left;vertical-align:top;
+  }
+  table.axis thead th{
+    background:var(--accent-bg);color:var(--accent);font-weight:800;font-size:12px;text-align:center;
+  }
+  table.axis td.zone{font-weight:800;white-space:nowrap;text-align:center;background:#f0f8f3;}
+  table.axis td.need{font-weight:700;}
+  table.axis td.need .hl{color:var(--accent);}
+  .matome .foot{font-size:11.5px;color:var(--muted);margin-top:10px;line-height:1.65;}
+  .matome .foot b{color:var(--ink);}
+
+  .sec-grid{display:flex;flex-direction:column;gap:12px;margin-top:8px;}
+  .sec-btn{
+    display:flex;align-items:center;justify-content:space-between;
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:18px 20px;cursor:pointer;transition:.15s;text-align:left;width:100%;
+    font-family:inherit;color:inherit;
+  }
+  .sec-btn:active{transform:scale(.98);}
+  .sec-btn .name{font-size:17px;font-weight:700;}
+  .sec-btn .meta{font-size:12px;color:var(--muted);margin-top:2px;}
+  .sec-btn .count{
+    background:var(--accent-bg);color:var(--accent);font-weight:700;
+    border-radius:999px;padding:4px 12px;font-size:13px;white-space:nowrap;
+  }
+  .sec-btn.all{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .sec-btn.all .meta{color:#f0e2c4;}
+  .sec-btn.all .count{background:rgba(255,255,255,.22);color:#fff;}
+  .sec-btn.review{background:#fff7f6;border-color:#f3d6d4;}
+  .sec-btn.review .name{color:var(--batsu);}
+  .sec-btn.review .count{background:#fae3e2;color:var(--batsu);}
+  .sec-btn:disabled{opacity:.45;cursor:default;}
+
+  .bar{display:flex;align-items:center;gap:12px;margin:8px 0 14px;}
+  .back{
+    background:none;border:none;color:var(--accent);font-size:15px;font-weight:700;
+    cursor:pointer;font-family:inherit;padding:6px 0;
+  }
+  .progress{flex:1;height:8px;background:var(--line);border-radius:999px;overflow:hidden;}
+  .progress > i{display:block;height:100%;background:var(--accent);width:0;transition:.3s;}
+  .counter{font-size:13px;color:var(--muted);font-weight:700;white-space:nowrap;}
+
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:20px;
+    padding:22px 20px;box-shadow:0 6px 20px rgba(40,120,70,.06);
+  }
+  .src-tag{
+    display:inline-block;background:var(--accent-bg);color:var(--accent);
+    font-size:12px;font-weight:700;border-radius:8px;padding:3px 10px;margin-bottom:14px;
+  }
+  .q-text{font-size:17px;line-height:1.85;font-weight:500;}
+
+  .choices{display:flex;gap:14px;margin-top:22px;}
+  .choice{
+    flex:1;border:2px solid var(--line);background:var(--card);border-radius:16px;
+    padding:18px 0;font-size:30px;font-weight:800;cursor:pointer;font-family:inherit;
+    transition:.12s;color:var(--ink);
+  }
+  .choice:active{transform:scale(.96);}
+  .choice.maru{color:var(--maru);}
+  .choice.batsu{color:var(--batsu);}
+  .choice:disabled{cursor:default;}
+  .choice.sel-correct{border-color:var(--maru);background:#eef9f3;}
+  .choice.sel-wrong{border-color:var(--batsu);background:#fdeeed;}
+  .choice.dim{opacity:.35;}
+
+  .result{margin-top:18px;border-radius:16px;padding:16px 18px;display:none;}
+  .result.show{display:block;animation:fade .25s;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  .result.ok{background:#eef9f3;border:1px solid #bfe6d2;}
+  .result.ng{background:#fdeeed;border:1px solid #f3cecb;}
+  .result .verdict{font-weight:800;font-size:15px;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+  .result.ok .verdict{color:var(--maru);}
+  .result.ng .verdict{color:var(--batsu);}
+  .result .ans{font-size:13px;color:var(--muted);font-weight:700;}
+  .result .point{font-size:14.5px;line-height:1.8;margin-top:8px;color:#39342b;}
+  .result .point b{color:var(--accent);}
+
+  .next{
+    width:100%;margin-top:16px;background:var(--accent);color:#fff;border:none;
+    border-radius:14px;padding:16px;font-size:16px;font-weight:800;cursor:pointer;
+    font-family:inherit;display:none;
+  }
+  .next.show{display:block;}
+  .next:active{transform:scale(.98);}
+
+  .summary{text-align:center;padding-top:10px;}
+  .summary .ring{
+    width:150px;height:150px;border-radius:50%;margin:18px auto;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:conic-gradient(var(--accent) var(--deg,0deg),var(--line) 0);
+  }
+  .summary .ring .inner{
+    width:122px;height:122px;border-radius:50%;background:var(--card);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+  }
+  .summary .ring .pct{font-size:34px;font-weight:800;color:var(--accent);}
+  .summary .ring .lbl{font-size:12px;color:var(--muted);}
+  .summary h2{font-size:20px;margin:6px 0;}
+  .summary .score{font-size:15px;color:var(--muted);margin-bottom:18px;}
+  .summary .acts{display:flex;flex-direction:column;gap:10px;}
+  .summary .acts button{
+    border-radius:14px;padding:15px;font-size:15px;font-weight:800;cursor:pointer;
+    font-family:inherit;border:none;
+  }
+  .btn-primary{background:var(--accent);color:#fff;}
+  .btn-ghost{background:var(--card);color:var(--accent);border:1px solid var(--line)!important;}
+  .btn-review{background:#fff7f6;color:var(--batsu);border:1px solid #f3d6d4!important;}
+
+  .hidden{display:none!important;}
+  footer{text-align:center;font-size:11px;color:#c3b89c;margin-top:28px;}
+  .sec-btn.star{background:#fffaf0;border-color:#f0d79a;}
+  .sec-btn.star .name{color:#b8860b;}
+  .sec-btn.star .count{background:#fdeec4;color:#b8860b;}
+  .card-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;}
+  .card-top .src-tag{margin-bottom:0;}
+  .star-btn{background:none;border:1px solid var(--line);border-radius:999px;padding:5px 13px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;font-family:inherit;white-space:nowrap;}
+  .star-btn:active{transform:scale(.94);}
+  .star-btn.on{background:#fffaf0;border-color:#f0c850;color:#b8860b;}
+  .btn-star{background:#fffaf0;color:#b8860b;border:1px solid #f0d79a!important;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HOME -->
+  <section id="home">
+    <header class="top">
+      <div class="eyebrow">2級建築士 計画 ／ 必勝テスト③</div>
+      <h1>必勝テスト③ 計画</h1>
+      <div class="sub">歴史・環境工学・湿り空気・日照日射採光・環境負荷・集合住宅・設備 ／ 全12問</div>
+    </header>
+
+    <div class="home-intro">
+      日建学院 必勝テスト③（建築計画）のピンクマーク枝を <b>○×形式</b> で出題します（全12問）。<br>
+      <b>○＝適当 ／ ×＝不適当</b>。解答すると<b>ポイント解説</b>が表示されます。分野別・気になる(★)・間違い復習に対応。
+    </div>
+    <div class="sec-grid" id="secGrid"></div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" class="hidden">
+    <div class="bar">
+      <button class="back" id="backBtn">← 戻る</button>
+      <div class="progress"><i id="prog"></i></div>
+      <div class="counter" id="counter">1/12</div>
+    </div>
+    <div class="card">
+      <div class="card-top">
+        <span class="src-tag" id="srcTag">No.</span>
+        <button class="star-btn" id="starBtn">☆ 気になる</button>
+      </div>
+      <div class="q-text" id="qText"></div>
+      <div class="choices">
+        <button class="choice maru" id="cMaru">○</button>
+        <button class="choice batsu" id="cBatsu">×</button>
+      </div>
+      <div class="result" id="result">
+        <div class="verdict" id="verdict"></div>
+        <div class="ans" id="ansLine"></div>
+        <div class="point" id="pointText"></div>
+      </div>
+    </div>
+    <button class="next" id="nextBtn">次の問題 →</button>
+  </section>
+
+  <!-- SUMMARY -->
+  <section id="summary" class="hidden">
+    <div class="summary">
+      <div class="ring" id="ring"><div class="inner">
+        <div class="pct" id="pct">0%</div><div class="lbl">正答率</div>
+      </div></div>
+      <h2 id="sumTitle">おつかれさまでした</h2>
+      <div class="score" id="sumScore"></div>
+      <div class="acts">
+        <button class="btn-review hidden" id="sumReview"></button>
+        <button class="btn-star hidden" id="sumStar"></button>
+        <button class="btn-primary" id="sumRetry">最初から全12問</button>
+        <button class="btn-ghost" id="sumHome">ホームに戻る</button>
+      </div>
+    </div>
+  </section>
+
+  <footer>※ 日建学院 2級建築士 必勝テスト③（建築計画）より作成（個人学習用）</footer>
+</div>
+
+<script>
+/* n:問題番号(ID) / src:出典 / a:正解(true=○正しい,false=×誤り) / q:問題文 / p:ポイント */
+const QUESTIONS = [
+  {n:1, src:"必勝③ 計画 問1-枝1", cat:"歴史", a:false,
+   q:"桂離宮（京都府）は、書院造りの先駆けであり、四室のうちの一室は同仁斎といわれ、四畳半茶室の最初と伝えられている建築物である。",
+   p:"不適当。<b>同仁斎</b>（四畳半茶室の最初とされる）は<b>慈照寺東求堂（銀閣寺）</b>の一室。桂離宮は<b>数寄屋造り</b>の代表で、書院造りの先駆けは東求堂。"},
+  {n:2, src:"必勝③ 計画 問2-枝4", cat:"環境工学", a:true,
+   q:"二酸化炭素は、無色、無臭で空気より重い。",
+   p:"適当。CO₂は無色・無臭の気体で、分子量44は空気（約29）より大きく<b>空気より重い</b>。"},
+  {n:3, src:"必勝③ 計画 問2-枝5", cat:"環境工学", a:false,
+   q:"大気放射は、日射のうち、大気により吸収、散乱される部分を除き、地表面に直接到達する日射である。",
+   p:"不適当。これは<b>直達日射</b>の説明。<b>大気放射</b>は、大気中の水蒸気・CO₂・雲などから放射される<b>長波放射</b>のこと。"},
+  {n:4, src:"必勝③ 計画 問3-枝2", cat:"湿り空気", a:true,
+   q:"乾球温度が同じであれば、乾球温度と湿球温度との差が大きいほど、相対湿度は低くなる。",
+   p:"適当。乾球と湿球の<b>温度差が大きい＝乾燥</b>している状態で、<b>相対湿度は低い</b>。差が0なら飽和（相対湿度100%）。"},
+  {n:5, src:"必勝③ 計画 問3-枝4", cat:"湿り空気", a:true,
+   q:"ある空気を露点温度以下に冷却した後、元の温度に加熱すると、相対湿度は低くなる。",
+   p:"適当。露点以下に冷却すると<b>結露して水分（絶対湿度）が減る</b>。元の温度に戻すと、水蒸気量が減った分<b>相対湿度は元より低く</b>なる。"},
+  {n:6, src:"必勝③ 計画 問6-枝2", cat:"日照・日射・採光", a:true,
+   q:"設計用全天空照度は、薄曇りの日より快晴の青空のほうが小さな値となる。",
+   p:"適当。設計用全天空照度は<b>快晴の青空（約10,000〜15,000lx）＜薄曇り（約50,000lx）</b>。直射光を除いた天空光は、青空より雲のある薄曇りの方が大きい。"},
+  {n:7, src:"必勝③ 計画 問6-枝4", cat:"日照・日射・採光", a:false,
+   q:"日射遮蔽係数が大きい窓ほど、日射遮蔽効果が大きい。",
+   p:"不適当。<b>日射遮蔽係数（SC）が小さいほど</b>日射を通しにくく遮蔽効果が大きい。係数が大きいほど日射を通すので遮蔽効果は小さい。"},
+  {n:8, src:"必勝③ 計画 問8-枝5", cat:"環境負荷", a:false,
+   q:"CASBEE（建築環境総合性能評価システム）は、建築物の環境性能について、建築物における環境品質と省エネルギー性能の二つの指標により評価するものである。",
+   p:"不適当。CASBEEは<b>Q（環境品質）とL（環境負荷）</b>から<b>BEE＝Q／L</b>で評価する。「省エネルギー性能」ではなく「環境負荷」が正しい。"},
+  {n:9, src:"必勝③ 計画 問10-枝3", cat:"集合住宅", a:false,
+   q:"コモンアクセスは、共用庭と各住戸へのアクセス路とを分離した形式で、動線はアクセス路側が中心となり、共用庭の利用は限られたものになりやすい。",
+   p:"不適当。コモンアクセス型は<b>共用庭（コモン）を介して各住戸にアクセス</b>する形式で、コモンの利用・住民交流が促されるのが特徴。説明が逆。"},
+  {n:10, src:"必勝③ 計画 問17-枝5", cat:"設備", a:false,
+   q:"分流式公共下水道の雨水専用管に、敷地内の雨水排水管を接続する場合には、トラップますを設置しなければならない。",
+   p:"不適当。雨水管どうしの接続に<b>トラップますは不要</b>（雨水系統は臭気遮断が不要）。雨水と汚水が合流する箇所など臭気対策が必要な場合にトラップますを設ける。"},
+  {n:11, src:"必勝③ 計画 問18-枝1", cat:"設備", a:false,
+   q:"電力の供給において、想定契約電力が40kWとなる場合、一般に、高圧受電となる。",
+   p:"不適当。契約電力が<b>50kW未満は低圧受電</b>、<b>50kW以上で高圧受電</b>。40kWは低圧受電となる。"},
+  {n:12, src:"必勝③ 計画 問18-枝3", cat:"設備", a:true,
+   q:"許容電流と電圧降下を考慮して、負荷容量と電線の長さから、幹線サイズを決定する。",
+   p:"適当。幹線（電線）サイズは、<b>許容電流・電圧降下・負荷容量・こう長（電線の長さ）</b>を考慮して決定する。"}
+];
+
+const STORE_KEY = "hisshou3_keikaku_wrong";
+/* ===== 気になる(★)：自己完結ストレージ ===== */
+const STAR_KEY = "hisshou3_keikaku_star";
+let starState = new Set();
+async function _starGet(){
+  try{ if(window.storage&&window.storage.get){const r=await window.storage.get(STAR_KEY); if(r&&r.value!=null) return r.value;} }catch(e){}
+  try{ const v=localStorage.getItem(STAR_KEY); if(v!=null) return v; }catch(e){}
+  return (window.__starmem&&window.__starmem[STAR_KEY])||null;
+}
+async function _starSet(v){
+  try{ if(window.storage&&window.storage.set){await window.storage.set(STAR_KEY,v);} }catch(e){}
+  try{ localStorage.setItem(STAR_KEY,v); }catch(e){}
+  window.__starmem=window.__starmem||{}; window.__starmem[STAR_KEY]=v;
+}
+async function getStarSet(){ const v=await _starGet(); if(v){try{return new Set(JSON.parse(v));}catch(e){}} return new Set(); }
+async function saveStarSet(set){ await _starSet(JSON.stringify([...set])); }
+function setStarIcon(btn,on){ btn.classList.toggle("on",on); btn.textContent = on?"★ 気になる":"☆ 気になる"; }
+async function toggleStar(btn,q){ const on=!starState.has(q.n); if(on)starState.add(q.n); else starState.delete(q.n); setStarIcon(btn,on); await saveStarSet(starState); }
+
+
+/* ── 保存：window.storage → localStorage → memory の三段フォールバック ── */
+let memStore = {};
+async function storeGet(key){
+  try{
+    if(window.storage && window.storage.get){
+      const r = await window.storage.get(key);
+      if(r && r.value!=null) return r.value;
+    }
+  }catch(e){}
+  try{
+    const v = localStorage.getItem(key);
+    if(v!=null) return v;
+  }catch(e){}
+  return memStore[key] ?? null;
+}
+async function storeSet(key,val){
+  try{ if(window.storage && window.storage.set){ await window.storage.set(key,val); } }catch(e){}
+  try{ localStorage.setItem(key,val); }catch(e){}
+  memStore[key]=val;
+}
+
+let pool = [];
+let idx = 0;
+let correctCount = 0;
+let sessionWrong = [];
+
+const el = id => document.getElementById(id);
+const homeSec = el("home"), quizSec = el("quiz"), sumSec = el("summary");
+
+async function getWrongSet(){
+  try{
+    const v = await storeGet(STORE_KEY);
+    if(v) return new Set(JSON.parse(v));
+  }catch(e){}
+  return new Set();
+}
+async function saveWrongSet(set){
+  try{ await storeSet(STORE_KEY, JSON.stringify([...set])); }catch(e){}
+}
+
+async function renderHome(){
+  const grid = el("secGrid");
+  grid.innerHTML = "";
+  const wrongSet = await getWrongSet();
+  starState = await getStarSet();
+
+  grid.appendChild(makeSecBtn({
+    name:`全${QUESTIONS.length}問に挑戦`, meta:"必勝テスト③（建築計画）○×",
+    count:QUESTIONS.length, cls:"all",
+    onClick:()=>startQuiz(QUESTIONS)
+  }));
+
+    const _starQs = QUESTIONS.filter(q=>starState.has(q.n));
+  const _st = makeSecBtn({ name:"気になる問題", meta:_starQs.length?"★を付けた問題だけ集中して解く":"問題カードの「☆ 気になる」で登録", count:_starQs.length, cls:"star", onClick:()=>startQuiz(_starQs) });
+  if(!_starQs.length) _st.disabled = true;
+  grid.appendChild(_st);
+
+  const wrongQs = QUESTIONS.filter(q=>wrongSet.has(q.n));
+  const rev = makeSecBtn({
+    name:"間違い復習", meta:wrongQs.length? "間違えた問題だけ解き直す":"間違いはまだありません",
+    count:wrongQs.length, cls:"review",
+    onClick:()=>startQuiz(wrongQs)
+  });
+  if(!wrongQs.length) rev.disabled = true;
+  grid.appendChild(rev);
+
+  /* 分野別 */
+  const cats=[...new Set(QUESTIONS.map(q=>q.cat).filter(Boolean))];
+  if(cats.length>1){
+    const head=document.createElement("div");
+    head.style.cssText="font-size:12px;color:var(--muted);font-weight:700;margin:14px 2px 2px;";
+    head.textContent="分野別に解く";
+    grid.appendChild(head);
+    cats.forEach(c=>{
+      const qs=QUESTIONS.filter(q=>q.cat===c);
+      grid.appendChild(makeSecBtn({ name:c, meta:"この分野だけ解く", count:qs.length, cls:"", onClick:()=>startQuiz(qs) }));
+    });
+  }
+}
+
+function makeSecBtn({name,meta,count,cls,onClick}){
+  const b = document.createElement("button");
+  b.className = "sec-btn "+cls;
+  b.innerHTML = `<span><span class="name">${name}</span><span class="meta">${meta}</span></span>
+                 <span class="count">${count}問</span>`;
+  b.addEventListener("click", onClick);
+  return b;
+}
+
+function startQuiz(set){
+  if(!set.length) return;
+  pool = [...set];
+  idx = 0; correctCount = 0; sessionWrong = [];
+  homeSec.classList.add("hidden");
+  sumSec.classList.add("hidden");
+  quizSec.classList.remove("hidden");
+  showQuestion();
+}
+
+function showQuestion(){
+  const q = pool[idx];
+  el("srcTag").textContent = q.cat ? `${q.src}　【${q.cat}】` : `${q.src}　【計画】`;
+  el("qText").textContent = q.q;
+  el("counter").textContent = `${idx+1}/${pool.length}`;
+  el("prog").style.width = `${(idx/pool.length)*100}%`;
+
+  const cM = el("cMaru"), cB = el("cBatsu");
+  [cM,cB].forEach(c=>{
+    c.disabled = false;
+    c.classList.remove("sel-correct","sel-wrong","dim");
+  });
+  el("result").className = "result";
+  el("nextBtn").className = "next";
+
+  const _sb=el("starBtn"); setStarIcon(_sb, starState.has(q.n)); _sb.onclick=()=>toggleStar(_sb,q);
+  cM.onclick = ()=>answer(true);
+  cB.onclick = ()=>answer(false);
+}
+
+async function answer(choice){
+  const q = pool[idx];
+  const cM = el("cMaru"), cB = el("cBatsu");
+  cM.disabled = true; cB.disabled = true;
+
+  const isCorrect = (choice === q.a);
+  const chosenEl = choice ? cM : cB;
+  const otherEl  = choice ? cB : cM;
+
+  if(isCorrect){
+    chosenEl.classList.add("sel-correct");
+    otherEl.classList.add("dim");
+    correctCount++;
+  }else{
+    chosenEl.classList.add("sel-wrong");
+    (q.a ? cM : cB).classList.add("sel-correct");
+    sessionWrong.push(q.n);
+  }
+
+  const res = el("result");
+  res.classList.add("show", isCorrect ? "ok":"ng");
+  el("verdict").textContent = isCorrect ? "正解！" : "不正解";
+  el("ansLine").textContent = `正解は「${q.a ? "○（正しい）":"×（誤り）"}」`;
+  el("pointText").innerHTML = `<b>ポイント：</b>${q.p}`;
+
+  el("prog").style.width = `${((idx+1)/pool.length)*100}%`;
+
+  const wrongSet = await getWrongSet();
+  if(isCorrect) wrongSet.delete(q.n);
+  else wrongSet.add(q.n);
+  await saveWrongSet(wrongSet);
+
+  const nb = el("nextBtn");
+  nb.classList.add("show");
+  nb.textContent = (idx+1 < pool.length) ? "次の問題 →" : "結果を見る →";
+  nb.onclick = nextQuestion;
+}
+
+function nextQuestion(){
+  idx++;
+  if(idx < pool.length) showQuestion();
+  else showSummary();
+}
+
+async function showSummary(){
+  quizSec.classList.add("hidden");
+  sumSec.classList.remove("hidden");
+
+  const total = pool.length;
+  const pct = Math.round((correctCount/total)*100);
+  el("pct").textContent = pct+"%";
+  el("ring").style.setProperty("--deg", (pct*3.6)+"deg");
+  el("sumScore").textContent = `${total}問中 ${correctCount}問 正解`;
+
+  const isReviewRound = pool.length < QUESTIONS.length;
+  let title = "おつかれさまでした";
+  if(pct===100) title = isReviewRound ? "間違いをすべてクリア！🎯" : "全問正解！ 完璧です🎯";
+  else if(pct>=80) title = "good! あと少し";
+  else if(pct>=50) title = "復習で固めましょう";
+  else title = "間違いを見直そう";
+  el("sumTitle").textContent = title;
+
+  const wrongQs = pool.filter(q => sessionWrong.includes(q.n));
+  const rb = el("sumReview");
+  if(wrongQs.length){
+    rb.classList.remove("hidden");
+    rb.textContent = `間違えた${wrongQs.length}問を解き直す`;
+    rb.onclick = ()=>startQuiz(wrongQs);
+  }else{
+    rb.classList.add("hidden");
+  }
+
+  const _stb=el("sumStar"); const _starS=QUESTIONS.filter(q=>starState.has(q.n));
+  if(_starS.length){ _stb.classList.remove("hidden"); _stb.textContent=`★ 気になる${_starS.length}問を解く`; _stb.onclick=()=>startQuiz(_starS); } else { _stb.classList.add("hidden"); }
+  el("sumRetry").textContent = `最初から全${QUESTIONS.length}問`;
+  el("sumRetry").onclick = ()=>startQuiz(QUESTIONS);
+  el("sumHome").onclick = goHome;
+}
+
+function goHome(){
+  quizSec.classList.add("hidden");
+  sumSec.classList.add("hidden");
+  homeSec.classList.remove("hidden");
+  renderHome();
+}
+el("backBtn").addEventListener("click", goHome);
+
+renderHome();
+</script>
+</body>
+</html>

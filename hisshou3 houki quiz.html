@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>法規 ○×トレーナー｜2級建築士 必勝テスト③</title>
+<style>
+  :root{
+    --accent:#b07d1f;
+    --accent-light:#ca9a45;
+    --accent-bg:#f7f0e0;
+    --maru:#2e9e6b;
+    --batsu:#d9534f;
+    --ink:#2a2733;
+    --muted:#85889a;
+    --line:#e2e6ef;
+    --card:#ffffff;
+    --bg:#f5f7fb;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+    background:var(--bg);color:var(--ink);
+    line-height:1.7;-webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:560px;margin:0 auto;padding:16px 16px 48px;}
+
+  header.top{text-align:center;padding:24px 0 8px;}
+  header.top .eyebrow{font-size:12px;letter-spacing:.18em;color:var(--accent);font-weight:700;}
+  header.top h1{font-size:22px;margin:6px 0 2px;font-weight:800;}
+  header.top .sub{font-size:13px;color:var(--muted);}
+
+  .home-intro{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:16px 18px;margin:16px 0;font-size:13.5px;color:#55525f;
+  }
+  .home-intro b{color:var(--accent);}
+  .home-nav{display:flex;justify-content:center;margin:4px 0 4px;}
+  .home-nav a{font-size:13px;color:var(--accent);font-weight:700;text-decoration:none;}
+  .sec-grid{display:flex;flex-direction:column;gap:12px;margin-top:8px;}
+  .sec-btn{
+    display:flex;align-items:center;justify-content:space-between;
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:18px 20px;cursor:pointer;transition:.15s;text-align:left;width:100%;
+    font-family:inherit;color:inherit;
+  }
+  .sec-btn:active{transform:scale(.98);}
+  .sec-btn .name{font-size:17px;font-weight:700;}
+  .sec-btn .meta{font-size:12px;color:var(--muted);margin-top:2px;}
+  .sec-btn .count{
+    background:var(--accent-bg);color:var(--accent);font-weight:700;
+    border-radius:999px;padding:4px 12px;font-size:13px;white-space:nowrap;
+  }
+  .sec-btn.all{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .sec-btn.all .meta{color:rgba(255,255,255,.8);}
+  .sec-btn.all .count{background:rgba(255,255,255,.22);color:#fff;}
+  .sec-btn.review{background:#fff7f6;border-color:#f3d6d4;}
+  .sec-btn.review .name{color:var(--batsu);}
+  .sec-btn.review .count{background:#fae3e2;color:var(--batsu);}
+  .sec-btn:disabled{opacity:.45;cursor:default;}
+  .cat-head{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.05em;margin:14px 2px 2px;}
+
+  .bar{display:flex;align-items:center;gap:12px;margin:8px 0 14px;}
+  .back{
+    background:none;border:none;color:var(--accent);font-size:15px;font-weight:700;
+    cursor:pointer;font-family:inherit;padding:6px 0;
+  }
+  .progress{flex:1;height:8px;background:var(--line);border-radius:999px;overflow:hidden;}
+  .progress > i{display:block;height:100%;background:var(--accent);width:0;transition:.3s;}
+  .counter{font-size:13px;color:var(--muted);font-weight:700;white-space:nowrap;}
+
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:20px;
+    padding:22px 20px;box-shadow:0 6px 20px rgba(40,70,140,.05);
+  }
+  .src-tag{
+    display:inline-block;background:var(--accent-bg);color:var(--accent);
+    font-size:12px;font-weight:700;border-radius:8px;padding:3px 10px;margin-bottom:14px;
+  }
+  .q-text{font-size:16.5px;line-height:1.9;font-weight:500;}
+
+  .choices{display:flex;gap:14px;margin-top:22px;}
+  .choice{
+    flex:1;border:2px solid var(--line);background:var(--card);border-radius:16px;
+    padding:18px 0;font-size:30px;font-weight:800;cursor:pointer;font-family:inherit;
+    transition:.12s;color:var(--ink);
+  }
+  .choice:active{transform:scale(.96);}
+  .choice.maru{color:var(--maru);}
+  .choice.batsu{color:var(--batsu);}
+  .choice:disabled{cursor:default;}
+  .choice.sel-correct{border-color:var(--maru);background:#eef9f3;}
+  .choice.sel-wrong{border-color:var(--batsu);background:#fdeeed;}
+  .choice.dim{opacity:.35;}
+
+  .result{margin-top:18px;border-radius:16px;padding:16px 18px;display:none;}
+  .result.show{display:block;animation:fade .25s;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  .result.ok{background:#eef9f3;border:1px solid #bfe6d2;}
+  .result.ng{background:#fdeeed;border:1px solid #f3cecb;}
+  .result .verdict{font-weight:800;font-size:15px;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+  .result.ok .verdict{color:var(--maru);}
+  .result.ng .verdict{color:var(--batsu);}
+  .result .ans{font-size:13px;color:var(--muted);font-weight:700;}
+  .result .point{font-size:14.5px;line-height:1.8;margin-top:8px;color:#3d3a47;}
+  .result .point b{color:var(--accent);}
+  .result .point .hl{background:#fff3bf;padding:0 2px;border-radius:3px;}
+
+  .next{
+    width:100%;margin-top:16px;background:var(--accent);color:#fff;border:none;
+    border-radius:14px;padding:16px;font-size:16px;font-weight:800;cursor:pointer;
+    font-family:inherit;display:none;
+  }
+  .next.show{display:block;}
+  .next:active{transform:scale(.98);}
+
+  .summary{text-align:center;padding-top:10px;}
+  .summary .ring{
+    width:150px;height:150px;border-radius:50%;margin:18px auto;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:conic-gradient(var(--accent) var(--deg,0deg),var(--line) 0);
+  }
+  .summary .ring .inner{
+    width:122px;height:122px;border-radius:50%;background:var(--card);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+  }
+  .summary .ring .pct{font-size:34px;font-weight:800;color:var(--accent);}
+  .summary .ring .lbl{font-size:12px;color:var(--muted);}
+  .summary h2{font-size:20px;margin:6px 0;}
+  .summary .score{font-size:15px;color:var(--muted);margin-bottom:18px;}
+  .summary .acts{display:flex;flex-direction:column;gap:10px;}
+  .summary .acts button{
+    border-radius:14px;padding:15px;font-size:15px;font-weight:800;cursor:pointer;
+    font-family:inherit;border:none;
+  }
+  .btn-primary{background:var(--accent);color:#fff;}
+  .btn-ghost{background:var(--card);color:var(--accent);border:1px solid var(--line)!important;}
+  .btn-review{background:#fff7f6;color:var(--batsu);border:1px solid #f3d6d4!important;}
+
+  .hidden{display:none!important;}
+  footer{text-align:center;font-size:11px;color:#b6bccb;margin-top:28px;}
+  .sec-btn.star{background:#fffaf0;border-color:#f0d79a;}
+  .sec-btn.star .name{color:#b8860b;}
+  .sec-btn.star .count{background:#fdeec4;color:#b8860b;}
+  .card-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;}
+  .card-top .src-tag{margin-bottom:0;}
+  .star-btn{background:none;border:1px solid var(--line);border-radius:999px;padding:5px 13px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;font-family:inherit;white-space:nowrap;}
+  .star-btn:active{transform:scale(.94);}
+  .star-btn.on{background:#fffaf0;border-color:#f0c850;color:#b8860b;}
+  .btn-star{background:#fffaf0;color:#b8860b;border:1px solid #f0d79a!important;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HOME -->
+  <section id="home">
+    <header class="top">
+      <div class="eyebrow">2級建築士 必勝テスト③</div>
+      <h1>法規 ○×トレーナー</h1>
+      <div class="sub">全10問</div>
+    </header>
+    <div class="home-nav"><a href="index.html">← メニューへ</a></div>
+    <div class="home-intro">必勝テスト③（建築法規）のピンクマーク部分の要点を <b>○×形式</b>（全10問）で出題します。<br>正解すると<b>ポイント解説</b>が表示され、間違えた問題は<b>復習</b>でまとめて解き直せます。</div>
+    <div class="sec-grid" id="secGrid"></div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" class="hidden">
+    <div class="bar">
+      <button class="back" id="backBtn">← 戻る</button>
+      <div class="progress"><i id="prog"></i></div>
+      <div class="counter" id="counter"></div>
+    </div>
+    <div class="card">
+      <div class="card-top">
+        <span class="src-tag" id="srcTag">No.</span>
+        <button class="star-btn" id="starBtn">☆ 気になる</button>
+      </div>
+      <div class="q-text" id="qText"></div>
+      <div class="choices">
+        <button class="choice maru" id="cMaru">○</button>
+        <button class="choice batsu" id="cBatsu">×</button>
+      </div>
+      <div class="result" id="result">
+        <div class="verdict" id="verdict"></div>
+        <div class="ans" id="ansLine"></div>
+        <div class="point" id="pointText"></div>
+      </div>
+    </div>
+    <button class="next" id="nextBtn">次の問題 →</button>
+  </section>
+
+  <!-- SUMMARY -->
+  <section id="summary" class="hidden">
+    <div class="summary">
+      <div class="ring" id="ring"><div class="inner">
+        <div class="pct" id="pct">0%</div><div class="lbl">正答率</div>
+      </div></div>
+      <h2 id="sumTitle">おつかれさまでした</h2>
+      <div class="score" id="sumScore"></div>
+      <div class="acts">
+        <button class="btn-review hidden" id="sumReview"></button>
+        <button class="btn-star hidden" id="sumStar"></button>
+        <button class="btn-primary" id="sumRetry"></button>
+        <button class="btn-ghost" id="sumHome">ホームに戻る</button>
+      </div>
+    </div>
+  </section>
+
+  <footer>2級建築士 学習用 ○×トレーナー（個人学習用）</footer>
+</div>
+
+<script>
+const QUESTIONS = [
+  {n:1, src:"問1-2", cat:"用語の定義", a:true, q:"建築物の自重及び積載荷重を支える最下階の床版は、「構造耐力上主要な部分」である。", p:"正しい（令1条三号）。「構造耐力上主要な部分」とは、基礎・柱・はり・床版・屋根版・横架材等で、<b>建築物の自重・積載荷重・積雪・風圧・土圧・水圧・地震等を支えるもの</b>。本肢は「自重・積載荷重を支える」と明示しており該当する（単に地盤上にのるだけで荷重を支えない最下階の床は除かれる点に注意）。"},
+  {n:2, src:"問1-3", cat:"用語の定義", a:false, q:"建築物の床が地盤面下にある階で、床面から地盤面までの高さが1m以上のものは、「地階」である。", p:"誤り（令1条二号）。「地階」とは、床が地盤面下にある階で、床面から地盤面までの高さが<b class=\"hl\">その階の天井の高さの1/3以上</b>のもの。<b>「1m以上」ではない</b>。"},
+  {n:3, src:"問6-4", cat:"構造強度", a:true, q:"鉄骨造の建築物において、構造耐力上主要な部分である鋼材の接合は、接合される鋼材がステンレス鋼であるときは、溶接接合とすることができる。", p:"正しい（令67条1項ただし書）。構造耐力上主要な部分である鋼材の接合は原則 高力ボルト・溶接・リベット接合。<b>ステンレス鋼を接合する場合は溶接接合とすることができる</b>。"},
+  {n:4, src:"問6-5", cat:"構造強度", a:false, q:"固結した砂の短期に生ずる力に対する地盤の許容応力度は、国土交通大臣が定める方法による地盤調査を行わない場合、500kN/m²としなければならない。", p:"誤り（令93条）。固結した砂の地盤の許容応力度は<b>長期500kN/m²</b>。短期に生ずる力に対しては<b class=\"hl\">長期の2倍＝1,000kN/m²</b>。「500kN/m²」ではない（500は長期の値）。"},
+  {n:5, src:"問9-3", cat:"内装制限", a:false, q:"一戸建て住宅に附属する自動車車庫は、当該用途に供する部分の壁及び天井の室内に面する部分の仕上げを、難燃材料とすることができる。", p:"誤り（令128条の4・128条の5）。自動車車庫・自動車修理工場の用途に供する部分は、壁・天井の室内に面する部分を<b class=\"hl\">準不燃材料</b>以上としなければならない。<b>難燃材料では不可</b>。"},
+  {n:6, src:"問9-4", cat:"内装制限", a:true, q:"2階建ての一戸建て住宅（特定主要構造部を耐火構造としたものを除く。）の1階にある火を使用する設備を設けた調理室は、内装の制限を受ける。", p:"正しい（令128条の4第4項）。階数2以上の住宅で<b>最上階以外の階</b>にある火気使用室（調理室等）は内装制限を受ける。2階建ての1階の調理室（特定主要構造部を耐火構造としたものを除く）は該当する。"},
+  {n:7, src:"問15-3", cat:"高さ・日影規制", a:false, q:"第一種低層住居専用地域内における10m又は12mの建築物の高さの限度については、天空率の計算を行うことにより、特定行政庁の許可又は認定を受けなくても、その高さの限度を超えることができる。", p:"誤り（法55条・56条7項）。天空率は<b>道路・隣地・北側の各斜線制限</b>の代替手段。第一種低層住居専用地域の<b class=\"hl\">10m又は12mの絶対高さ制限（法55条）には天空率は適用できない</b>。"},
+  {n:8, src:"問15-4", cat:"高さ・日影規制", a:true, q:"第一種低層住居専用地域内のうち、日影規制の対象区域内においては、北側高さ制限が適用される。", p:"正しい（法56条1項三号）。北側高さ制限（北側斜線）は第一種・第二種低層住専、第一種・第二種中高層住専に適用。<b>低層住専では日影規制対象区域内でも北側斜線は適用される</b>（中高層住専は日影規制区域内なら北側斜線が適用除外となる点と区別）。"},
+  {n:9, src:"問16-1", cat:"防火・準防火地域", a:false, q:"防火地域及び準防火地域にわたり新築する場合、準耐火建築物又はこれと同等以上の延焼防止時間となる建築物としなければならない。", p:"誤り（法65条）。防火地域と準防火地域にわたる場合は<b>厳しい方（防火地域）の規定を建築物全体に適用</b>。延べ面積<b>150m²＞100m²</b>なので<b class=\"hl\">耐火建築物又はこれと同等以上の延焼防止時間</b>が必要（準耐火では不可）。"},
+  {n:10, src:"問16-2", cat:"防火・準防火地域", a:true, q:"防火地域内において高さ2.1mの塀を設ける場合、その塀は、延焼防止上支障のない構造としなければならない。", p:"正しい（令136条の2第五号）。防火地域・準防火地域内の建築物に附属する<b>高さ2mを超える門・塀</b>は、延焼防止上支障のない構造としなければならない。高さ2.1mは該当する。"}
+];
+const STORE_KEY = "hisshou3_houki_wrong";
+/* ===== 気になる(★)：自己完結ストレージ ===== */
+const STAR_KEY = "hisshou3_houki_star";
+let starState = new Set();
+async function _starGet(){
+  try{ if(window.storage&&window.storage.get){const r=await window.storage.get(STAR_KEY); if(r&&r.value!=null) return r.value;} }catch(e){}
+  try{ const v=localStorage.getItem(STAR_KEY); if(v!=null) return v; }catch(e){}
+  return (window.__starmem&&window.__starmem[STAR_KEY])||null;
+}
+async function _starSet(v){
+  try{ if(window.storage&&window.storage.set){await window.storage.set(STAR_KEY,v);} }catch(e){}
+  try{ localStorage.setItem(STAR_KEY,v); }catch(e){}
+  window.__starmem=window.__starmem||{}; window.__starmem[STAR_KEY]=v;
+}
+async function getStarSet(){ const v=await _starGet(); if(v){try{return new Set(JSON.parse(v));}catch(e){}} return new Set(); }
+async function saveStarSet(set){ await _starSet(JSON.stringify([...set])); }
+function setStarIcon(btn,on){ btn.classList.toggle("on",on); btn.textContent = on?"★ 気になる":"☆ 気になる"; }
+async function toggleStar(btn,q){ const on=!starState.has(q.n); if(on)starState.add(q.n); else starState.delete(q.n); setStarIcon(btn,on); await saveStarSet(starState); }
+
+
+/* ===== 誤答ストレージ：window.storage → localStorage → メモリ の3段フォールバック ===== */
+let memStore = {};
+async function storeGet(k){
+  try{ if(window.storage&&window.storage.get){const r=await window.storage.get(k); if(r&&r.value!=null) return r.value;} }catch(e){}
+  try{ const v=localStorage.getItem(k); if(v!=null) return v; }catch(e){}
+  return memStore[k]!=null?memStore[k]:null;
+}
+async function storeSet(k,v){
+  try{ if(window.storage&&window.storage.set){await window.storage.set(k,v);} }catch(e){}
+  try{ localStorage.setItem(k,v); }catch(e){}
+  memStore[k]=v;
+}
+async function getWrongSet(){
+  const v=await storeGet(STORE_KEY);
+  if(v){ try{ return new Set(JSON.parse(v)); }catch(e){} }
+  return new Set();
+}
+async function saveWrongSet(set){ await storeSet(STORE_KEY, JSON.stringify([...set])); }
+
+const catOf = q => q.cat || q.sec || "";
+
+let pool=[], idx=0, correctCount=0, sessionWrong=[];
+const el = id => document.getElementById(id);
+const homeSec=el("home"), quizSec=el("quiz"), sumSec=el("summary");
+
+function makeSecBtn({name,meta,count,cls,onClick}){
+  const b=document.createElement("button");
+  b.className="sec-btn "+(cls||"");
+  b.innerHTML=`<span><span class="name">${name}</span>${meta?`<span class="meta">${meta}</span>`:""}</span>
+               <span class="count">${count}問</span>`;
+  b.addEventListener("click",onClick);
+  return b;
+}
+
+async function renderHome(){
+  const grid=el("secGrid"); grid.innerHTML="";
+  const wrongSet=await getWrongSet();
+  starState = await getStarSet();
+
+  grid.appendChild(makeSecBtn({
+    name:`全${QUESTIONS.length}問に挑戦`, meta:"すべての問題をランダム表示",
+    count:QUESTIONS.length, cls:"all", onClick:()=>startQuiz(QUESTIONS,true)
+  }));
+
+    const _starQs = QUESTIONS.filter(q=>starState.has(q.n));
+  const _st = makeSecBtn({ name:"気になる問題", meta:_starQs.length?"★を付けた問題だけ集中して解く":"問題カードの「☆ 気になる」で登録", count:_starQs.length, cls:"star", onClick:()=>startQuiz(_starQs,true) });
+  if(!_starQs.length) _st.disabled = true;
+  grid.appendChild(_st);
+
+  const wrongQs=QUESTIONS.filter(q=>wrongSet.has(q.n));
+  const rev=makeSecBtn({
+    name:"間違い復習", meta:wrongQs.length?"間違えた問題だけ解き直す":"間違いはまだありません",
+    count:wrongQs.length, cls:"review", onClick:()=>startQuiz(wrongQs,true)
+  });
+  if(!wrongQs.length) rev.disabled=true;
+  grid.appendChild(rev);
+
+  /* 分野別（カテゴリがある場合のみ） */
+  const cats=[...new Set(QUESTIONS.map(catOf).filter(Boolean))];
+  if(cats.length>1){
+    const head=document.createElement("div"); head.className="cat-head"; head.textContent="分野別に解く";
+    grid.appendChild(head);
+    cats.forEach(c=>{
+      const qs=QUESTIONS.filter(q=>catOf(q)===c);
+      grid.appendChild(makeSecBtn({ name:c, count:qs.length, cls:"", onClick:()=>startQuiz(qs,false) }));
+    });
+  }
+}
+
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function startQuiz(set,doShuffle){
+  if(!set.length) return;
+  pool=doShuffle?shuffle(set):[...set];
+  idx=0; correctCount=0; sessionWrong=[];
+  homeSec.classList.add("hidden"); sumSec.classList.add("hidden");
+  quizSec.classList.remove("hidden"); showQuestion();
+}
+
+function showQuestion(){
+  const q=pool[idx];
+  const c=catOf(q);
+  el("srcTag").textContent = c?`${q.src}　【${c}】`:`${q.src}`;
+  el("qText").textContent=q.q;
+  el("counter").textContent=`${idx+1}/${pool.length}`;
+  el("prog").style.width=`${(idx/pool.length)*100}%`;
+  const cM=el("cMaru"), cB=el("cBatsu");
+  [cM,cB].forEach(x=>{x.disabled=false;x.classList.remove("sel-correct","sel-wrong","dim");});
+  el("result").className="result"; el("nextBtn").className="next";
+  const _sb=el("starBtn"); setStarIcon(_sb, starState.has(q.n)); _sb.onclick=()=>toggleStar(_sb,q);
+  cM.onclick=()=>answer(true); cB.onclick=()=>answer(false);
+}
+
+async function answer(choice){
+  const q=pool[idx];
+  const cM=el("cMaru"), cB=el("cBatsu");
+  cM.disabled=true; cB.disabled=true;
+  const isCorrect=(choice===q.a);
+  const chosenEl=choice?cM:cB, otherEl=choice?cB:cM;
+  if(isCorrect){ chosenEl.classList.add("sel-correct"); otherEl.classList.add("dim"); correctCount++; }
+  else{ chosenEl.classList.add("sel-wrong"); (q.a?cM:cB).classList.add("sel-correct"); sessionWrong.push(q.n); }
+  const res=el("result");
+  res.classList.add("show", isCorrect?"ok":"ng");
+  el("verdict").textContent=isCorrect?"正解！":"不正解";
+  el("ansLine").textContent=`正解は「${q.a?"○":"×"}」`;
+  el("pointText").innerHTML=`<b>ポイント：</b>${q.p||""}`;
+  el("prog").style.width=`${((idx+1)/pool.length)*100}%`;
+  const wrongSet=await getWrongSet();
+  if(isCorrect) wrongSet.delete(q.n); else wrongSet.add(q.n);
+  await saveWrongSet(wrongSet);
+  const nb=el("nextBtn"); nb.classList.add("show");
+  nb.textContent=(idx+1<pool.length)?"次の問題 →":"結果を見る →"; nb.onclick=nextQuestion;
+}
+
+function nextQuestion(){ idx++; if(idx<pool.length) showQuestion(); else showSummary(); }
+
+function showSummary(){
+  quizSec.classList.add("hidden"); sumSec.classList.remove("hidden");
+  const total=pool.length, pct=Math.round((correctCount/total)*100);
+  el("pct").textContent=pct+"%";
+  el("ring").style.setProperty("--deg",(pct*3.6)+"deg");
+  el("sumScore").textContent=`${total}問中 ${correctCount}問 正解`;
+  const isReview=pool.length<QUESTIONS.length;
+  let title="おつかれさまでした";
+  if(pct===100) title=isReview?"間違いをすべてクリア！🎯":"全問正解！ 完璧です🎯";
+  else if(pct>=80) title="good! あと少し";
+  else if(pct>=50) title="復習で固めましょう";
+  else title="間違いを見直そう";
+  el("sumTitle").textContent=title;
+  const wrongQs=pool.filter(q=>sessionWrong.includes(q.n));
+  const rb=el("sumReview");
+  if(wrongQs.length){ rb.classList.remove("hidden"); rb.textContent=`間違えた${wrongQs.length}問を解き直す`; rb.onclick=()=>startQuiz(wrongQs,true); }
+  else rb.classList.add("hidden");
+  const _stb=el("sumStar"); const _starS=QUESTIONS.filter(q=>starState.has(q.n));
+  if(_starS.length){ _stb.classList.remove("hidden"); _stb.textContent=`★ 気になる${_starS.length}問を解く`; _stb.onclick=()=>startQuiz(_starS,true); } else { _stb.classList.add("hidden"); }
+  el("sumRetry").textContent=`最初から全${QUESTIONS.length}問`;
+  el("sumRetry").onclick=()=>startQuiz(QUESTIONS,true);
+  el("sumHome").onclick=goHome;
+}
+
+function goHome(){ quizSec.classList.add("hidden"); sumSec.classList.add("hidden"); homeSec.classList.remove("hidden"); renderHome(); }
+el("backBtn").addEventListener("click",goHome);
+renderHome();
+</script>
+</body>
+</html>
