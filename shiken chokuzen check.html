@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>試験直前CHECK ○×｜2級建築士（計画・法規・構造・施工）</title>
+<style>
+  :root{
+    --accent:#3f51b5;
+    --accent-light:#6b78cf;
+    --accent-bg:#e9ebf7;
+    --maru:#2e9e6b;
+    --batsu:#d9534f;
+    --ink:#2a2733;
+    --muted:#85889a;
+    --line:#e2e6ef;
+    --card:#ffffff;
+    --bg:#f5f7fb;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+    background:var(--bg);color:var(--ink);
+    line-height:1.7;-webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:560px;margin:0 auto;padding:16px 16px 48px;}
+
+  header.top{text-align:center;padding:24px 0 8px;}
+  header.top .eyebrow{font-size:12px;letter-spacing:.18em;color:var(--accent);font-weight:700;}
+  header.top h1{font-size:22px;margin:6px 0 2px;font-weight:800;}
+  header.top .sub{font-size:13px;color:var(--muted);}
+
+  .home-intro{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:16px 18px;margin:16px 0;font-size:13.5px;color:#55525f;
+  }
+  .home-intro b{color:var(--accent);}
+  .home-nav{display:flex;justify-content:center;margin:4px 0 4px;}
+  .home-nav a{font-size:13px;color:var(--accent);font-weight:700;text-decoration:none;}
+  .sec-grid{display:flex;flex-direction:column;gap:12px;margin-top:8px;}
+  .sec-btn{
+    display:flex;align-items:center;justify-content:space-between;
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:18px 20px;cursor:pointer;transition:.15s;text-align:left;width:100%;
+    font-family:inherit;color:inherit;
+  }
+  .sec-btn:active{transform:scale(.98);}
+  .sec-btn .name{font-size:17px;font-weight:700;}
+  .sec-btn .meta{font-size:12px;color:var(--muted);margin-top:2px;}
+  .sec-btn .count{
+    background:var(--accent-bg);color:var(--accent);font-weight:700;
+    border-radius:999px;padding:4px 12px;font-size:13px;white-space:nowrap;
+  }
+  .sec-btn.all{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .sec-btn.all .meta{color:rgba(255,255,255,.8);}
+  .sec-btn.all .count{background:rgba(255,255,255,.22);color:#fff;}
+  .sec-btn.review{background:#fff7f6;border-color:#f3d6d4;}
+  .sec-btn.review .name{color:var(--batsu);}
+  .sec-btn.review .count{background:#fae3e2;color:var(--batsu);}
+  .sec-btn:disabled{opacity:.45;cursor:default;}
+  .cat-head{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.05em;margin:14px 2px 2px;}
+
+  .bar{display:flex;align-items:center;gap:12px;margin:8px 0 14px;}
+  .back{
+    background:none;border:none;color:var(--accent);font-size:15px;font-weight:700;
+    cursor:pointer;font-family:inherit;padding:6px 0;
+  }
+  .progress{flex:1;height:8px;background:var(--line);border-radius:999px;overflow:hidden;}
+  .progress > i{display:block;height:100%;background:var(--accent);width:0;transition:.3s;}
+  .counter{font-size:13px;color:var(--muted);font-weight:700;white-space:nowrap;}
+
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:20px;
+    padding:22px 20px;box-shadow:0 6px 20px rgba(40,70,140,.05);
+  }
+  .src-tag{
+    display:inline-block;background:var(--accent-bg);color:var(--accent);
+    font-size:12px;font-weight:700;border-radius:8px;padding:3px 10px;margin-bottom:14px;
+  }
+  .q-text{font-size:16.5px;line-height:1.9;font-weight:500;}
+
+  .choices{display:flex;gap:14px;margin-top:22px;}
+  .choice{
+    flex:1;border:2px solid var(--line);background:var(--card);border-radius:16px;
+    padding:18px 0;font-size:30px;font-weight:800;cursor:pointer;font-family:inherit;
+    transition:.12s;color:var(--ink);
+  }
+  .choice:active{transform:scale(.96);}
+  .choice.maru{color:var(--maru);}
+  .choice.batsu{color:var(--batsu);}
+  .choice:disabled{cursor:default;}
+  .choice.sel-correct{border-color:var(--maru);background:#eef9f3;}
+  .choice.sel-wrong{border-color:var(--batsu);background:#fdeeed;}
+  .choice.dim{opacity:.35;}
+
+  .result{margin-top:18px;border-radius:16px;padding:16px 18px;display:none;}
+  .result.show{display:block;animation:fade .25s;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  .result.ok{background:#eef9f3;border:1px solid #bfe6d2;}
+  .result.ng{background:#fdeeed;border:1px solid #f3cecb;}
+  .result .verdict{font-weight:800;font-size:15px;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+  .result.ok .verdict{color:var(--maru);}
+  .result.ng .verdict{color:var(--batsu);}
+  .result .ans{font-size:13px;color:var(--muted);font-weight:700;}
+  .result .point{font-size:14.5px;line-height:1.8;margin-top:8px;color:#3d3a47;}
+  .result .point b{color:var(--accent);}
+  .result .point .hl{background:#fff3bf;padding:0 2px;border-radius:3px;}
+
+  .next{
+    width:100%;margin-top:16px;background:var(--accent);color:#fff;border:none;
+    border-radius:14px;padding:16px;font-size:16px;font-weight:800;cursor:pointer;
+    font-family:inherit;display:none;
+  }
+  .next.show{display:block;}
+  .next:active{transform:scale(.98);}
+
+  .summary{text-align:center;padding-top:10px;}
+  .summary .ring{
+    width:150px;height:150px;border-radius:50%;margin:18px auto;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:conic-gradient(var(--accent) var(--deg,0deg),var(--line) 0);
+  }
+  .summary .ring .inner{
+    width:122px;height:122px;border-radius:50%;background:var(--card);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+  }
+  .summary .ring .pct{font-size:34px;font-weight:800;color:var(--accent);}
+  .summary .ring .lbl{font-size:12px;color:var(--muted);}
+  .summary h2{font-size:20px;margin:6px 0;}
+  .summary .score{font-size:15px;color:var(--muted);margin-bottom:18px;}
+  .summary .acts{display:flex;flex-direction:column;gap:10px;}
+  .summary .acts button{
+    border-radius:14px;padding:15px;font-size:15px;font-weight:800;cursor:pointer;
+    font-family:inherit;border:none;
+  }
+  .btn-primary{background:var(--accent);color:#fff;}
+  .btn-ghost{background:var(--card);color:var(--accent);border:1px solid var(--line)!important;}
+  .btn-review{background:#fff7f6;color:var(--batsu);border:1px solid #f3d6d4!important;}
+
+  .hidden{display:none!important;}
+  footer{text-align:center;font-size:11px;color:#b6bccb;margin-top:28px;}
+  .sec-btn.star{background:#fffaf0;border-color:#f0d79a;}
+  .sec-btn.star .name{color:#b8860b;}
+  .sec-btn.star .count{background:#fdeec4;color:#b8860b;}
+  .card-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;}
+  .card-top .src-tag{margin-bottom:0;}
+  .star-btn{background:none;border:1px solid var(--line);border-radius:999px;padding:5px 13px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;font-family:inherit;white-space:nowrap;}
+  .star-btn:active{transform:scale(.94);}
+  .star-btn.on{background:#fffaf0;border-color:#f0c850;color:#b8860b;}
+  .btn-star{background:#fffaf0;color:#b8860b;border:1px solid #f0d79a!important;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HOME -->
+  <section id="home">
+    <header class="top">
+      <div class="eyebrow">2級建築士 試験直前CHECK</div>
+      <h1>法規 ○×トレーナー</h1>
+      <div class="sub">計画・法規・構造・施工 ／ 全87問</div>
+    </header>
+    <div class="home-nav"><a href="index.html">← メニューへ</a></div>
+    <div class="home-intro">試験直前CHECK（4科目）のマーク部分の要点を <b>○×形式</b>（全87問）で確認します。分野別ボタンで科目ごとに絞り込めます。<br>正解すると<b>ポイント解説</b>が表示され、間違えた問題は<b>復習</b>でまとめて解き直せます。</div>
+    <div class="sec-grid" id="secGrid"></div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" class="hidden">
+    <div class="bar">
+      <button class="back" id="backBtn">← 戻る</button>
+      <div class="progress"><i id="prog"></i></div>
+      <div class="counter" id="counter"></div>
+    </div>
+    <div class="card">
+      <div class="card-top">
+        <span class="src-tag" id="srcTag">No.</span>
+        <button class="star-btn" id="starBtn">☆ 気になる</button>
+      </div>
+      <div class="q-text" id="qText"></div>
+      <div class="choices">
+        <button class="choice maru" id="cMaru">○</button>
+        <button class="choice batsu" id="cBatsu">×</button>
+      </div>
+      <div class="result" id="result">
+        <div class="verdict" id="verdict"></div>
+        <div class="ans" id="ansLine"></div>
+        <div class="point" id="pointText"></div>
+      </div>
+    </div>
+    <button class="next" id="nextBtn">次の問題 →</button>
+  </section>
+
+  <!-- SUMMARY -->
+  <section id="summary" class="hidden">
+    <div class="summary">
+      <div class="ring" id="ring"><div class="inner">
+        <div class="pct" id="pct">0%</div><div class="lbl">正答率</div>
+      </div></div>
+      <h2 id="sumTitle">おつかれさまでした</h2>
+      <div class="score" id="sumScore"></div>
+      <div class="acts">
+        <button class="btn-review hidden" id="sumReview"></button>
+        <button class="btn-star hidden" id="sumStar"></button>
+        <button class="btn-primary" id="sumRetry"></button>
+        <button class="btn-ghost" id="sumHome">ホームに戻る</button>
+      </div>
+    </div>
+  </section>
+
+  <footer>2級建築士 学習用 ○×トレーナー（個人学習用）</footer>
+</div>
+
+<script>
+const QUESTIONS = [
+  {n:1, src:"計画②", cat:"計画", a:true, q:"居室の1人当たりの必要換気量は、一般に、30㎥/h程度とされている。", p:"CO₂濃度を基準とした1人当たりの必要換気量は約30㎥/h。"},
+  {n:2, src:"計画⑥", cat:"計画", a:true, q:"二重窓における外側窓の室内側の結露を防止するためには、外側サッシの気密性より内側サッシの気密性を高くするほうが効果的である。", p:"内側サッシの気密性を高くし、湿った室内空気を外側窓へ回さないのが効果的。"},
+  {n:3, src:"計画⑦", cat:"計画", a:true, q:"外気に面した窓にカーテンを吊るすと、ガラスの室内側表面に結露が発生しやすくなる。", p:"カーテンで窓際の空気が滞留・冷却され、室内側表面に結露しやすくなる。"},
+  {n:4, src:"計画⑧", cat:"計画", a:true, q:"天空日射量とは、大気中の水蒸気や塵埃で乱反射して地上に達する日射量であり、大気透過率が高くなるほど減少する。", p:"大気透過率が高い（澄んだ空）ほど乱反射が減り、天空日射量は減少する。"},
+  {n:5, src:"計画⑨", cat:"計画", a:true, q:"北緯35度の地点において、開口部に水平な庇を設置する場合、夏期における日射の遮蔽効果は、西面より南面のほうが大きい。", p:"太陽高度の高い南面は水平庇が効くが、低い西日には効きにくい。"},
+  {n:6, src:"計画⑩", cat:"計画", a:true, q:"北向き鉛直壁面には、約6か月間、日照がある。", p:"春分〜秋分は北面にも日が当たり、年間約6か月間日照がある。"},
+  {n:7, src:"計画⑭", cat:"計画", a:true, q:"色の反射率の度合いを明度といい、完全な白を10、完全な黒を0としている。", p:"明度＝反射率の度合い。完全な白＝10、完全な黒＝0。"},
+  {n:8, src:"計画⑳", cat:"計画", a:true, q:"屋内駐車場の自動車用車路の勾配は、1/6以下とする。", p:"自動車用車路の勾配は1/6以下。"},
+  {n:9, src:"計画㉑", cat:"計画", a:true, q:"高齢者・障がい者等に配慮した、屋内歩行用傾斜路の勾配は、1/12以下とする。", p:"バリアフリーの屋内歩行用傾斜路（スロープ）の勾配は1/12以下。"},
+  {n:10, src:"計画㉒", cat:"計画", a:true, q:"車椅子使用者の利用する玄関の外側とくつずりとの高低差は、2cm以下とする。", p:"車椅子対応の玄関外側とくつずりの高低差は2cm以下。"},
+  {n:11, src:"計画㉖", cat:"計画", a:true, q:"テラスハウスは、各住戸がそれぞれ土地に接し、専用庭をもっている。", p:"テラスハウス＝各住戸が接地し専用庭をもつ連続住宅。"},
+  {n:12, src:"計画㉘", cat:"計画", a:true, q:"貸事務所における、基準階のレンタブル比は、一般に、収益性を考慮すると、75〜85%程度が目安となる。", p:"基準階のレンタブル比（収益上の目安）は75〜85%程度。"},
+  {n:13, src:"計画㉛", cat:"計画", a:true, q:"保育所において、保育室と便所は、近接させて配置する。", p:"幼児の利用を考え、保育室と便所は近接配置。"},
+  {n:14, src:"計画39", cat:"計画", a:true, q:"バキュームブレーカは、吐水した水又は使用した水が、逆サイホン作用により給水管に逆流するのを防止するために設ける。", p:"バキュームブレーカ＝逆サイホン作用による給水管への逆流防止。"},
+  {n:15, src:"計画42", cat:"計画", a:true, q:"通気管の末端は、窓等の開口部付近に設ける場合、その開口部の上端から60cm以上立ち上げるか、又は水平に3m以上離す。", p:"通気管末端は開口部上端から60cm以上立上げ、又は水平3m以上離す。"},
+  {n:16, src:"計画44", cat:"計画", a:true, q:"電力の供給において、負荷容量、電線の太さ・長さが同一であれば、配電電圧を高くするほうが、配電線路における電力損失が少なくなる。", p:"同条件なら配電電圧を高くするほど電流が減り電力損失が小さい。"},
+  {n:17, src:"計画49", cat:"計画", a:true, q:"自動火災報知設備の発信機は、手動によって火災信号を受信機に発信するものである。", p:"発信機＝人が手動で火災信号を受信機へ発信する装置。"},
+  {n:18, src:"計画50", cat:"計画", a:true, q:"自動火災報知設備の差動式感知器は、周囲の温度の上昇率が一定値を超えたときに作動する。", p:"差動式＝温度の上昇「率」が一定値超で作動（定温式は一定温度で作動）。"},
+
+  {n:19, src:"法規①", cat:"法規", a:true, q:"地下の工作物内に設ける店舗は、「建築物」である。", p:"地下の工作物内に設ける事務所・店舗・倉庫等も建築物に該当。"},
+  {n:20, src:"法規③", cat:"法規", a:true, q:"地震の震動を支える火打材は、「構造耐力上主要な部分」である。", p:"火打材（斜材）は構造耐力上主要な部分に含まれる。"},
+  {n:21, src:"法規⑤", cat:"法規", a:true, q:"直接地上へ通ずる出入口のある階は、「避難階」である。", p:"避難階＝直接地上へ通ずる出入口のある階。"},
+  {n:22, src:"法規⑥", cat:"法規", a:true, q:"建築主は、確認、中間検査及び完了検査の申請を、同一の指定確認検査機関に行うことができる。", p:"確認・中間・完了検査の申請は同一の指定確認検査機関に行える。"},
+  {n:23, src:"法規⑦", cat:"法規", a:true, q:"建築物の除却の届出は、当該建築物の除却の工事を施工する者が、原則として、建築主事等を経由して、都道府県知事に行う。", p:"除却届出は施工者が建築主事等を経由して都道府県知事へ。"},
+  {n:24, src:"法規⑧", cat:"法規", a:true, q:"消防法に基づく住宅用防災機器の規定については、建築基準関係規定に該当し、建築主事等又は指定確認検査機関による確認審査等の対象となる。", p:"住宅用防災機器は建築基準関係規定に該当し、確認審査等の対象。"},
+  {n:25, src:"法規⑩", cat:"法規", a:true, q:"建築主は、建築物の用途の変更に係る確認済証の交付を受けた場合において、当該工事を完了したときは、建築主事等に届け出なければならない。", p:"用途変更の確認を受けた工事の完了時は建築主事等へ届出。"},
+  {n:26, src:"法規⑯", cat:"法規", a:true, q:"階段に代わる傾斜路の勾配は、1/8を超えてはならない。", p:"階段に代わる傾斜路の勾配は1/8以下（令26条）。"},
+  {n:27, src:"法規⑰", cat:"法規", a:true, q:"密実な砂質地盤の長期に生ずる力に対する許容応力度は、200kN/m²とすることができる。", p:"密実な砂質地盤の長期許容応力度＝200kN/m²。"},
+  {n:28, src:"法規⑱", cat:"法規", a:true, q:"堅いローム層の長期に生ずる力に対する許容応力度は、100kN/m²とすることができる。", p:"堅いローム層の長期許容応力度＝100kN/m²。"},
+  {n:29, src:"法規⑳", cat:"法規", a:true, q:"多雪区域外においては、積雪の単位荷重は、積雪量1cmごとに1m²につき20N以上としなければならない。", p:"多雪区域外の積雪単位荷重は1cmにつき20N/m²以上。"},
+  {n:30, src:"法規㉔", cat:"法規", a:true, q:"建築物の地上部分に作用する地震力について、必要保有水平耐力を計算する場合、標準せん断力係数は、1.0以上としなければならない。", p:"必要保有水平耐力計算（二次設計）のC₀は1.0以上。"},
+  {n:31, src:"法規㉙", cat:"法規", a:true, q:"避難階が1階である2階建ての診療所（主要構造部が不燃材料で造られている。）で、2階における病室の床面積の合計が60㎡であるものには、2以上の直通階段を設けなくてもよい。", p:"主要構造部不燃・2階病室60㎡なら2直通階段は不要（規模・構造による緩和）。"},
+  {n:32, src:"法規㉚", cat:"法規", a:true, q:"延べ面積600㎡の共同住宅の階段部分には、排煙設備を設けなくてもよい。", p:"共同住宅の階段部分は排煙設備の設置対象外。"},
+  {n:33, src:"法規㉛", cat:"法規", a:true, q:"病院の病室には、非常用の照明装置を設けなくてもよい。", p:"病室・住宅の居室等は非常用照明の設置対象外。"},
+  {n:34, src:"法規35", cat:"法規", a:true, q:"災害があった場合において建築する応急仮設建築物である官公署の敷地は、道路に2m以上接しなくてもよい。", p:"応急仮設建築物は接道義務の適用除外。"},
+  {n:35, src:"法規36", cat:"法規", a:true, q:"公衆便所は、特定行政庁が通行上支障がないと認めて建築審査会の同意を得て許可を受ければ、道路内に建築することができる。", p:"公衆便所・巡査派出所等は許可により道路内に建築可。"},
+  {n:36, src:"法規38", cat:"法規", a:true, q:"都市計画区域内にあっては、用途地域の指定のない区域内の建築物についても、容積率の制限を受ける。", p:"用途地域の指定のない区域（白地）でも容積率制限を受ける。"},
+  {n:37, src:"法規39", cat:"法規", a:true, q:"容積率の算定に当たっては、建築物の自動車車庫の用途に供する部分の床面積は、原則として、各階の床面積の合計の1/5を限度として、延べ面積には算入しない。", p:"自動車車庫は延べ面積合計の1/5を限度に容積率不算入。"},
+  {n:38, src:"法規40", cat:"法規", a:true, q:"容積率の算定に当たっては、住宅の地階で天井が地盤面からの高さ1m以下にあるものの床面積は、原則として、住宅用途床面積の合計の1/3を限度として延べ面積には算入しない。", p:"住宅の地階（天井が地盤面＋1m以下）は住宅部分の1/3を限度に不算入。"},
+  {n:39, src:"法規41", cat:"法規", a:true, q:"容積率の算定に当たっては、共同住宅又は老人ホーム等の共用の廊下又は階段の用に供する部分の床面積は、原則として、延べ面積には算入しない。", p:"共同住宅・老人ホーム等の共用廊下・階段は容積率不算入。"},
+  {n:40, src:"法規42", cat:"法規", a:true, q:"商業地域内で、かつ、防火地域内の耐火建築物は、建蔽率の制限を受けない。", p:"商業地域（建蔽率8/10）かつ防火地域内の耐火建築物は建蔽率制限なし。"},
+  {n:41, src:"法規43", cat:"法規", a:true, q:"日影規制が適用されるか否かの建築物の高さの算定は、地盤面からの高さによる。", p:"日影規制の高さ判定は地盤面からの高さで行う。"},
+  {n:42, src:"法規44", cat:"法規", a:true, q:"日影規制の対象区域外にある高さが10mを超える建築物で、冬至日において、対象区域内の土地に日影を生じさせるものは、当該対象区域内の建築物とみなして、日影規制を適用する。", p:"区域外の高さ10m超でも、対象区域内に日影を落とせば規制対象とみなす。"},
+  {n:43, src:"法規45", cat:"法規", a:true, q:"同一の敷地内に2以上の建築物がある場合においては、これらの建築物を一の建築物とみなして、日影規制を適用する。", p:"同一敷地内の2以上の建築物は一体とみなして日影規制。"},
+  {n:44, src:"法規46", cat:"法規", a:true, q:"日影規制の対象区域は、地方公共団体の条例で指定する。", p:"日影規制の対象区域は地方公共団体の条例で指定。"},
+  {n:45, src:"法規47", cat:"法規", a:true, q:"確認済証の交付を受けた後でなければすることができない建築物の建築の工事を、確認済証の交付を受けないでした工事施工者は、1年以下の拘禁刑又は100万円以下の罰金に処せられる。", p:"確認前着工の施工者は1年以下の拘禁刑又は100万円以下の罰金。"},
+  {n:46, src:"法規48", cat:"法規", a:true, q:"災害があった場合において建築する停車場については、確認済証の交付を受ける必要はない。", p:"災害時の停車場等の応急建築物は確認不要。"},
+
+  {n:47, src:"構造③", cat:"構造", a:true, q:"積載荷重は、一般に、室の種類と構造計算の対象に応じて、異なった値を用いる。", p:"積載荷重は「床用＞大梁・柱用＞地震力用」と対象で異なる値。"},
+  {n:48, src:"構造⑥", cat:"構造", a:true, q:"風圧力は、速度圧に風力係数を乗じて計算する。", p:"風圧力＝速度圧×風力係数。"},
+  {n:49, src:"構造⑧", cat:"構造", a:true, q:"暴風時における建築物の転倒、柱の引抜き等を検討する場合においては、建築物の実況に応じて積載荷重を減らした数値によるものとする。", p:"転倒・引抜き検討では積載荷重を小さめに見る（安全側）。"},
+  {n:50, src:"構造⑪", cat:"構造", a:true, q:"振動特性係数Rtは、建築物の設計用一次固有周期及び地盤の種別に応じて算出し、一般に、固有周期が長くなるほど小さくなる。", p:"Rtは固有周期が長いほど小さくなる。"},
+  {n:51, src:"構造⑫", cat:"構造", a:true, q:"一次設計（許容応力度設計）用の標準せん断力係数C₀の値は、一般に、0.2以上とする。", p:"一次設計のC₀は0.2以上（二次設計は1.0以上）。"},
+  {n:52, src:"構造㉓", cat:"構造", a:true, q:"圧縮力を負担する筋かいとして、幅90mmの木材を使用する場合、その厚さは30mm以上とする。", p:"圧縮筋かい（木材）の厚さは幅に応じ所定以上（幅90mmなら30mm以上）。"},
+  {n:53, src:"構造㉔", cat:"構造", a:true, q:"水平力を負担する筋かいの緊結方法において、端部の一方を柱と横架材との仕口、もう一方を柱等に緊結することができる。", p:"筋かい端部は柱・横架材へ確実に緊結する。"},
+  {n:54, src:"構造28", cat:"構造", a:true, q:"ラグスクリューを木口に打ち込んだ場合の許容せん断耐力は、側面打ちの値の2/3とする。", p:"木口打ちは側面打ちより低減し、許容せん断耐力は2/3。"},
+  {n:55, src:"構造34", cat:"構造", a:true, q:"梁の引張鉄筋比が、つり合い鉄筋比以下の場合、梁の許容曲げモーメントは、引張鉄筋の断面積にほぼ比例する。", p:"鉄筋比がつり合い以下（鉄筋降伏先行）なら許容曲げMは引張鉄筋量にほぼ比例。"},
+  {n:56, src:"構造35", cat:"構造", a:true, q:"普通コンクリートを用いた柱の小径は、一般に、その構造耐力上主要な支点間の距離の1/15以上とする。", p:"RC柱の小径は支点間距離の1/15以上。"},
+  {n:57, src:"構造36", cat:"構造", a:true, q:"柱のせん断補強筋比（帯筋比）は、0.2%以上とする。", p:"帯筋比は0.2%以上。"},
+  {n:58, src:"構造37", cat:"構造", a:true, q:"柱のコンクリート全断面積に対する主筋全断面積の割合は、0.8%以上とする。", p:"柱の主筋全断面積は0.8%以上。"},
+  {n:59, src:"構造38", cat:"構造", a:true, q:"床スラブ各方向の全幅について、コンクリート全断面積に対する鉄筋全断面積の割合は、0.2%以上とする。", p:"床スラブの鉄筋比は各方向0.2%以上。"},
+  {n:60, src:"構造39", cat:"構造", a:true, q:"梁のせん断補強筋比（あばら筋比）は、0.2%以上とする。", p:"あばら筋比は0.2%以上。"},
+  {n:61, src:"構造40", cat:"構造", a:true, q:"耐震壁の壁板のせん断補強筋比は、直交する各方向に関し、それぞれ0.25%以上とする。", p:"耐震壁の壁板の補強筋比は各方向0.25%以上。"},
+  {n:62, src:"構造42", cat:"構造", a:true, q:"主要な梁材のたわみは、通常の場合、スパンの1/300以下とする。", p:"鉄骨の主要な梁のたわみは通常スパンの1/300以下。"},
+  {n:63, src:"構造45", cat:"構造", a:true, q:"応力を伝達すべき溶接継目の形式は、一般に、完全溶込み溶接、隅肉溶接及び部分溶込み溶接である。", p:"応力伝達の溶接＝完全溶込み・隅肉・部分溶込み。"},
+  {n:64, src:"構造46", cat:"構造", a:true, q:"構造計算に用いる隅肉溶接のサイズは、薄いほうの母材の厚さ以下とする。", p:"隅肉溶接のサイズは薄いほうの母材厚さ以下。"},
+  {n:65, src:"構造48", cat:"構造", a:true, q:"普通ボルトは、振動、衝撃又は繰返し応力を受ける接合部には、使用してはならない。", p:"緩みやすいため、振動・衝撃・繰返し応力部に普通ボルトは不可。"},
+  {n:66, src:"構造49", cat:"構造", a:true, q:"高力ボルトの相互間の中心距離は、高力ボルトの径の2.5倍以上とする。", p:"高力ボルトの中心距離（ピッチ）は径の2.5倍以上。"},
+
+  {n:67, src:"施工⑧", cat:"施工", a:true, q:"高さ2m以上の作業場所には、作業床を設け、その幅を40cm以上とする。", p:"高さ2m以上の作業床の幅は40cm以上。"},
+  {n:68, src:"施工⑩", cat:"施工", a:true, q:"ベンチマークは、相互にチェックができるように2箇所以上設置し、移動しないようにその周囲に養生を行う。", p:"ベンチマークは2箇所以上設置し周囲を養生。"},
+  {n:69, src:"施工⑪", cat:"施工", a:true, q:"高さが12mのくさび緊結足場における壁つなぎの間隔を、垂直方向5m、水平方向5.5m以下とする。", p:"くさび緊結足場の壁つなぎは垂直5m・水平5.5m以下。"},
+  {n:70, src:"施工⑫", cat:"施工", a:true, q:"高さが12mの枠組足場における壁つなぎの間隔を、垂直方向9m、水平方向8m以下とする。", p:"枠組足場の壁つなぎは垂直9m・水平8m以下。"},
+  {n:71, src:"施工⑬", cat:"施工", a:true, q:"高さが8m以上の登り桟橋には、7m以内ごとに踊り場を設ける。", p:"高さ8m以上の登り桟橋は7m以内ごとに踊り場。"},
+  {n:72, src:"施工⑮", cat:"施工", a:true, q:"柱の鉄筋のかぶり厚さは、主筋の外周りを包んでいる帯筋の外側表面から、これを覆うコンクリート表面までの最短距離とする。", p:"かぶり厚さは帯筋外側表面〜コンクリート表面の最短距離。"},
+  {n:73, src:"施工⑯", cat:"施工", a:true, q:"梁の配筋において、鉄筋のかぶり厚さを確保するためのスペーサーの間隔は、端部以外の部分で1.5m程度とする。", p:"梁の端部以外のスペーサー間隔は1.5m程度。"},
+  {n:74, src:"施工⑰", cat:"施工", a:true, q:"鉄筋の定着長さ・継手長さには、末端部のフックの長さを含めない。", p:"定着長さ・継手長さにフック分は含めない。"},
+  {n:75, src:"施工⑳", cat:"施工", a:true, q:"柱の主筋をガス圧接継手とする場合、隣り合う主筋の継手の位置は、同じ位置とならないように400mm以上ずらす。", p:"ガス圧接継手位置は隣接主筋で400mm以上ずらす。"},
+  {n:76, src:"施工㉑", cat:"施工", a:true, q:"ガス圧接部における鉄筋中心軸の偏心量は、鉄筋径の1/5以下とする。", p:"ガス圧接部の偏心量は鉄筋径の1/5以下。"},
+  {n:77, src:"施工27", cat:"施工", a:true, q:"柱及び壁のせき板は、コンクリートの圧縮強度が5N/mm²以上に達したことが確認されれば取り外すことができる。", p:"柱・壁のせき板は圧縮強度5N/mm²以上で取外し可。"},
+  {n:78, src:"施工28", cat:"施工", a:true, q:"スラブ下の支柱は、コンクリートの圧縮強度が12N/mm²以上に達し、かつ、施工中の荷重及び外力について構造計算により安全が確認されれば取り外すことができる。", p:"スラブ下支柱は12N/mm²以上＋構造計算での安全確認で取外し可。"},
+  {n:79, src:"施工29", cat:"施工", a:true, q:"コンクリートの圧送に先立ち、コンクリートの品質の変化を防止するために、富調合のモルタルを圧送する。", p:"圧送初めは富調合モルタルで配管内をならす（先送りモルタル）。"},
+  {n:80, src:"施工31", cat:"施工", a:true, q:"コンクリートの打重ね時間の間隔は、外気温が25℃以上の場合、120分以内を目安とする。", p:"打重ね間隔は25℃以上で120分以内が目安。"},
+  {n:81, src:"施工32", cat:"施工", a:true, q:"コンクリートの練混ぜ開始から打込み終了までの時間は、外気温が25℃を超えている場合、90分以内とする。", p:"練混ぜ〜打込み終了は25℃超で90分以内。"},
+  {n:82, src:"施工36", cat:"施工", a:true, q:"梁・スラブの鉛直打継ぎ位置は、そのスパンの中央または端から1/4付近とする。", p:"梁・スラブの鉛直打継ぎはせん断力の小さいスパン中央または端から1/4付近。"},
+  {n:83, src:"施工37", cat:"施工", a:true, q:"コンクリート棒形振動機を用いて締め固める場合、その挿入間隔は、60cm以下とする。", p:"棒形振動機の挿入間隔は60cm以下。"},
+  {n:84, src:"施工38", cat:"施工", a:true, q:"隅肉溶接の溶接長さは、有効溶接長さに隅肉サイズの2倍を加えたものとする。", p:"隅肉溶接長さ＝有効溶接長さ＋隅肉サイズ×2。"},
+  {n:85, src:"施工41", cat:"施工", a:true, q:"高力ボルト接合による継手の仮ボルトの締付け本数は、一群のボルト数の1/3以上、かつ、2本以上とする。", p:"仮ボルトは一群の1/3以上かつ2本以上。"},
+  {n:86, src:"施工47", cat:"施工", a:true, q:"大引の継手は、床束心から150mm程度持ち出し、腰掛け蟻継ぎ、釘2本打ちとする。", p:"大引の継手は床束心から150mm程度持出し・腰掛け蟻継ぎ・釘2本打ち。"},
+  {n:87, src:"施工48", cat:"施工", a:true, q:"垂木と軒桁の接合には、ひねり金物を使用する。", p:"垂木と軒桁の接合はひねり金物。"}
+];
+const STORE_KEY = "chokuzen_check_wrong";
+/* ===== 気になる(★)：自己完結ストレージ ===== */
+const STAR_KEY = "chokuzen_check_star";
+let starState = new Set();
+async function _starGet(){
+  try{ if(window.storage&&window.storage.get){const r=await window.storage.get(STAR_KEY); if(r&&r.value!=null) return r.value;} }catch(e){}
+  try{ const v=localStorage.getItem(STAR_KEY); if(v!=null) return v; }catch(e){}
+  return (window.__starmem&&window.__starmem[STAR_KEY])||null;
+}
+async function _starSet(v){
+  try{ if(window.storage&&window.storage.set){await window.storage.set(STAR_KEY,v);} }catch(e){}
+  try{ localStorage.setItem(STAR_KEY,v); }catch(e){}
+  window.__starmem=window.__starmem||{}; window.__starmem[STAR_KEY]=v;
+}
+async function getStarSet(){ const v=await _starGet(); if(v){try{return new Set(JSON.parse(v));}catch(e){}} return new Set(); }
+async function saveStarSet(set){ await _starSet(JSON.stringify([...set])); }
+function setStarIcon(btn,on){ btn.classList.toggle("on",on); btn.textContent = on?"★ 気になる":"☆ 気になる"; }
+async function toggleStar(btn,q){ const on=!starState.has(q.n); if(on)starState.add(q.n); else starState.delete(q.n); setStarIcon(btn,on); await saveStarSet(starState); }
+
+
+/* ===== 誤答ストレージ：window.storage → localStorage → メモリ の3段フォールバック ===== */
+let memStore = {};
+async function storeGet(k){
+  try{ if(window.storage&&window.storage.get){const r=await window.storage.get(k); if(r&&r.value!=null) return r.value;} }catch(e){}
+  try{ const v=localStorage.getItem(k); if(v!=null) return v; }catch(e){}
+  return memStore[k]!=null?memStore[k]:null;
+}
+async function storeSet(k,v){
+  try{ if(window.storage&&window.storage.set){await window.storage.set(k,v);} }catch(e){}
+  try{ localStorage.setItem(k,v); }catch(e){}
+  memStore[k]=v;
+}
+async function getWrongSet(){
+  const v=await storeGet(STORE_KEY);
+  if(v){ try{ return new Set(JSON.parse(v)); }catch(e){} }
+  return new Set();
+}
+async function saveWrongSet(set){ await storeSet(STORE_KEY, JSON.stringify([...set])); }
+
+const catOf = q => q.cat || q.sec || "";
+
+let pool=[], idx=0, correctCount=0, sessionWrong=[];
+const el = id => document.getElementById(id);
+const homeSec=el("home"), quizSec=el("quiz"), sumSec=el("summary");
+
+function makeSecBtn({name,meta,count,cls,onClick}){
+  const b=document.createElement("button");
+  b.className="sec-btn "+(cls||"");
+  b.innerHTML=`<span><span class="name">${name}</span>${meta?`<span class="meta">${meta}</span>`:""}</span>
+               <span class="count">${count}問</span>`;
+  b.addEventListener("click",onClick);
+  return b;
+}
+
+async function renderHome(){
+  const grid=el("secGrid"); grid.innerHTML="";
+  const wrongSet=await getWrongSet();
+  starState = await getStarSet();
+
+  grid.appendChild(makeSecBtn({
+    name:`全${QUESTIONS.length}問に挑戦`, meta:"すべての問題をランダム表示",
+    count:QUESTIONS.length, cls:"all", onClick:()=>startQuiz(QUESTIONS,true)
+  }));
+
+    const _starQs = QUESTIONS.filter(q=>starState.has(q.n));
+  const _st = makeSecBtn({ name:"気になる問題", meta:_starQs.length?"★を付けた問題だけ集中して解く":"問題カードの「☆ 気になる」で登録", count:_starQs.length, cls:"star", onClick:()=>startQuiz(_starQs,true) });
+  if(!_starQs.length) _st.disabled = true;
+  grid.appendChild(_st);
+
+  const wrongQs=QUESTIONS.filter(q=>wrongSet.has(q.n));
+  const rev=makeSecBtn({
+    name:"間違い復習", meta:wrongQs.length?"間違えた問題だけ解き直す":"間違いはまだありません",
+    count:wrongQs.length, cls:"review", onClick:()=>startQuiz(wrongQs,true)
+  });
+  if(!wrongQs.length) rev.disabled=true;
+  grid.appendChild(rev);
+
+  /* 分野別（カテゴリがある場合のみ） */
+  const cats=[...new Set(QUESTIONS.map(catOf).filter(Boolean))];
+  if(cats.length>1){
+    const head=document.createElement("div"); head.className="cat-head"; head.textContent="分野別に解く";
+    grid.appendChild(head);
+    cats.forEach(c=>{
+      const qs=QUESTIONS.filter(q=>catOf(q)===c);
+      grid.appendChild(makeSecBtn({ name:c, count:qs.length, cls:"", onClick:()=>startQuiz(qs,false) }));
+    });
+  }
+}
+
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function startQuiz(set,doShuffle){
+  if(!set.length) return;
+  pool=doShuffle?shuffle(set):[...set];
+  idx=0; correctCount=0; sessionWrong=[];
+  homeSec.classList.add("hidden"); sumSec.classList.add("hidden");
+  quizSec.classList.remove("hidden"); showQuestion();
+}
+
+function showQuestion(){
+  const q=pool[idx];
+  const c=catOf(q);
+  el("srcTag").textContent = c?`${q.src}　【${c}】`:`${q.src}`;
+  el("qText").textContent=q.q;
+  el("counter").textContent=`${idx+1}/${pool.length}`;
+  el("prog").style.width=`${(idx/pool.length)*100}%`;
+  const cM=el("cMaru"), cB=el("cBatsu");
+  [cM,cB].forEach(x=>{x.disabled=false;x.classList.remove("sel-correct","sel-wrong","dim");});
+  el("result").className="result"; el("nextBtn").className="next";
+  const _sb=el("starBtn"); setStarIcon(_sb, starState.has(q.n)); _sb.onclick=()=>toggleStar(_sb,q);
+  cM.onclick=()=>answer(true); cB.onclick=()=>answer(false);
+}
+
+async function answer(choice){
+  const q=pool[idx];
+  const cM=el("cMaru"), cB=el("cBatsu");
+  cM.disabled=true; cB.disabled=true;
+  const isCorrect=(choice===q.a);
+  const chosenEl=choice?cM:cB, otherEl=choice?cB:cM;
+  if(isCorrect){ chosenEl.classList.add("sel-correct"); otherEl.classList.add("dim"); correctCount++; }
+  else{ chosenEl.classList.add("sel-wrong"); (q.a?cM:cB).classList.add("sel-correct"); sessionWrong.push(q.n); }
+  const res=el("result");
+  res.classList.add("show", isCorrect?"ok":"ng");
+  el("verdict").textContent=isCorrect?"正解！":"不正解";
+  el("ansLine").textContent=`正解は「${q.a?"○":"×"}」`;
+  el("pointText").innerHTML=`<b>ポイント：</b>${q.p||""}`;
+  el("prog").style.width=`${((idx+1)/pool.length)*100}%`;
+  const wrongSet=await getWrongSet();
+  if(isCorrect) wrongSet.delete(q.n); else wrongSet.add(q.n);
+  await saveWrongSet(wrongSet);
+  const nb=el("nextBtn"); nb.classList.add("show");
+  nb.textContent=(idx+1<pool.length)?"次の問題 →":"結果を見る →"; nb.onclick=nextQuestion;
+}
+
+function nextQuestion(){ idx++; if(idx<pool.length) showQuestion(); else showSummary(); }
+
+function showSummary(){
+  quizSec.classList.add("hidden"); sumSec.classList.remove("hidden");
+  const total=pool.length, pct=Math.round((correctCount/total)*100);
+  el("pct").textContent=pct+"%";
+  el("ring").style.setProperty("--deg",(pct*3.6)+"deg");
+  el("sumScore").textContent=`${total}問中 ${correctCount}問 正解`;
+  const isReview=pool.length<QUESTIONS.length;
+  let title="おつかれさまでした";
+  if(pct===100) title=isReview?"間違いをすべてクリア！🎯":"全問正解！ 完璧です🎯";
+  else if(pct>=80) title="good! あと少し";
+  else if(pct>=50) title="復習で固めましょう";
+  else title="間違いを見直そう";
+  el("sumTitle").textContent=title;
+  const wrongQs=pool.filter(q=>sessionWrong.includes(q.n));
+  const rb=el("sumReview");
+  if(wrongQs.length){ rb.classList.remove("hidden"); rb.textContent=`間違えた${wrongQs.length}問を解き直す`; rb.onclick=()=>startQuiz(wrongQs,true); }
+  else rb.classList.add("hidden");
+  const _stb=el("sumStar"); const _starS=QUESTIONS.filter(q=>starState.has(q.n));
+  if(_starS.length){ _stb.classList.remove("hidden"); _stb.textContent=`★ 気になる${_starS.length}問を解く`; _stb.onclick=()=>startQuiz(_starS,true); } else { _stb.classList.add("hidden"); }
+  el("sumRetry").textContent=`最初から全${QUESTIONS.length}問`;
+  el("sumRetry").onclick=()=>startQuiz(QUESTIONS,true);
+  el("sumHome").onclick=goHome;
+}
+
+function goHome(){ quizSec.classList.add("hidden"); sumSec.classList.add("hidden"); homeSec.classList.remove("hidden"); renderHome(); }
+el("backBtn").addEventListener("click",goHome);
+renderHome();
+</script>
+</body>
+</html>
